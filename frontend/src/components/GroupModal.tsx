@@ -4,6 +4,7 @@ import { IconCheck, IconLinkPlus } from '@tabler/icons-react';
 import { handleError, handleSuccess } from "../utils/handlers";
 import { useForm } from "@mantine/form";
 import { get, post } from "../utils/apiClient";
+import { useGroups } from "../context/GroupsProvider";
 
 export interface User {
 	id: string;
@@ -34,6 +35,8 @@ export const GroupModal = ({
 		},
 	});
 
+	const { refreshGroups } = useGroups();
+
 
   // Call API to get users
   const [users, setUsers] = useState<User[]>([]);
@@ -53,11 +56,6 @@ export const GroupModal = ({
 		getUsernames();
 	}, []);
 
-	// e.preventDefault();
-	// console.log('Group Name:', groupName);
-	// console.log('Friends:', members);
-	// 
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -66,16 +64,17 @@ export const GroupModal = ({
 			groupName: groupName,
 			memberIds: memberIds
 		}
-		console.log(params)
 		const res = await post("/group/create", params);
 		
 		if (res.error) {
 			handleError(res.error);
 			return;
 		}
-		console.log(res)
 		handleSuccess(res.message ?? "Success!");
+		setMembers([]);
+		setGroupName('');
 		closeAddGroup();
+		refreshGroups();
 	};	
 
 	const usernameToId = (username: string) => {
@@ -83,12 +82,15 @@ export const GroupModal = ({
 		if (foundUsers.length == 0) return null;
 		return foundUsers[0].id ?? null;
 	}
-
+		const InputStyle = {
+			margin: "2rem auto",
+		}
 		return (
 			<Modal opened={openedAddGroup} onClose={closeAddGroup} title="Add Group" centered>
 				<div style={{padding: "1rem" }}>
 				<form onSubmit={handleSubmit}>
         <TextInput
+					style={InputStyle}
           label="Group Name"
           placeholder="Group Name"
 					value={groupName}
@@ -97,6 +99,7 @@ export const GroupModal = ({
 					key={form.key('groupName')}
         />
         <MultiSelect
+					style={InputStyle}
           label="Friends"
           placeholder="Add friends"
 					value={members}

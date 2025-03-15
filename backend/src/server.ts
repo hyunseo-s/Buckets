@@ -13,18 +13,11 @@ import { clear, readData, writeData } from './types/dataStore'
 import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
+import { getUser } from './types/user';
 import { google } from "googleapis";
 import { getCal } from './calendar/script';
 import { OAuth2Client } from 'google-auth-library';
 import { Token } from './interface';
-// import open from "open";
-// import { DateTime, Interval } from "luxon"; // Import Luxon for timezone handling
-
-// Google Cal API
-// const calendar = google.calendar("v3");
-
-const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
-const TOKEN_PATH = "token.json";
 
 // Set up web app
 const app = express();
@@ -65,10 +58,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     // Check if the token is still valid:
-    const existingToken = localStorage.getItem("token");
-    decodeJWT(existingToken)
-    const { token } = await login(req, res) as any;
-
+    await login(req, res);
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
@@ -91,11 +81,11 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
+	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
   try {
-    const groupId = createGroup(groupName, [...memberIds, id]);
+    const groupId = createGroup(groupName, [...memberIds, id], images);
     res.status(201).json({ message: 'Group created', groupId });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -171,8 +161,8 @@ app.get('/group/:groupId', (req: Request, res: Response) => {
 
 // get groups that user is a part of 
 app.get('/users/groups', (req: Request, res: Response) => {
-  const existingToken = localStorage.getItem("token");
-  const id = decodeJWT(existingToken)
+  const token = req.header('Authorization').split(" ")[1];
+  const id = decodeJWT(token)
 
   const groups = getAllGroups(id);
   res.status(200).json(groups);
@@ -191,15 +181,25 @@ app.get('/users/me', (req: Request, res: Response) => {
   res.status(200).json(id);
 });
 
+app.get('/users/:userId/profile', (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const user = getUser(userId);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
 
 // ====================================================================
 //  ================= BUCKETS ===================
 // ====================================================================
 
 app.post('/buckets', (req: Request, res: Response) => {
-  const { bucketName, groupId }: { bucketName: string, groupId: string } = req.body;
+  const { bucketName, groupId, images } = req.body;
   try {
-      const bucketId = createBucket(bucketName, groupId);
+      const bucketId = createBucket(bucketName, groupId, images);
       res.status(201).json({ message: 'Bucket created', bucketId });
   } catch (error) {
       res.status(500).json({ error: error.message });
@@ -230,7 +230,7 @@ app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
   const { bucketId } = req.params;
   try {
     const allItems = getBucketItems(bucketId);
-    res.status(200).json({ items: allItems });
+    res.status(200).json(allItems);
   } catch (error) {
     res.status(404).json({ error: error.message });
   } finally {
@@ -241,8 +241,15 @@ app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
 // all buckets for a specific group
 app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const buckets = getAllBuckets(groupId);
-  res.status(200).json(buckets);
+  
+	try {
+    const buckets = getAllBuckets(groupId);
+  	res.status(200).json(buckets);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
+  }
 });
 
 
@@ -252,13 +259,13 @@ app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
 
 app.post('/item/add', (req: Request, res: Response) => {
   try {
-    const existingToken = localStorage.getItem("token");
-    const id = decodeJWT(existingToken)
+    const token = req.header('Authorization').split(" ")[1];
+  	const id = decodeJWT(token)
     const params = req.body;
     params.addedBy = id;
 
     const result = createItem(params)
-    return res.status(200).json(result);
+    res.status(201).json({ message: 'Item added to buckets!' });
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
@@ -324,31 +331,6 @@ app.get('/user/cal', (req: Request, res: Response) => {
   
   getCal(oAuth2Client)
 });
-
-// export function getNewToken(oAuth2Client: OAuth2Client) {
-//     const authUrl = oAuth2Client.generateAuthUrl({
-//         access_type: "offline",
-//         scope: SCOPES,
-//     });
-
-//     console.log("Authorize this app by visiting this URL:", authUrl);
-//     open(authUrl);
-
-//     app.get("/", async (req: Request, res: Response) => {
-//         const code = req.query.code;
-//         try {
-//             const { tokens } : Token = oAuth2Client.getToken(code as string);
-//             oAuth2Client.setCredentials(tokens);
-//             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
-//             res.send("Authentication successful! You can close this tab.");
-//             getFreeTime(oAuth2Client);
-//         } catch (error) {
-//             console.error("Error retrieving access token", error);
-//             res.send("Authentication failed. Check console for details.");
-//         }
-//     });
-// }
-
 
 app.delete('/clear', (req: Request, res: Response) => {
   try {

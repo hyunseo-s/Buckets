@@ -1,15 +1,19 @@
 import { Autocomplete } from "@mantine/core";
 import { IconSearch } from '@tabler/icons-react';
 import { Group } from "../../types";
+import { useGroups } from "../../context/GroupsProvider";
 
 interface SearchBarProps {
-	data: Group[];
+	query: string;
 }
 
-export const SearchBar = ({ data, query, setQuery }: SearchBarProps) => {
+export const SearchBar = ({ query, setQuery }: SearchBarProps) => {
+	const { groups } = useGroups();
+
 	const AutocompleteStyle = {
 		width: "100%",
-		margin: "auto",
+		marginX: "auto",
+		marginTop: "2rem",
 		height: "fit-content",
 		border: "none"
 	}
@@ -22,7 +26,7 @@ export const SearchBar = ({ data, query, setQuery }: SearchBarProps) => {
 			size="md"
 			radius="xl"
 			placeholder="Search for a group"
-			data={data.map(group => group.groupName)}
+			data={groups.map(group => group.groupName)}
 			rightSection={<IconSearch size="16pt" stroke="2pt" style={{ marginRight: "6pt", color: "#1794FA"}} />}
 		/>
 	);

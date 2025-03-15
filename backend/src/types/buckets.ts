@@ -1,9 +1,10 @@
 import { getData } from './dataStore';
 import { Bucket, Item } from '../interface';
 import { v4 } from 'uuid';
+import { getGroup } from './groups';
 
 // This function takes in the bucket name and group id, and returns the bucket id
-export function createBucket(bucketName: string, groupId: string) {
+export function createBucket(bucketName: string, groupId: string, images: string[]) {
     const database = getData();
     const buckets = database.buckets;
     
@@ -13,8 +14,13 @@ export function createBucket(bucketName: string, groupId: string) {
       bucketId: bucketId,
       bucketName: bucketName,
       groupId: groupId,
-      items: []
+      items: [],
+      images,
     };
+
+		const group = getGroup(groupId);
+		group.buckets.push(bucketId);
+		
 
     buckets.push(bucket);
 
@@ -38,8 +44,8 @@ export function deleteBucket(findBucketId: string) {
 
 export function getBucket(findBucketId: string) {
   const database = getData();
-  const buckets = database.buckets;
-  return buckets.filter(bucket => bucket.bucketId === findBucketId);
+  const buckets = database.buckets.filter(bucket => bucket.bucketId === findBucketId);
+  return buckets.length > 0 ? buckets[0] : null;
 }
 
 export function getAllBuckets(groupId: string) {

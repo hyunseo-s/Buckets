@@ -4,33 +4,22 @@ import { useEffect, useState } from 'react';
 import { get } from '../utils/apiClient';
 import { handleError } from '../utils/handlers';
 import { Group } from '../types';
+import { useGroups } from '../context/GroupsProvider';
 
 const Groups = () => {
-  const [groups, setGroups] = useState<Group[]>([]);
 	const [query, setQuery] = useState<string>('');
-
-	useEffect(() => {
-		const getGroups = async () => {
-			const res = await get('/users/groups');
-			console.log(res)
-			if (res.error) {
-				handleError(res.error);
-				return;
-			}
-			setGroups(res);
-		}
-
-		getGroups();
-	}, [])
-
+	const { groups } = useGroups();
 
   return (
     <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
-      <div style={{ width: "60%", minWidth: "300px", margin: "auto" }}>
-        <SearchBar data={groups} query={query} setQuery={setQuery}/>
+      <div style={{ width: "60%", minWidth: "300px", margin: "2rem auto" }}>
+        <SearchBar query={query} setQuery={setQuery}/>
         <Flex
 					mt="4rem"
+					mx={"auto"}
           justify="space-between"
+					w={"98%"}
+
 					gap={{ base: "2rem" }}
 					wrap={{ base: "nowrap", sm: "wrap" }}
           direction={{ base: "column", sm: "row" }}

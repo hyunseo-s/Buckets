@@ -24,7 +24,7 @@ export const AddButton = () => {
             color={buttonColor}
             radius="xl"
             style={{
-              position: 'absolute',
+              position: 'fixed',
               bottom: '16px',
               right: '16px',
               width: '56px',

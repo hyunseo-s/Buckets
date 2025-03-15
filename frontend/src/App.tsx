@@ -2,12 +2,16 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import MyBuckets from './pages/MyBuckets'
+import '@mantine/carousel/styles.css';
+import GroupBuckets from './pages/GroupBuckets'
 import { AddButton } from './components/AddButton'
 import { createTheme, MantineProvider } from '@mantine/core'
 import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
 import WaveHeader from './assets/WaveHeader'
 import './App.css';
+import { GroupsProvider } from './context/GroupsProvider'
 
 function App() {
 	const theme = createTheme({
@@ -17,23 +21,28 @@ function App() {
 			md: '64em',
 			lg: '74em',
 			xl: '90em',
-		},
+		}
 	});
 
   return (
     <>
 			<MantineProvider theme={theme} >
-				<Notifications />
-				<WaveHeader />
-				<BrowserRouter>
-					<Routes>
-						<Route index element={<Home />} />
-						<Route path="login" element={<Login />} />
-						<Route path="register" element={<Register />} />
-						<Route path="groups" element={<Groups />} />
-					</Routes>
-				</BrowserRouter>
-				<AddButton />
+				<GroupsProvider>
+					<Notifications />
+					<WaveHeader />
+					<BrowserRouter>
+						<Routes>
+							<Route index element={<Home />} />
+							<Route path="login" element={<Login />} />
+							<Route path="register" element={<Register />} />
+							<Route path="groups" element={<Groups />} />
+							<Route path="my-buckets/:gid" element={<MyBuckets />} />
+							<Route path="grp-buckets/:gid" element={<GroupBuckets />} />
+							<Route path="groups" element={<Groups />} />
+						</Routes>
+					</BrowserRouter>
+					<AddButton />
+				</GroupsProvider>
 			</MantineProvider>
     </>
   )
