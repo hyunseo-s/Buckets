@@ -29,8 +29,8 @@ function App() {
 						<Route index element={<Home />} />
 						<Route path="login" element={<Login />} />
 						<Route path="register" element={<Register />} />
-						<Route path="my-buckets" element={<MyBuckets />} />
-						<Route path="grp-buckets" element={<GroupBuckets />} />
+						<Route path="my-buckets/:gid" element={<MyBuckets />} />
+						<Route path="grp-buckets/:gid" element={<GroupBuckets />} />
 						<Route path="groups" element={<Groups />} />
 					</Routes>
 				</BrowserRouter>

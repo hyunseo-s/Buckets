@@ -2,6 +2,7 @@ import { Flex } from '@mantine/core';
 import { SearchBar, GroupCard } from '../components';
 import { useEffect, useState } from 'react';
 import { get } from '../utils/apiClient';
+import { useNavigate } from 'react-router';
 
 interface Groups {
   groupId: string;
@@ -12,6 +13,7 @@ interface Groups {
 
 const Groups = () => {
   const [groups, setGroups] = useState<Groups[]>([]);
+  const navigate = useNavigate();
 
   const fetchGroups = async () => {
     let v;
@@ -23,6 +25,10 @@ const Groups = () => {
   useEffect(() => {
     fetchGroups()
   }, [])
+
+  const handleClick = (id: string) => {
+    navigate(`/grp-buckets/${id}`)
+  }
 
   return (
     <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
@@ -36,7 +42,7 @@ const Groups = () => {
           direction={{ base: "column", sm: "row" }}
         >
           {groups.map((group, index) => (
-            <GroupCard key={index} {...group}/>
+            <GroupCard key={index} onClick={() => {handleClick(group.groupId)}} {...group}/>
           ))}
         </Flex>
       </div>

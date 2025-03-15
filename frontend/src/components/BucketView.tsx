@@ -1,37 +1,44 @@
 import { Button, Dialog, Divider, Flex, Grid, Title, Text, Group, TextInput } from "@mantine/core"
 import ItemCard from "./ItemCard.tsx"
 import BucketMenu from "./BucketMenu.tsx";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import SortMenu from "./SortMenu.tsx";
+import { get } from "../utils/apiClient.ts";
 
-const buckets: string[] = ['Bucket 1', 'Bucket 2']
+interface Buckets {
+  bucketId: string;
+  bucketName: string;
+  gid: string;
+  items: string[]
+}
 
-const items = [{
-  title: 'Hello',
-  likes: 1,
-  images: ['https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg', 'https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg'],
-  link: 'https://www.ramblers.com.au/blog/sunset-skydives/'
-},{
-  title: 'Hello',
-  likes: 1,
-  images: ['https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg', 'https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg'],
-  link: 'https://www.ramblers.com.au/blog/sunset-skydives/'
-},{
-  title: 'Hello',
-  likes: 1,
-  images: ['https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg', 'https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg'],
-  link: 'https://www.ramblers.com.au/blog/sunset-skydives/'
-},{
-  title: 'Hello',
-  likes: 1,
-  images: ['https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg', 'https://www.ramblers.com.au/wp-content/uploads/2017/04/dsc_0043_28150455396_o-1200x800.jpg'],
-  link: 'https://www.ramblers.com.au/blog/sunset-skydives/'
-}]
+interface Item {
+  itemId: string;
+  itemName: string;
+  itemDesc: string;
+  itemUrl: string;
+  addedBy: string;
+  images: string[];
+  likes: number;
+  bucketId: string;
+  active: boolean;
+}
 
-const BucketView = (props: PropsWithChildren<{title : string}>) => {
+const BucketView = (props: PropsWithChildren<{title : string, buckets: Buckets[]}>) => {
   const [active, setActive] = useState(0);
   const [edit, setEdit] = useState(false);
   const [rename, setRename] = useState(false);
+  const [items, setItems] = useState<Item[]>([])
+
+  const fetchItems = async (bucketId : string) => {
+    let v;
+    const raw = await get(`/buckets/${bucketId}/items`, v)
+    setItems(JSON.parse(raw));
+  }
+
+  useEffect(() => {
+    fetchItems(props.buckets[active].bucketId)
+  }, [active, props.buckets])
 
   const handleSaveClick = () => {
     setEdit(false);
@@ -52,8 +59,8 @@ const BucketView = (props: PropsWithChildren<{title : string}>) => {
     {/* Buckets List */}
     <Flex direction='row' justify='space-between' w='100%'>
       <Flex direction='row' gap='lg'>
-        {buckets.map((bucket, index) => {
-          return <BucketMenu key={index} index={index} name={bucket} isFocused={index === active} buttonListener={setActive} editListener={setEdit} renameListener={setRename}/>
+        {props.buckets.map((bucket, index) => {
+          return <BucketMenu key={index} index={index} name={bucket.bucketName} isFocused={index === active} buttonListener={setActive} editListener={setEdit} renameListener={setRename}/>
         })}
       </Flex>
       <SortMenu />
@@ -85,7 +92,7 @@ const BucketView = (props: PropsWithChildren<{title : string}>) => {
       {items.map((item, index) => {
         return (
           <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>
-            <ItemCard key={index} title={item.title} likes={item.likes} images={item.images} link={item.link} type={edit}/>
+            <ItemCard key={index} title={item.itemName} likes={item.likes} images={item.images} link={item.itemUrl} type={edit}/>
           </Grid.Col>
         )
       })}
