@@ -35,7 +35,7 @@ export interface Item {
     itemDesc: string;
     itemUrl: string;
     addedBy: string;
-    images: string;
+    images: string[];
     likes: number;
     bucketId: string;
     active: boolean;

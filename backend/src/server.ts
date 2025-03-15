@@ -14,7 +14,6 @@ import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 
-
 // Set up web app
 const app = express();
 // Use middleware that allows us to access the JSON body of requests
