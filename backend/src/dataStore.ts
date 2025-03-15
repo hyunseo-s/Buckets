@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { dataStore } from './interface'
+import { Database } from './interface'
 
 const USERS_FILE = "dataStore.json"
 
-let data: dataStore = {
+let data: Database = {
 	users: [],
 	groups: [],
 	buckets: [],

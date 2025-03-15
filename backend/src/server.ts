@@ -10,7 +10,7 @@ import process from 'process';
 import { createItem, removeItem } from './items'
 import { readData, writeData } from './dataStore'
 import { login, register } from './auth';
-
+import { decodeJWT } from './utilis'
 
 // Set up web app
 const app = express();
@@ -38,18 +38,24 @@ writeData();
 
 app.post('/auth/register', async (req: Request, res: Response) => {
   try {
-    await register(req, res);
+    const newToken = await register(req, res);
+    localStorage.setItem("jwtToken", String(newToken));
   } catch (error) {
-    return res.status(400).json(error)
+    return res.status(400).json({ error: error.message })
   }
 })
 
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
+    // Check if the token is still valid:
+    const existingToken = localStorage.getItem("jwtToken");
+
+    decodeJWT(existingToken)
+
     const { token } = await login(req, res) as any;
     localStorage.setItem("jwtToken", token);
   } catch (error) {
-    return res.status(400).json(error)
+    return res.status(400).json({ error: error.message })
   }
 })
 
@@ -57,7 +63,7 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
   try {
     localStorage.removeItem("jwtToken");
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error: error.message });
   }
 })
 
@@ -117,7 +123,15 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
+<<<<<<< HEAD
 function jwtDecode(arg0: string) {
+=======
+function decodeJWT(existingToken: string | null) {
+  throw new Error('Function not implemented.');
+}
+
+function decodeJWT(existingToken: string | null) {
+>>>>>>> 12b09b0acd8e9fbea1305a7bb87e77240847856a
   throw new Error('Function not implemented.');
 }
 
