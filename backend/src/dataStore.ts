@@ -17,10 +17,10 @@ const readData = () => {
         fs.writeFileSync(DATABASE, JSON.stringify({ users: [], group: [], buckets: [], items: [] }, null, 2), "utf-8");
     }
     return JSON.parse(fs.readFileSync(DATABASE, "utf-8"));
-  };
+};
 
 // Write to the database file 
-const writeData = (data: Database) => {
+const writeData = () => {
     fs.writeFileSync(DATABASE, JSON.stringify(data, null, 2), "utf-8");
 };
 
