@@ -7,13 +7,10 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-<<<<<<< HEAD
 import { createItem, removeItem } from './items'
 import { readData, writeData } from './dataStore'
 import { login, register } from './auth';
-=======
-import { register, login } from './auth.ts' 
->>>>>>> 544a2aba2eb4aad4101323b59eb09d034e8df847
+
 
 // Set up web app
 const app = express();
@@ -66,10 +63,9 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 
 app.post('/item/add', (req: Request, res: Response) => {
   try {
-    const token = jwtDecode(localStorage.getItem("token"));
-    const id = token.id;
+    // GETE ID
 
-    const { id, name, desc, uri, image, bucketId } = req.body;
+    const { name, desc, uri, image, bucketId } = req.body;
     const result = createItem(id, name, desc, uri, image, bucketId);
     return res.status(200).json(result);
   } catch (error) {
@@ -79,9 +75,6 @@ app.post('/item/add', (req: Request, res: Response) => {
 
 app.post('/item/remove', (req: Request, res: Response) => {
   try {
-    const token = jwtDecode(localStorage.getItem("token"));
-    const id = token.id;
-
     const { itemId } = req.body;
     const result = removeItem(itemId);
     return res.status(200).json(result);
