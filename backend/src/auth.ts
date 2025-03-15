@@ -28,10 +28,10 @@ const writeDatabase = (data: Database) => {
 
 // Register a new user
 export const register = async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    const { email, username, password } = req.body;
     const db = readDatabase();
   
-    if (db.users.some((user) => user.username === username)) {
+    if (db.users.some((user) => user.email === email)) {
         throw new Error("User already exists");
     }
   
@@ -39,6 +39,7 @@ export const register = async (req: Request, res: Response) => {
     const newUser: User = {
         id: String(v4()),
         username,
+        email,
         password: hashedPassword,
         groups: [],
         friends: [],
@@ -50,9 +51,9 @@ export const register = async (req: Request, res: Response) => {
 
     const dbnew = readDatabase();
   
-    const user = dbnew.users.find((u) => u.username === username);
+    const user = dbnew.users.find((u) => u.email === email);
 
-    const token = jwt.sign({ user: user.id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
     res.status(201).json({ message: "Registration success", token });
 }
@@ -60,10 +61,10 @@ export const register = async (req: Request, res: Response) => {
 // User login function
 export const login = async (req: Request, res: Response) => {
 
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     const db = readDatabase();
   
-    const user = db.users.find((u) => u.username === username);
+    const user = db.users.find((u) => u.email === email);
     if (!user) {
         throw new Error("Invalid credentials");
     }
@@ -73,7 +74,7 @@ export const login = async (req: Request, res: Response) => {
         throw new Error("Invalid credentials");
     }
   
-    const token = jwt.sign({ user: user.id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
   
     res.status(201).json({ message: "Login success", token });
 };
