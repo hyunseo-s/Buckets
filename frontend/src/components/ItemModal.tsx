@@ -39,8 +39,8 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 		return foundGroups[0].groupName ?? null;
 	}
 
-	const bucketNameToId = (groupName: string, bucketName: string) => {
-		const foundBuckets = buckets.filter(bucket => bucket.bucketName === bucketName && bucket.groupId === groupIdToName(bucket.bucketId));
+	const bucketNameToId = (groupName: string, bucketName: string, filteredBuckets: Bucket[]) => {
+		const foundBuckets = filteredBuckets.filter(bucket => bucket.bucketName === bucketName && bucket.groupId === groupNameToId(groupName));
 		if (foundBuckets.length == 0) return null;
 
 		return foundBuckets[0].groupId ?? null;
@@ -63,11 +63,12 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 	const handleSubmit = async (values) => {
 		const bucketIds: string[] = [];
 	
-		itemAllocations.forEach(itemAllocation => itemAllocation.bucketNames.forEach(bucketName => {
-			const bId = bucketNameToId(itemAllocation.groupName ?? "", bucketName ?? "");
+		itemAllocations.forEach((itemAllocation, index) => itemAllocation.bucketNames.forEach(bucketName => {
+			console.log(itemAllocation.groupName, bucketName)
+			const bId = bucketNameToId(itemAllocation.groupName ?? "", bucketName ?? "", buckets[index]);
 			if (bId) bucketIds.push(bId);
 		}));
-	
+
 		// Convert files to data URLs
 		const filePromises = files.map(file => {
 			return new Promise<string>((resolve, reject) => {
@@ -80,13 +81,13 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 	
 		try {
 			const dataUrls = await Promise.all(filePromises);
-	
+			console.log(bucketIds)
 			const params = { 
 				itemName: values.itemName, 
 				itemDesc: values.itemDesc, 
 				itemUrl: values.itemUrl,  
 				images: dataUrls,  // Converted Data URLs
-				bucketId: bucketIds, 
+				bucketIds: bucketIds, 
 			};
 	
 			const res = await post("/item/add", params);
@@ -118,12 +119,12 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 					console.log(gId, res);
 		
 					if (res) {
-						return [...new Set(res.map(bucket => bucket.bucketName))];
+						return [...new Set(res)];
 					}
 					return [];
 		
 				}))
-		
+				console.log(newBuckets)
 				setBuckets(newBuckets);
 		}
 		getBuckets()
@@ -162,7 +163,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 											label="Group"
 											placeholder="Group"
 											key={form.key(index + 'groupName')}
-											data={groups.map(group => group.groupName)}
+											data={[...new Set(groups.map(group => group.groupName))]}
 											value={itemAllocation.groupName}
 											onChange={(value) => {
 												const newItemAllocations = [...itemAllocations];
@@ -184,7 +185,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 												newItemAllocations[index].bucketNames = value;
 												setItemAllocations(newItemAllocations)
 											}}
-											data={buckets[index]}
+											data={ (!buckets[index] || buckets[index].length === 0) ? [] : [...new Set(buckets[index].map(bucket => bucket.bucketName))]}
 										/>
 									</Group>
 								)

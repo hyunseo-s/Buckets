@@ -55,7 +55,6 @@ app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     // Check if the token is still valid:
     await login(req, res);
-
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
@@ -262,7 +261,7 @@ app.post('/item/add', (req: Request, res: Response) => {
     params.addedBy = id;
 
     const result = createItem(params)
-    return res.status(200).json(result);
+    res.status(201).json({ message: 'Item added to buckets!' });
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {

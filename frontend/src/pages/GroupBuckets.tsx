@@ -20,12 +20,17 @@ const GroupBuckets = () => {
 
   const fetchBuckets = async (gid: string) => {
     const res = await get(`/groups/${gid}/buckets`);
-    setBuckets(JSON.parse(res));
+
+		if (res) {
+			console.log("Res", res)
+			setBuckets(res);
+		}
   }
 
   const fetchGroup = async (gid: string) => {
     let v;
-    const res = await get(`/groups/${gid}`, v);
+    const res = await get(`/group/${gid}`, v);
+		console.log(res);
     if (res.error) {
       handleError(res.error);
       return;

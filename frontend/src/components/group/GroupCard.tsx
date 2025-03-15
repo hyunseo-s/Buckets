@@ -5,6 +5,7 @@ import { Group as GroupType, User } from "../../types";
 import { useEffect, useState } from 'react';
 import { get } from '../../utils/apiClient';
 import { handleError, handleSuccess } from '../../utils/handlers';
+import { useNavigate } from 'react-router';
 
 interface GroupCardProps {
 	group: GroupType;
@@ -14,7 +15,7 @@ export const GroupCard = ({ group }: GroupCardProps) => {
   const theme = useMantineTheme();
 
 	const [owner, setOwner] = useState<User | null>(null);
-
+	const navigate = useNavigate();
 	useEffect(() => {
 		// TODO: doesn't get owner
 		const getUser = async () => {
@@ -91,8 +92,10 @@ export const GroupCard = ({ group }: GroupCardProps) => {
 			w={{ base: '90%', sm: '45%' }}
       radius="md"
       component="a"
-      href="https://mantine.dev/"
       target="_blank"
+			onClick={() => {
+				navigate(`/grp-buckets/${group.groupId}`)
+			}}
     >
       <div className="image" style={imageStyle} />
       <div style={overlayStyle} />

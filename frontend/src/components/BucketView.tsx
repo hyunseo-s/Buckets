@@ -25,7 +25,7 @@ interface Item {
 }
 
 const BucketView = (props: PropsWithChildren<{title : string, buckets: Buckets[]}>) => {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(null);
   const [edit, setEdit] = useState(false);
   const [rename, setRename] = useState(false);
   const [items, setItems] = useState<Item[]>([])
@@ -33,10 +33,19 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Buckets[]
   const fetchItems = async (bucketId : string) => {
     let v;
     const raw = await get(`/buckets/${bucketId}/items`, v)
-    setItems(JSON.parse(raw));
+    setItems(raw);
   }
 
+	useEffect(() => {
+		if (props.buckets.length > 0) {
+			setActive(0);
+		}
+	}, [])
+
   useEffect(() => {
+		if (!active) {
+			return;
+		}
     fetchItems(props.buckets[active].bucketId)
   }, [active, props.buckets])
 
@@ -89,7 +98,7 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Buckets[]
 
     {/* Items Grid */}
     <Grid px='4rem' gutter={50}>
-      {items.map((item, index) => {
+      {items.length > 0 && items.map((item, index) => {
         return (
           <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>
             <ItemCard key={index} title={item.itemName} likes={item.likes} images={item.images} link={item.itemUrl} type={edit}/>
