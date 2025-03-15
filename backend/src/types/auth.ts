@@ -10,35 +10,35 @@ const JWT_SECRET = "TOPSECRET";
 
 // Register a new user
 export const register = async (req: Request, res: Response) => {
-    const { email, username, password } = req.body;
-    console.log(email,username,password)
-    
-    const db: Database = getData();
-  
-    if (db.users.some((user) => user.email === email)) {
-        throw new Error("User already exists");
-    }
-  
-		const id = v4()
-    // const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser: User = {
-        id,
-        username,
-        email,
-        password: password,
-        groups: [],
-        friends: [],
-        buckets: [],
-    };
+	const { email, username, password } = req.body;
+	console.log(email,username,password)
+	
+	const db: Database = getData();
 
-    db.users.push(newUser);
-    const user = db.users.find((u) => u.email === email);
+	if (db.users.some((user) => user.email === email)) {
+		throw new Error("User already exists");
+	}
 
-    const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+	const id = v4()
+	// const hashedPassword = await bcrypt.hash(password, 10);
+	const newUser: User = {
+		id,
+		username,
+		email,
+		password: password,
+		groups: [],
+		friends: [],
+		buckets: [],
+	};
 
-		createGroup("My Buckets", [id])
+	db.users.push(newUser);
+	const user = db.users.find((u) => u.email === email);
 
-    res.status(201).json({ message: "Registration success", token });
+	const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+	createGroup("My Buckets", [id])
+
+	return ({ message: "Registration success", token });
 }
 
 // User login function
