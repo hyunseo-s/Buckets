@@ -13,6 +13,18 @@ import { clear, readData, writeData } from './types/dataStore'
 import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
+import { google } from "googleapis";
+import { getCal } from './calendar/script';
+import { OAuth2Client } from 'google-auth-library';
+import { Token } from './interface';
+// import open from "open";
+// import { DateTime, Interval } from "luxon"; // Import Luxon for timezone handling
+
+// Google Cal API
+// const calendar = google.calendar("v3");
+
+const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
+const TOKEN_PATH = "token.json";
 
 // Set up web app
 const app = express();
@@ -302,6 +314,39 @@ app.put('/item/toggleActive', (req: Request, res: Response) => {
   }
 });
 
+app.get('/user/cal', (req: Request, res: Response) => {
+  const credentials = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/src/calendar/credentials.json"), "utf8"));
+  const { client_id, client_secret, redirect_uris } = credentials.web;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+  
+  getCal(oAuth2Client)
+});
+
+export function getNewToken(oAuth2Client: OAuth2Client) {
+    const authUrl = oAuth2Client.generateAuthUrl({
+        access_type: "offline",
+        scope: SCOPES,
+    });
+
+    console.log("Authorize this app by visiting this URL:", authUrl);
+    open(authUrl);
+
+    app.get("/", async (req: Request, res: Response) => {
+        const code = req.query.code;
+        try {
+            const { tokens } : Token = oAuth2Client.getToken(code as string);
+            oAuth2Client.setCredentials(tokens);
+            fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
+            res.send("Authentication successful! You can close this tab.");
+            getFreeTime(oAuth2Client);
+        } catch (error) {
+            console.error("Error retrieving access token", error);
+            res.send("Authentication failed. Check console for details.");
+        }
+    });
+}
+
+
 app.delete('/clear', (req: Request, res: Response) => {
   try {
     const result = clear();
@@ -345,3 +390,7 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
+function getFreeTime(oAuth2Client: OAuth2Client) {
+  throw new Error('Function not implemented.');
+}
+
