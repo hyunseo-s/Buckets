@@ -1,9 +1,10 @@
 import { Button, FileInput, Flex, Group, Input, Modal, MultiSelect, Select, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useState } from "react";
-import { post } from "../utils/apiClient";
+import { useEffect, useState } from "react";
+import { get, post } from "../utils/apiClient";
 import { handleError, handleSuccess } from "../utils/handlers";
-import { ItemDropzone } from "./ItemDropzone";
+import { useGroups } from "../context/GroupsProvider";
+import { Bucket } from "../types";
 
 interface ItemAllocation {
 	groupName: string | null,
@@ -24,53 +25,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 	});
 
 
-	const groups = [
-    {
-      groupId: "justin",
-      groupName: "justin1"
-    },
-    {
-      groupId: "edison",
-      groupName: "edison1"
-    },
-    {
-      groupId: "elizabeth",
-      groupName: "elizabeth1"
-    },
-  ]
-
-  const buckets = [
-    {
-      groupId: "justin",
-      bucketName: "justinBucket",
-      bucketId: "justinBBA"
-    },
-    {
-      groupId: "justin",
-      bucketName: "justinBucket2",
-      bucketId: "justinBBB"
-    },
-    {
-      groupId: "justin",
-      bucketName: "justinBucket3",
-      bucketId: "justinBBC"
-    },
-    {
-      groupId: "elizabeth",
-      bucketName: "elizabethBucket",
-      bucketId: "elizabethBBA"
-    },
-    {
-      groupId: "elizabeth",
-      bucketName: "elizabethBucket2",
-      bucketId: "elizabethBBB"
-    },
-    {
-      groupId: "edison",
-      bucketName: "edisonBucket2",
-      bucketId: "edisonBBB"
-    },
-  ]
+	const { groups } = useGroups();
 
 	const groupNameToId = (groupName: string) => {
 		const foundGroups = groups.filter(group => group.groupName === groupName);
@@ -103,6 +58,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 
 	const [ itemAllocations, setItemAllocations] = useState<ItemAllocation[]>([ { groupName: null, bucketNames: [] }]);
 	const [ files, setFiles ] = useState<File[]>([]);
+	const [ buckets, setBuckets ] = useState([]);
 
 	const handleSubmit = async (values) => {
 		const bucketIds: string[] = [];
@@ -146,7 +102,33 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 			console.error("Error converting files:", error);
 			handleError("Failed to convert images.");
 		}
-	};	
+	};
+
+
+	useEffect(() => {
+		const getBuckets = async () => {
+				const newBuckets = await Promise.all(itemAllocations.map(async (itemAllocation) => {
+					const gId = groupNameToId(itemAllocation.groupName ?? "");
+					console.log(gId);
+					if (!gId) {
+						return [];
+					}
+					const res = await get(`/groups/${gId}/buckets`);
+
+					console.log(gId, res);
+		
+					if (res) {
+						return [...new Set(res.map(bucket => bucket.bucketName))];
+					}
+					return [];
+		
+				}))
+		
+				setBuckets(newBuckets);
+		}
+		getBuckets()
+
+	}, [itemAllocations])
 
     return (
         <Modal opened={openedAddItem} onClose={closeAddItem} title="Add Item" centered>
@@ -193,7 +175,6 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 										<MultiSelect
 										 	className="bucket-multiselect"
 											style={{ maxWidth: "50%"}}
-											inputSize="md"
 											label="Bucket"
 											placeholder="Bucket"
 											key={form.key(index + 'bucketName')}
@@ -203,10 +184,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 												newItemAllocations[index].bucketNames = value;
 												setItemAllocations(newItemAllocations)
 											}}
-											data={
-												buckets.filter(bucket => bucket.groupId === groupNameToId(itemAllocation.groupName ?? ""))
-													.map((group) => group.bucketName)
-											}
+											data={buckets[index]}
 										/>
 									</Group>
 								)

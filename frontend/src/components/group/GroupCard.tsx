@@ -1,7 +1,10 @@
 // https://ui.mantine.dev/category/article-cards/#image-card
 import { IconUser, IconBucket } from '@tabler/icons-react';
 import { Card, Center, Group, Text, useMantineTheme } from '@mantine/core';
-import { Group as GroupType } from "../../types";
+import { Group as GroupType, User } from "../../types";
+import { useEffect, useState } from 'react';
+import { get } from '../../utils/apiClient';
+import { handleError, handleSuccess } from '../../utils/handlers';
 
 interface GroupCardProps {
 	group: GroupType;
@@ -9,6 +12,22 @@ interface GroupCardProps {
 
 export const GroupCard = ({ group }: GroupCardProps) => {
   const theme = useMantineTheme();
+
+	const [owner, setOwner] = useState<User | null>(null);
+
+	useEffect(() => {
+		// TODO: doesn't get owner
+		const getUser = async () => {
+			const res = await get(`/users/${group.members[group.members.length - 1]}/profile`);
+
+			if (res) {
+				console.log(res);
+				setOwner(res);
+			}
+		}
+
+		getUser();
+	}, [])
 
   // Define styles as variables
   const cardStyle = {
@@ -86,7 +105,7 @@ export const GroupCard = ({ group }: GroupCardProps) => {
 
           <Group justify="space-between" gap="xs">
             <Text size="sm" style={authorStyle}>
-              {group.groupName}
+              {owner?.username ?? ""}
             </Text>
             <Group gap="lg">
               <Center>

@@ -3,10 +3,13 @@ import { useForm } from '@mantine/form';
 import { post } from '../utils/apiClient';
 import { handleError, handleSuccess } from '../utils/handlers';
 import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
+import { useGroups } from '../context/GroupsProvider';
 
 
 const Login = () => {
 	const navigate = useNavigate();
+	const { refreshGroups } = useGroups();
 
 	const ButtonStyle = {
 		width: "10rem",
@@ -44,6 +47,11 @@ const Login = () => {
     },
   });
 
+	useEffect(() => {
+		localStorage.removeItem("token");
+		refreshGroups();
+	}, [])
+
 	const handleSubmit = async (values) => {
 		const res = await post("/auth/login", values);
 
@@ -54,6 +62,7 @@ const Login = () => {
 
 		handleSuccess(res.message);
 		localStorage.setItem("token", res.token);
+		refreshGroups();
 		navigate('/groups')
 	}
 

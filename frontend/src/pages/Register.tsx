@@ -3,9 +3,12 @@ import { useForm } from '@mantine/form';
 import { post } from '../utils/apiClient';
 import { handleError, handleSuccess } from '../utils/handlers';
 import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
+import { useGroups } from '../context/GroupsProvider';
 
 const Register = () => {
 	const navigate = useNavigate();
+	const { refreshGroups } = useGroups();
 
 	const ButtonStyle = {
 		width: "10rem",
@@ -57,8 +60,14 @@ const Register = () => {
 
 		handleSuccess(res.message);
 		localStorage.setItem("token", res.token);
+		refreshGroups();
 		navigate('/groups');
 	}
+
+	useEffect(() => {
+		localStorage.removeItem("token");
+		refreshGroups();
+	}, [])
 
   return (
 		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: "-100pt"}}>

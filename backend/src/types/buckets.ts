@@ -1,6 +1,7 @@
 import { getData } from './dataStore';
 import { Bucket, Item } from '../interface';
 import { v4 } from 'uuid';
+import { getGroup } from './groups';
 
 // This function takes in the bucket name and group id, and returns the bucket id
 export function createBucket(bucketName: string, groupId: string) {
@@ -15,6 +16,10 @@ export function createBucket(bucketName: string, groupId: string) {
       groupId: groupId,
       items: []
     };
+
+		const group = getGroup(groupId);
+		group.buckets.push(bucketId);
+		
 
     buckets.push(bucket);
 

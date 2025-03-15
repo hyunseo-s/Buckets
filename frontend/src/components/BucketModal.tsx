@@ -1,8 +1,8 @@
 import { Button, Modal, Select, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { handleError, handleSuccess } from "../utils/handlers";
-import { get, post } from "../utils/apiClient";
-import { Group } from "../types";
+import { post } from "../utils/apiClient";
+import { useGroups } from "../context/GroupsProvider";
 
 export const BucketModal = ({
   openedAddBucket,
@@ -14,28 +14,16 @@ export const BucketModal = ({
   
   const [bucketName, setBucketName] = useState<string>('');
   const [selectedBucketGroupOption, setBucketSelectedGroupOption] = useState<string | null>(null);
-
-  const [userGroups, setUserGroups] = useState<Group[]>([])
-  
-  useEffect(() => {
-    const generateUserGroups = async () => {
-      const res = await get('/users/groups');
-      if (res.error) {
-        handleError(res.error);
-        return;
-      }
-      setUserGroups(res);
-    }
-
-    generateUserGroups();
-  }, []);
+	const { groups, refreshGroups } = useGroups();
 
   const groupNameToId = (groupName: string) => {
-		const foundUsers = userGroups.filter(group => group.groupName === groupName);
+		const foundUsers = groups.filter(group => group.groupName === groupName);
 		if (foundUsers.length == 0) return null;
 		return foundUsers[0].groupId ?? null;
 	}
-
+	const InputStyle = {
+		margin: "2rem auto",
+	}
   const handleSubmit = async (e) => {
     e.preventDefault();
     const groupId = groupNameToId(selectedBucketGroupOption ?? "")
@@ -51,12 +39,14 @@ export const BucketModal = ({
     }
     handleSuccess(res.message ?? "Success!");
     closeAddBucket();
+		refreshGroups();
   };	
 
   return (
     <Modal opened={openedAddBucket} onClose={closeAddBucket} title="Add Bucket" centered>
       <form onSubmit={handleSubmit}>
         <TextInput
+					style={InputStyle}
           label="Bucket Name"
           placeholder="Enter bucket name"
           value={bucketName}
@@ -64,9 +54,10 @@ export const BucketModal = ({
           required
         />
         <Select
+					style={InputStyle}
           label="Add to group"
           placeholder="Select group"
-          data={userGroups.map(group => group.groupName)}
+          data={groups.map(group => group.groupName)}
           value={selectedBucketGroupOption}
           onChange={(value) => setBucketSelectedGroupOption(value)}
           required
