@@ -10,7 +10,7 @@ import fs, { write } from 'fs';
 import path from 'path';
 import process from 'process';
 import { clear, readData, writeData } from './types/dataStore'
-import { login, register } from './types/auth';
+import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 
@@ -162,6 +162,11 @@ app.get('/users/groups', (req: Request, res: Response) => {
 
   const groups = getAllGroups(id);
   res.status(200).json(groups);
+});
+
+app.get('/users/all', (req: Request, res: Response) => {
+  const users = getAllUsers();
+  res.status(200).json(users);
 });
 
 
