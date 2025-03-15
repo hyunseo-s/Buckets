@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import { MantineProvider } from '@mantine/core'
 import MyBuckets from './pages/MyBuckets'
+import '@mantine/carousel/styles.css';
 
 function App() {
 
@@ -16,7 +17,7 @@ function App() {
 						<Route index element={<Home />} />
 						<Route path="login" element={<Login />} />
 						<Route path="register" element={<Register />} />
-						<Route path="my-bucket" element={<MyBuckets />} />
+						<Route path="my-buckets" element={<MyBuckets />} />
 					</Routes>
 				</BrowserRouter>
 			</MantineProvider>
