@@ -1,6 +1,6 @@
 import express, { json, Request, Response } from 'express';
-import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './groups';
-import { createBucket, deleteBucket, getBucket, getAllBuckets } from './buckets'
+import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './types/groups';
+import { createBucket, deleteBucket, getBucket, getAllBuckets } from './types/buckets'
 import { User } from './interface'
 import morgan from 'morgan';
 import config from './config.json';
@@ -11,9 +11,9 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { decodeJWT } from './utilis';
-import { readData, writeData } from './dataStore'
-import { login, register } from './auth';
-import { createItem, removeItem } from './items';
+import { readData, writeData } from './types/dataStore'
+import { login, register } from './types/auth';
+import { createItem, removeItem } from './types/items';
 
 // Set up web app
 const app = express();

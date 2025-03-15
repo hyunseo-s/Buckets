@@ -1,6 +1,6 @@
 import { getData } from './dataStore'
 import { v4 } from 'uuid';
-import { Item } from './interface';
+import { Item } from '../interface';
 
 interface CreateItemType {
     itemName: string, 

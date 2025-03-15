@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { User, Database } from "./interface";
+import { User, Database } from "../interface";
 import { v4 } from 'uuid';
 import { readData, writeData } from "./dataStore";
 

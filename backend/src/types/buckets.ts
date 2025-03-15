@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { Bucket } from './interface';
+import { Bucket } from '../interface';
 import { v4 } from 'uuid';
 
 // This function takes in the bucket name and group id, and returns the bucket id
