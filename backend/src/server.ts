@@ -226,7 +226,7 @@ app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
   const { bucketId } = req.params;
   try {
     const allItems = getBucketItems(bucketId);
-    res.status(200).json({ items: allItems });
+    res.status(200).json(allItems);
   } catch (error) {
     res.status(404).json({ error: error.message });
   } finally {

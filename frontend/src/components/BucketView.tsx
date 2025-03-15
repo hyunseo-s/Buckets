@@ -12,7 +12,6 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
   const [edit, setEdit] = useState(false);
   const [rename, setRename] = useState(false);
   const {items, refreshItemsOfBucket } = useGroups()
-
 	useEffect(() => {
 		if (props.buckets && props.buckets.length > 0) {
 			setActive(0);
@@ -76,7 +75,7 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
 
     {/* Items Grid */}
     <Grid px='4rem' gutter={50}>
-      {items[props.buckets[active ?? 0].bucketId].items && items[props.buckets[active ?? 0].bucketId].items.length > 0 && items[props.buckets[active ?? 0].bucketId].items.map((item, index) => {
+      {items[props.buckets[active ?? 0].bucketId] && items[props.buckets[active ?? 0].bucketId].length > 0 && items[props.buckets[active ?? 0].bucketId].map((item, index) => {
         return (
           <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>
             <ItemCard key={index} title={item.itemName} likes={item.likes} images={[item.images]} link={item.itemUrl} type={edit}/>

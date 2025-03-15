@@ -34,8 +34,7 @@ export const GroupsProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const refreshBucketsOfGroup = async (groupId: string) => {
-		const res = await get(`/groups/${groupId}/buckets`);
-		console.log({ [groupId]: res })
+    const res = await get(`/groups/${groupId}/buckets`);
     if (res) {
       setBuckets((prev) => ({ ...prev, [groupId]: res }));
       return;
