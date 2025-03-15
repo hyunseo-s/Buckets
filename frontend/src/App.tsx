@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
 import Register from './pages/Register'
 import { AddButton } from './components/AddButton'
 import { createTheme, MantineProvider } from '@mantine/core'
@@ -26,13 +27,14 @@ function App() {
 			<MantineProvider theme={theme} >
 				<GroupsProvider>
 					<Notifications />
-					<WaveHeader />
 					<BrowserRouter>
+						<WaveHeader />	
 						<Routes>
 							<Route index element={<Home />} />
 							<Route path="login" element={<Login />} />
 							<Route path="register" element={<Register />} />
 							<Route path="groups" element={<Groups />} />
+							<Route path="profile" element={<Profile />} />
 						</Routes>
 					</BrowserRouter>
 					<AddButton />
