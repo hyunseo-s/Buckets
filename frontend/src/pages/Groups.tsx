@@ -7,6 +7,7 @@ import { Group } from '../types';
 
 const Groups = () => {
   const [groups, setGroups] = useState<Group[]>([]);
+	const [query, setQuery] = useState<string>('');
 
 	useEffect(() => {
 		const getGroups = async () => {
@@ -26,7 +27,7 @@ const Groups = () => {
   return (
     <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
       <div style={{ width: "60%", minWidth: "300px", margin: "auto" }}>
-        <SearchBar />
+        <SearchBar data={groups} query={query} setQuery={setQuery}/>
         <Flex
 					mt="4rem"
           justify="space-between"
@@ -34,7 +35,7 @@ const Groups = () => {
 					wrap={{ base: "nowrap", sm: "wrap" }}
           direction={{ base: "column", sm: "row" }}
         >
-          {groups.length > 0 && groups.map((group, index) => (
+          {groups.filter(group => group.groupName.includes(query)).length > 0 && groups.filter(group => group.groupName.includes(query)).map((group, index) => (
             <GroupCard key={index} group={group} />
           ))}
         </Flex>
