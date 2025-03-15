@@ -1,5 +1,12 @@
 import { Button, Modal, Select, TextInput } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { handleError } from "../utils/handlers";
+import { get } from "../utils/apiClient";
+
+// export interface Group {
+// 	// id: string;
+// 	// buckets: string[];
+// }
 
 export const BucketModal = ({
   openedAddBucket,
@@ -11,6 +18,22 @@ export const BucketModal = ({
   
   const [bucketName, setBucketName] = useState<string>('');
   const [selectedBucketGroupOption, setBucketSelectedGroupOption] = useState<string | null>(null);
+
+  const [userGroups, setUserGroups] = useState([])
+  
+  useEffect(() => {
+    const generateUserGroups = async () => {
+      const res = await get('/users/groups');
+      if (res.error) {
+        handleError(res.error);
+        return;
+      }
+      console.log(res.groups, "here")
+      setUserGroups(res.groups);
+    }
+
+    generateUserGroups();
+  }, []);
 
   return (
     <Modal opened={openedAddBucket} onClose={closeAddBucket} title="Add Bucket" centered>
