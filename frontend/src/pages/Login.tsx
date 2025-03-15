@@ -1,5 +1,6 @@
 import { Group, PasswordInput, TextInput, Button, Anchor } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { post } from '../utils/api';
 
 const Login = () => {
 
@@ -35,15 +36,20 @@ const Login = () => {
 
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-			password: (value) => (!value ? 'Invalid password' : (/^\S+@\S+$/.test(value) ? null : 'Invalid password')),
+			password: (value) => (value ? null : 'Invalid password'),
     },
   });
+
+	const handleSubmit = async (values) => {
+		const res = await post("/auth/login", values);
+		console.log(res);
+	}
 
   return (
 		<div style={{ height: "80vh", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
 			<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Login</h2>
-				<form onSubmit={form.onSubmit((values) => console.log(values))}>
+				<form onSubmit={form.onSubmit(handleSubmit)}>
 					<TextInput
 						style={InputStyle}
 						withAsterisk

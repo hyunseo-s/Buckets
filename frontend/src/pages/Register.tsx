@@ -1,5 +1,6 @@
 import { Group, PasswordInput, TextInput, Button, Anchor } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { post } from '../utils/api';
 
 const Register = () => {
 
@@ -37,17 +38,22 @@ const Register = () => {
 
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-			password: (value) => (!value ? 'Invalid password' : (/^\S+@\S+$/.test(value) ? null : 'Invalid password')),
-			username: (value) => (!value ? 'Invalid username' : (/^\S+@\S+$/.test(value) ? null : 'Invalid username')),
-			name: (value) => (!value ? 'Invalid name' : (/^\S+@\S+$/.test(value) ? null : 'Invalid name')),
+			password: (value) => (value ? null : 'Invalid password'),
+			username: (value) => (value ? null : 'Invalid username'),
+			name: (value) => (value ? null : 'Invalid name'),
     },
   });
+
+	const handleSubmit = async (values) => {
+		const res = await post("/auth/register", values);
+		console.log(res);
+	}
 
   return (
 		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
 			<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Create Account</h2>
-				<form onSubmit={form.onSubmit((values) => console.log(values))}>
+				<form onSubmit={form.onSubmit(handleSubmit)}>
 					<TextInput
 						style={InputStyle}
 						withAsterisk
