@@ -1,6 +1,7 @@
 import { getData } from './dataStore'
 import { v4 } from 'uuid';
 import { Item } from '../interface';
+import { getBucket } from './buckets';
 
 interface CreateItemType {
     itemName: string, 
@@ -27,10 +28,11 @@ interface EditItemType {
 export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucketIds}: CreateItemType) {
   const database = getData();
   const items = database.items;
-  
+  console.log({itemName, itemDesc, itemUrl, addedBy, images, bucketIds})
   for (const bucketId of bucketIds) {
+		const itemId = v4();
     const item: Item = {
-      itemId: v4(),
+      itemId: itemId,
       itemName,
       itemDesc,
       itemUrl,
@@ -42,8 +44,14 @@ export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucket
     };
 
     items.push(item);
-  }
+		const bucket = getBucket(bucketId);
+		console.log(bucket);
+		if (bucket) {
+			bucket.items.push(itemId);
+		}
+	}
 	
+
 }
 
 export function editItem({ itemId, itemName, itemDesc, itemUrl, itemImage, bucketId }: EditItemType) {

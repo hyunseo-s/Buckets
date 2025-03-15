@@ -25,7 +25,11 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 	});
 
 
-	const { groups } = useGroups();
+	const { groups, refreshGroups } = useGroups();
+
+	useEffect(() => {
+		refreshGroups();
+	}, [])
 
 	const groupNameToId = (groupName: string) => {
 		const foundGroups = groups.filter(group => group.groupName === groupName);
@@ -43,7 +47,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 		const foundBuckets = filteredBuckets.filter(bucket => bucket.bucketName === bucketName && bucket.groupId === groupNameToId(groupName));
 		if (foundBuckets.length == 0) return null;
 
-		return foundBuckets[0].groupId ?? null;
+		return foundBuckets[0].bucketId ?? null;
 	}
 
 	const ButtonStyle = {
@@ -81,7 +85,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 	
 		try {
 			const dataUrls = await Promise.all(filePromises);
-			console.log(bucketIds)
+			console.log(bucketIds, "bucket")
 			const params = { 
 				itemName: values.itemName, 
 				itemDesc: values.itemDesc, 
@@ -98,7 +102,10 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 			}
 	
 			handleSuccess(res.message);
-			closeAddItem();
+			// closeAddItem();
+			// form.reset();
+			// setItemAllocations([{ groupName: null, bucketNames: [] }])
+			// setFiles([])
 		} catch (error) {
 			console.error("Error converting files:", error);
 			handleError("Failed to convert images.");

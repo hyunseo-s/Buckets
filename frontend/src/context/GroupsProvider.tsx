@@ -34,21 +34,21 @@ export const GroupsProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const refreshBucketsOfGroup = async (groupId: string) => {
-    const res = await get(`/groups/${groupId}/buckets`);
-    if (res.error) {
-      handleError(res.error);
+		const res = await get(`/groups/${groupId}/buckets`);
+		console.log({ [groupId]: res })
+    if (res) {
+      setBuckets((prev) => ({ ...prev, [groupId]: res }));
       return;
     }
-    setBuckets((prev) => ({ ...prev, [groupId]: res }));
+    
   };
 
   const refreshItemsOfBucket = async (bucketId: string) => {
     const res = await get(`/buckets/${bucketId}/items`);
-    if (res.error) {
-      handleError(res.error);
+    if (res) {
+      setItems((prev) => ({ ...prev, [bucketId]: res }));
       return;
     }
-    setItems((prev) => ({ ...prev, [bucketId]: res }));
   };
 
   useEffect(() => {

@@ -43,8 +43,8 @@ export function deleteBucket(findBucketId: string) {
 
 export function getBucket(findBucketId: string) {
   const database = getData();
-  const buckets = database.buckets;
-  return buckets.filter(bucket => bucket.bucketId === findBucketId);
+  const buckets = database.buckets.filter(bucket => bucket.bucketId === findBucketId);
+  return buckets.length > 0 ? buckets[0] : null;
 }
 
 export function getAllBuckets(groupId: string) {
