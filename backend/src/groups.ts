@@ -1,37 +1,30 @@
-import { Groups, User } from './interface';
+import { getData } from './dataStore';
+import { Group, User } from './interface';
 import { v4 as uuidv4 } from 'uuid';
 
-//
-//
-//
-//
-//
-//
-//
-const database = {};
+// Function to create the group, given the name and the members
+export function createGroup(groupName: string, memberIds: string[]) {
+    const database = getData();
+    const groups = database.groups;
+    const groupId = uuidv4();
+    
+    const group: Group = {
+        groupId: groupId,
+        groupName: groupName,
+        members: memberIds,
+        buckets: []
+    };
 
-export function createGroup(groupName: String, memberIds: [User]) {
-        //let database = getData();
-        let groups = database["groups"];
-        let id = uuidv4();
-        
-        let Group = {
-            groupId: id,
-            groupName: groupName,
-            members: memberIds,
-            buckets: []
-        };
-    
-        groups.push(Group);
-    
-        return id;
+    groups.push(group);
+
+    return groupId;
 }
 
-// pass through groupId
-// return true or false
-export function deleteGroup(findGroupId: String) {
-    //let database = getData();
-    let groups = database["groups"];
+// Function to delete the groups given the id
+export function deleteGroup(findGroupId: string) {
+    const database = getData();
+    const groups = database.groups;
+
     const groupExists = groups.some(group => group.groupId === findGroupId);
     
     if (!groupExists) {
@@ -41,14 +34,13 @@ export function deleteGroup(findGroupId: String) {
     return groups.filter(group => group.groupId !== findGroupId);
 }
 
-
 // passes through groupId and members to add
 // returns updated list of members
-export function addToGroup(groupId: String, memberIds: [User]) {
-    //let database = getData();
-    let groups = database["groups"];
+export function addToGroup(groupId: string, memberIds: string[]) {
+    const database = getData();
+    const groups = database.groups;
 
-    let group = groups.find(group => group.groupId === groupId);
+    const group = groups.find(group => group.groupId === groupId);
     if (!group) {
         throw new Error(`Group with ID ${groupId} not found`);
     }
@@ -64,11 +56,12 @@ export function addToGroup(groupId: String, memberIds: [User]) {
     return group.members;
 }
 
-export function removeFromGroup(groupId: String, memberIds: [User]) {
-    //let database = getData();
-    let groups = database["groups"];
+export function removeFromGroup(groupId: string, memberIds: string[]) {
+    const database = getData();
+    const groups = database.groups;
 
-    let group = groups.find(group => group.groupId === groupId);
+    const group = groups.find(group => group.groupId === groupId);
+    
     if (!group) {
         throw new Error(`Group with ID ${groupId} not found`);
     }
@@ -78,11 +71,11 @@ export function removeFromGroup(groupId: String, memberIds: [User]) {
     return group.members;
 }
 
-export function editGroup(groupId: String, updatedGroupName: String) {
-    //let database = getData();
-    let groups = database["groups"];
+export function editGroup(groupId: string, updatedGroupName: string) {
+    const database = getData();
+    const groups = database.groups;
 
-    let group = groups.find(group => group.groupId === groupId);
+    const group = groups.find(group => group.groupId === groupId);
     if (!group) {
         throw new Error(`Group with ID ${groupId} not found`);
     }
@@ -92,9 +85,9 @@ export function editGroup(groupId: String, updatedGroupName: String) {
     return group.groupName;
 }
 
-export function getGroup(groupId: String) {
-    //let database = getData();
-    let groups = database["groups"];
+export function getGroup(groupId: string) {
+    const database = getData();
+    const groups = database.groups;
 
     let group = groups.find(group => group.groupId === groupId);
     if (!group) {
@@ -104,9 +97,9 @@ export function getGroup(groupId: String) {
     return group;
 }
 
-export function getAllGroups(memberId: String) {
-    //let database = getData();
-    let groups = database["groups"];
+export function getAllGroups(memberId: string) {
+    const database = getData();
+    const groups = database.groups;
 
     return groups.filter(group => group.members.includes(memberId));
 }

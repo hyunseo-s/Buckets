@@ -11,9 +11,9 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { decodeJWT } from './utilis';
-import { createItem, removeItem } from './items'
 import { readData, writeData } from './dataStore'
 import { login, register } from './auth';
+import { createItem, removeItem } from './items';
 
 // Set up web app
 const app = express();
@@ -40,7 +40,7 @@ readData();
 writeData();
 
 app.post('/group/create', (req: Request, res: Response) => {
-  const { groupName, memberIds }: { groupName: string, memberIds: [User] } = req.body;
+  const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
   try {
       const groupId = createGroup(groupName, memberIds);
       res.status(201).json({ message: 'Group created', groupId });
@@ -61,7 +61,7 @@ app.delete('/groups/:groupId', (req: Request, res: Response) => {
 
 app.post('/groups/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { memberIds }: { memberIds: [User] } = req.body;
+  const { memberIds }: { memberIds: string[] } = req.body;
   try {
       const updatedMembers = addToGroup(groupId, memberIds);
       res.status(200).json({ message: 'Members added', updatedMembers });
@@ -72,7 +72,7 @@ app.post('/groups/:groupId/members', (req: Request, res: Response) => {
 
 app.delete('/groups/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { memberIds }: { memberIds: [User] } = req.body;
+  const { memberIds }: { memberIds: string[] } = req.body;
   try {
       const updatedMembers = removeFromGroup(groupId, memberIds);
       res.status(200).json({ message: 'Members removed', updatedMembers });
