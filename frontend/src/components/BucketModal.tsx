@@ -28,8 +28,8 @@ export const BucketModal = ({
         handleError(res.error);
         return;
       }
-      console.log(res.groups, "here")
-      setUserGroups(res.groups);
+      console.log(res, "here")
+      // setUserGroups(res);
     }
 
     generateUserGroups();
