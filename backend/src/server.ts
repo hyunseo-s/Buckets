@@ -214,7 +214,7 @@ app.post('/item/add', (req: Request, res: Response) => {
     const existingToken = localStorage.getItem("token");
     const id = decodeJWT(existingToken)
     const params = req.body;
-    params.id = id;
+    params.addedBy = id;
 
     const result = createItem(params)
     return res.status(200).json(result);
