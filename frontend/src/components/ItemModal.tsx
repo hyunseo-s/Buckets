@@ -25,7 +25,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 	});
 
 
-	const { groups, refreshGroups } = useGroups();
+	const { groups, refreshGroups, refreshItemsOfBucket } = useGroups();
 
 	useEffect(() => {
 		refreshGroups();
@@ -102,10 +102,12 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 			}
 	
 			handleSuccess(res.message);
-			// closeAddItem();
-			// form.reset();
-			// setItemAllocations([{ groupName: null, bucketNames: [] }])
-			// setFiles([])
+			closeAddItem();
+			form.reset();
+			setItemAllocations([{ groupName: null, bucketNames: [] }])
+			setFiles([])
+			bucketIds.forEach((bId) => refreshItemsOfBucket(bId));
+			
 		} catch (error) {
 			console.error("Error converting files:", error);
 			handleError("Failed to convert images.");
