@@ -10,12 +10,10 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { register, login } from './auth.ts' 
-import { decodeJWT } from './utilis.ts';
+import { decodeJWT } from './utilis';
 import { createItem, removeItem } from './items'
 import { readData, writeData } from './dataStore'
 import { login, register } from './auth';
-
 
 // Set up web app
 const app = express();
@@ -179,7 +177,8 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 app.post('/item/add', (req: Request, res: Response) => {
   try {
     // GETE ID
-
+    const existingToken = localStorage.getItem("token");
+    const id = decodeJWT(existingToken)
     const { name, desc, uri, image, bucketId } = req.body;
     const result = createItem(id, name, desc, uri, image, bucketId);
     return res.status(200).json(result);
@@ -232,15 +231,5 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
-<<<<<<< HEAD
-function decodeJWT(existingToken: string | null) {
-  throw new Error('Function not implemented.');
-}
 
-function decodeJWT(existingToken: string | null) {
-=======
-function jwtDecode(arg0: string) {
->>>>>>> Elizabeth_backend
-  throw new Error('Function not implemented.');
-}
 
