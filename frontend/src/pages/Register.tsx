@@ -1,8 +1,11 @@
 import { Group, PasswordInput, TextInput, Button, Anchor } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { post } from '../utils/api';
+import { post } from '../utils/apiClient';
+import { handleError, handleSuccess } from '../utils/handlers';
+import { useNavigate } from 'react-router';
 
 const Register = () => {
+	const navigate = useNavigate();
 
 	const ButtonStyle = {
 		width: "10rem",
@@ -47,6 +50,14 @@ const Register = () => {
 	const handleSubmit = async (values) => {
 		const res = await post("/auth/register", values);
 		console.log(res);
+		if (res.error) {
+			handleError(res.error);
+			return;
+		}
+
+		handleSuccess(res.message);
+		localStorage.setItem("token", res.token);
+		navigate('/groups');
 	}
 
   return (

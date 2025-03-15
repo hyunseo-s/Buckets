@@ -4,12 +4,14 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import { MantineProvider } from '@mantine/core'
 import Group from './pages/Group'
+import { Notifications } from '@mantine/notifications'
 
 function App() {
 
   return (
     <>
 			<MantineProvider >
+				<Notifications />
 				<BrowserRouter>
 					<Routes>
 						<Route index element={<Home />} />

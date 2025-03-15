@@ -13,13 +13,6 @@ export const createRequest = async (url, requestType, body) => {
   }
   return fetch(`${config.url}:${config.port}${url}`, options)
   .then((response) => response.json())
-  .then((json) => {
-    if ("error" in json) {
-      return Promise.reject(json.error);
-    }
-    return json;
-  })
-  .catch((err) => Promise.reject(err))
 }
 
 export const get = (url, body) =>
