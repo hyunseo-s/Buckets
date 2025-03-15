@@ -1,0 +1,487 @@
+openapi: 3.0.3
+info:
+  title: Swagger Buckets - OpenAPI 3.0
+  description: |-
+    This is a Buckets Store Server based on the OpenAPI 3.0 specification.
+
+paths:
+  /auth/register:
+    post:
+      summary: Registers user into the system
+      description: ''
+      operationId: registerUser
+      parameters:
+        - name: email
+          in: query
+          description: The email for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: The name of the user
+          required: false
+          schema:
+            type: string
+        - name: username
+          in: query
+          description: The name of the user
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid details supplied
+  /auth/login:
+    post:
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: email
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+  /auth/logout:
+    post:
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /group/create:
+    post:
+      summary: Creates a group
+      description: ''
+      operationId: createGroup
+      parameters:
+        - name: name
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: memberIds
+          in: query
+          description: The list of ids of initial members
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        default:
+          description: successful operation
+  /group/add:
+    post:
+      summary: Adds users to a group
+      description: ''
+      operationId: addUsers
+      parameters:
+        - name: memberIds
+          in: query
+          description: The member ids to be added to the group
+          required: false
+          schema:
+            type: array
+            items: 
+              type: string
+      responses:
+        default:
+          description: successful operation
+  /group/remove:
+    post:
+      summary: Remove users to a group
+      description: ''
+      operationId: removeUsers
+      parameters:
+        - name: memberIds
+          in: query
+          description: The member ids to be removed from the group
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        default:
+          description: successful operation
+  /group/edit:
+    post:
+      summary: Edits the details of the group
+      description: ''
+      operationId: editGroup
+      parameters:
+        - name: name
+          in: query
+          description: The new name of the group
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /bucket/add:
+    post:
+      summary: Add a bucket
+      description: ''
+      operationId: addBucket
+      parameters:
+        - name: name
+          in: query
+          description: The name of the bucket
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /bucket/remove:
+    post:
+      summary: Removes a bucket
+      description: ''
+      operationId: removeBucket
+      parameters:
+        - name: bucketId
+          in: query
+          description: The Id of the bucket
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /item/add:
+    post:
+      summary: Adds item to a bucket
+      description: ''
+      operationId: addItem
+      parameters:
+        - name: name
+          in: query
+          description: 'Name of the item'
+          required: false
+          schema:
+            type: string
+        - name: uri
+          in: query
+          description: 'Uri linked to the item'
+          required: false
+          schema:
+            type: string
+        - name: image
+          in: query
+          description: 'Display image for item'
+          required: false
+          schema:
+            type: string
+        - name: bucketId
+          in: query
+          description: 'Id of the bucket item is to be added to '
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /item/remove:
+    post:
+      summary: Removes item from a group
+      description: ''
+      operationId: removeItem
+      parameters:
+        - name: itemId
+          in: query
+          description: The id of the item to be removed
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /item/edit:
+    post:
+      summary: Edits an item
+      description: ''
+      operationId: editItem
+      parameters:
+        - name: id
+          in: query
+          description: 'Id of the item'
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: 'Name of the item'
+          required: false
+          schema:
+            type: string
+        - name: uri
+          in: query
+          description: 'Uri linked to the item'
+          required: false
+          schema:
+            type: string
+        - name: image
+          in: query
+          description: 'Display image for item'
+          required: false
+          schema:
+            type: string
+        - name: bucketId
+          in: query
+          description: 'Id of the bucket item is to be added to '
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /item/toggleLike:
+    post:
+      summary: Toggles like status on an item
+      description: ''
+      operationId: toggleLike
+      parameters:
+        - name: itemId
+          in: query
+          description: 'Id of the item'
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /item/toggleActive:
+    post:
+      summary: Toggles active status on an item
+      description: ''
+      operationId: toggleActive
+      parameters:
+        - name: itemId
+          in: query
+          description: 'Id of the item'
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /bucket/{bucketId}:
+    get:
+      summary: Returns the bucket entity given the id
+      description: ''
+      operationId: getBucket
+      parameters:
+        - name: bucketId
+          in: query
+          description: 'Id of the bucket'
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /group/{groupId}:
+    get:
+      summary: Returns the group entity given the id
+      description: ''
+      operationId: getGroup
+      parameters:
+        - name: groupId
+          in: query
+          description: 'Id of the group'
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+  /item/{itemId}:
+    get:
+      summary: Returns the item entity given the id
+      description: ''
+      operationId: getItem
+      parameters:
+        - name: itemId
+          in: query
+          description: 'Id of the group'
+          required: false
+          schema:
+            type: string
+      responses:
+        default:
+          description: successful operation
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "f9a9cf24-e68e-4b44-9208-b390e7f6126c"
+        firstName:
+          type: string
+          example: "Justin"
+        lastName:
+          type: string
+          example: "Son"
+        username:
+          type: string
+          example: "j999999999999999"
+        email:
+          type: string
+          format: "justin.son@gmail.com"
+        password:
+          type: string
+          example: "hyunseo"
+        groups:
+          type: string
+          example: "hyunseo"
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+        name:
+          type: string
+          example: "Mitras"
+        members:
+          type: array
+          description: Array of member ids
+          items:
+            type: string
+          example: ["A", "B", "C", "D", "E", "F"]
+        buckets:
+          type: array
+          description: Array of bucket ids
+          items:
+            type: string
+          example: ["B1", "B2", "B3"]
+    Bucket:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+        name:
+          type: string
+          example: "JAPAN 2025"
+        groupId:
+          type: string
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+        items:
+          type: array
+          description: Array of item ids
+          items:
+            type: string
+          example: ["I1", "I2", "I3"]
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+        name:
+          type: string
+          example: "Osaka Castle"
+        description:
+          type: string
+          example: "Japanese castle in Chūō-ku, Osaka, Japan. The castle is one of Japan's most famous landmarks."
+        url:
+          type: string
+          example: "https://en.wikipedia.org/wiki/Osaka_Castle"
+        addedBy:
+          type: string
+          description: id of user that added item
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+        image:
+          type: string
+          description: url of image
+          example: "https://en.wikipedia.org/wiki/Osaka_Castle#/media/File:Osaka_Castle_02bs3200.jpg"
+        likes:
+          type: integer
+          example: 2
+        active:
+          type: boolean
+          example: true
+        groupId:
+          type: string
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+        bucketId:
+          type: string
+          example: "ce103440-216b-430e-8ae1-4a9961ae1e1a"
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
