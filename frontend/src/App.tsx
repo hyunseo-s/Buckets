@@ -8,6 +8,7 @@ import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
 import WaveHeader from './assets/WaveHeader'
 import './App.css';
+import { GroupsProvider } from './context/GroupsProvider'
 
 function App() {
 	const theme = createTheme({
@@ -23,17 +24,19 @@ function App() {
   return (
     <>
 			<MantineProvider theme={theme} >
-				<Notifications />
-				<WaveHeader />
-				<BrowserRouter>
-					<Routes>
-						<Route index element={<Home />} />
-						<Route path="login" element={<Login />} />
-						<Route path="register" element={<Register />} />
-						<Route path="groups" element={<Groups />} />
-					</Routes>
-				</BrowserRouter>
-				<AddButton />
+				<GroupsProvider>
+					<Notifications />
+					<WaveHeader />
+					<BrowserRouter>
+						<Routes>
+							<Route index element={<Home />} />
+							<Route path="login" element={<Login />} />
+							<Route path="register" element={<Register />} />
+							<Route path="groups" element={<Groups />} />
+						</Routes>
+					</BrowserRouter>
+					<AddButton />
+				</GroupsProvider>
 			</MantineProvider>
     </>
   )
