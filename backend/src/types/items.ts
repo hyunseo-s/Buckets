@@ -9,7 +9,7 @@ interface CreateItemType {
     addedBy: string, 
     images: string, 
     likes: number, 
-    bucketId: string,
+    bucketIds: string[],
     active: boolean
 }
 
@@ -24,23 +24,25 @@ interface EditItemType {
 }
 
 // Function to create the group, given the name and the members
-export function createItem({itemName, itemDesc, itemUrl, addedBy, images, likes, bucketId, active}: CreateItemType) {
-    const database = getData();
-    const items = database.items;
-    
+export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucketIds}: CreateItemType) {
+  const database = getData();
+  const items = database.items;
+  
+  for (const bucketId of bucketIds) {
     const item: Item = {
-        itemId: v4(),
-        itemName: itemName,
-        itemDesc: itemDesc,
-        itemUrl: itemUrl,
-        addedBy: addedBy,
-        images: images,
-        likes: likes,
-        bucketId: bucketId,
-        active: active
+      itemId: v4(),
+      itemName,
+      itemDesc,
+      itemUrl,
+      addedBy,
+      images,
+      likes: 0,
+      bucketId: bucketId,
+      active: true,
     };
 
     items.push(item);
+  }
 }
 
 export function editItem({ itemId, itemName, itemDesc, itemUrl, itemImage, bucketId }: EditItemType) {
