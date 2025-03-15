@@ -3,37 +3,36 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { User, Database } from "../interface";
 import { v4 } from 'uuid';
-import { readData, writeData } from "./dataStore";
+import { getData, readData, writeData } from "./dataStore";
 
 const JWT_SECRET = "TOPSECRET";
 
 // Register a new user
 export const register = async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
+    console.log(email,username,password)
     
-    const db: Database = readData();
+    const db: Database = getData();
   
     if (db.users.some((user) => user.email === email)) {
         throw new Error("User already exists");
     }
   
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
     const newUser: User = {
         id: String(v4()),
         username,
         email,
-        password: hashedPassword,
+        password: password,
         groups: [],
         friends: [],
         buckets: [],
     };
 
     db.users.push(newUser);
-    writeData();
 
-    const dbnew = readData();
   
-    const user = dbnew.users.find((u) => u.email === email);
+    const user = db.users.find((u) => u.email === email);
 
     const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
@@ -46,7 +45,7 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const db = readData();
   
-    const user = db.users.find((u) => u.email === email);
+    const user = db.users.find((u: User) => u.email === email);
     if (!user) {
         throw new Error("Invalid credentials");
     }
