@@ -4,32 +4,15 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { User, Database } from "./interface";
 import { v4 } from 'uuid';
+import { readData, writeData } from "./dataStore";
 
 const JWT_SECRET = "TOPSECRET";
-const DATABASE = "database.json"
-
-// =============================================================================
-
-// Read the database file
-const readDatabase = (): Database => {
-    if (!fs.existsSync(DATABASE)) {
-        fs.writeFileSync(DATABASE, JSON.stringify({ users: [], group: [], buckets: [], items: [] }, null, 2), "utf-8");
-    }
-
-    return JSON.parse(fs.readFileSync(DATABASE, "utf-8"));
-  };
-
-// Helper function to write to database
-const writeDatabase = (data: Database) => {
-    fs.writeFileSync(DATABASE, JSON.stringify(data, null, 2), "utf-8");
-};
-
-// =============================================================================
 
 // Register a new user
 export const register = async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
-    const db = readDatabase();
+    
+    const db: Database = readData();
   
     if (db.users.some((user) => user.email === email)) {
         throw new Error("User already exists");
@@ -47,9 +30,9 @@ export const register = async (req: Request, res: Response) => {
     };
 
     db.users.push(newUser);
-    writeDatabase(db);
+    writeData();
 
-    const dbnew = readDatabase();
+    const dbnew = readData();
   
     const user = dbnew.users.find((u) => u.email === email);
 
@@ -62,7 +45,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
 
     const { email, password } = req.body;
-    const db = readDatabase();
+    const db = readData();
   
     const user = db.users.find((u) => u.email === email);
     if (!user) {
