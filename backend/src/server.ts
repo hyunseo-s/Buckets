@@ -1,6 +1,6 @@
 import express, { json, Request, Response } from 'express';
 import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './types/groups';
-import { createBucket, deleteBucket, getBucket, getAllBuckets } from './types/buckets'
+import { createBucket, deleteBucket, getBucket, getAllBuckets, getBucketItems } from './types/buckets'
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
@@ -13,7 +13,6 @@ import { clear, readData, writeData } from './types/dataStore'
 import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
-
 
 // Set up web app
 const app = express();
@@ -167,6 +166,14 @@ app.get('/users/all', (req: Request, res: Response) => {
   res.status(200).json(users);
 });
 
+// get the user id
+app.get('/users/me', (req: Request, res: Response) => {
+  const existingToken = localStorage.getItem("token");
+  const id = decodeJWT(existingToken)
+
+  res.status(200).json(id);
+});
+
 
 // ====================================================================
 //  ================= BUCKETS ===================
@@ -200,6 +207,18 @@ app.get('/buckets/:bucketId', (req: Request, res: Response) => {
   const { bucketId } = req.params;
   const bucket = getBucket(bucketId);
   res.status(200).json(bucket);
+});
+
+app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
+  const { bucketId } = req.params;
+  try {
+    const allItems = getBucketItems(bucketId);
+    res.status(200).json({ items: allItems });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
+  }
 });
 
 // all buckets for a specific group
