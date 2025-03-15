@@ -77,11 +77,11 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
+	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
   try {
-    const groupId = createGroup(groupName, [...memberIds, id]);
+    const groupId = createGroup(groupName, [...memberIds, id], images);
     res.status(201).json({ message: 'Group created', groupId });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -193,9 +193,9 @@ app.get('/users/:userId/profile', (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/buckets', (req: Request, res: Response) => {
-  const { bucketName, groupId }: { bucketName: string, groupId: string } = req.body;
+  const { bucketName, groupId, images } = req.body;
   try {
-      const bucketId = createBucket(bucketName, groupId);
+      const bucketId = createBucket(bucketName, groupId, images);
       res.status(201).json({ message: 'Bucket created', bucketId });
   } catch (error) {
       res.status(500).json({ error: error.message });

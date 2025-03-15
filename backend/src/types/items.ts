@@ -50,8 +50,6 @@ export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucket
 			bucket.items.push(itemId);
 		}
 	}
-	
-
 }
 
 export function editItem({ itemId, itemName, itemDesc, itemUrl, itemImage, bucketId }: EditItemType) {

@@ -3,7 +3,7 @@ import { Group, User } from '../interface';
 import { v4 as uuidv4 } from 'uuid';
 
 // Function to create the group, given the name and the members
-export function createGroup(groupName: string, memberIds: string[]) {
+export function createGroup(groupName: string, memberIds: string[], images: string[]) {
 	const database = getData();
 	const groups = database.groups;
 	const groupId = uuidv4();
@@ -12,7 +12,8 @@ export function createGroup(groupName: string, memberIds: string[]) {
 		groupId: groupId,
 		groupName: groupName,
 		members: memberIds,
-		buckets: []
+		buckets: [],
+		images,
 	};
 
 	groups.push(group);

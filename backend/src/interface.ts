@@ -17,16 +17,18 @@ export interface User {
 
 export interface Group {
     groupId: string;
-    groupName: string,
-    members: string[],
-    buckets: string[],
+    groupName: string;
+    members: string[];
+    buckets: string[];
+    images: string[];
 }
 
 export interface Bucket {
     bucketId: string;
     bucketName: string;
     groupId: string;
-    items: string[]
+    items: string[];
+    images: string[];
 }
 
 export interface Item {
