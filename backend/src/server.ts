@@ -34,7 +34,6 @@ const HOST: string = process.env.IP || '127.0.0.1';
 app.post('/auth/register', async (req: Request, res: Response) => {
   try {
     const newToken = await register(req, res);
-    localStorage.setItem("jwtToken", String(newToken));
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
@@ -43,12 +42,12 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     // Check if the token is still valid:
-    const existingToken = localStorage.getItem("jwtToken");
+    const existingToken = localStorage.getItem("token");
 
     decodeJWT(existingToken)
 
     const { token } = await login(req, res) as any;
-    localStorage.setItem("jwtToken", token);
+
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
@@ -56,7 +55,7 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 
 app.post('/auth/logout', async (req: Request, res: Response) => {
   try {
-    localStorage.removeItem("jwtToken");
+    
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

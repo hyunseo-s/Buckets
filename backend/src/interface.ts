@@ -8,6 +8,7 @@ export interface Database {
 export interface User {
     id: string;
     username: string;
+    email: string;
     password: string;
     groups: string[];
     friends: string[];
