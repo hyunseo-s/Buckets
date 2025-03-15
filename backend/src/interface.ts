@@ -3,7 +3,7 @@ export interface Database {
     groups: Groups[];
     buckets: Buckets[];
     items: Items[];
-  }
+}
 
 export interface User {
     id: string;
