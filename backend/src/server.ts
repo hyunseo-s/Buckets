@@ -7,6 +7,7 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { register, login } from './auth.ts' 
 
 // Set up web app
 const app = express();
@@ -29,6 +30,30 @@ const HOST: string = process.env.IP || '127.0.0.1';
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
+app.post('/auth/register', async (req: Request, res: Response) => {
+  try {
+    await register(req, res);
+  } catch (error) {
+    return res.status(400).json(error)
+  }
+})
+
+app.post('/auth/login', async (req: Request, res: Response) => {
+  try {
+    const { token } = await login(req, res) as any;
+    localStorage.setItem("jwtToken", token);
+  } catch (error) {
+    return res.status(400).json(error)
+  }
+})
+
+app.post('/auth/logout', async (req: Request, res: Response) => {
+  try {
+    localStorage.removeItem("jwtToken");
+  } catch (error) {
+    res.status(400).json(error);
+  }
+})
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
