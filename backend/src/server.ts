@@ -7,6 +7,8 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { createItem, removeItem } from './items'
+import { readData, writeData } from './dataStore'
 
 // Set up web app
 const app = express();
@@ -29,6 +31,36 @@ const HOST: string = process.env.IP || '127.0.0.1';
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
+readData();
+writeData();
+
+app.post('/item/add', (req: Request, res: Response) => {
+  try {
+    const token = jwtDecode(localStorage.getItem("token"));
+    const id = token.id;
+
+    const { id, name, desc, uri, image, bucketId } = req.body;
+    const result = createItem(id, name, desc, uri, image, bucketId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({error: error.message })
+  }
+});
+
+app.post('/item/remove', (req: Request, res: Response) => {
+  try {
+    const token = jwtDecode(localStorage.getItem("token"));
+    const id = token.id;
+
+    const { itemId } = req.body;
+    const result = removeItem(itemId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({error: error.message })
+  }
+});
+
+writeData();
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
