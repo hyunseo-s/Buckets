@@ -1,1 +1,1 @@
-export { SearchBar } from './group';
+export { SearchBar, GroupCard } from './group';

@@ -2,22 +2,31 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import { MantineProvider } from '@mantine/core'
-import Group from './pages/Group'
+import { createTheme, MantineProvider } from '@mantine/core'
+import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
 
 function App() {
+	const theme = createTheme({
+		breakpoints: {
+			xs: '30em',
+			sm: '48em',
+			md: '64em',
+			lg: '74em',
+			xl: '90em',
+		},
+	});
 
   return (
     <>
-			<MantineProvider >
+			<MantineProvider theme={theme} >
 				<Notifications />
 				<BrowserRouter>
 					<Routes>
 						<Route index element={<Home />} />
 						<Route path="login" element={<Login />} />
 						<Route path="register" element={<Register />} />
-						<Route path="group/:groupId" element={<Group />} />
+						<Route path="groups" element={<Groups />} />
 					</Routes>
 				</BrowserRouter>
 			</MantineProvider>

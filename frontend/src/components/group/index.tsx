@@ -1,1 +1,2 @@
-export { SearchBar } from './Searchbar';
+export { SearchBar } from './SearchBar';
+export { GroupCard } from './GroupCard';
