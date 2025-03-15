@@ -42,6 +42,7 @@ const HOST: string = process.env.IP || '127.0.0.1';
 app.post('/auth/register', async (req: Request, res: Response) => {
   try {
     const newToken = await register(req, res);
+    res.status(201).json(newToken);
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
