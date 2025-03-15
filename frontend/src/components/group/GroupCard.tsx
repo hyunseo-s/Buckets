@@ -64,7 +64,7 @@ export const GroupCard = () => {
       shadow="lg"
 			m={{ base: 'auto', sm: '0' }}
       style={cardStyle}
-			w={{ base: '80%', sm: '45%' }}
+			w={{ base: '90%', sm: '45%' }}
       radius="md"
       component="a"
       href="https://mantine.dev/"
@@ -83,7 +83,6 @@ export const GroupCard = () => {
             <Text size="sm" style={authorStyle}>
               Robert Gluesticker
             </Text>
-
             <Group gap="lg">
               <Center>
                 <IconBucket size={16} stroke={1.5} color={theme.colors.dark[2]} />

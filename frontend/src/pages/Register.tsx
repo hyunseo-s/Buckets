@@ -14,7 +14,7 @@ const Register = () => {
 	}
 
 	const InputStyle = {
-		margin: "1.75rem auto",
+		margin: "0.75rem auto",
 	}
 
 	const HeadingStyle = { 
@@ -49,7 +49,7 @@ const Register = () => {
 
 	const handleSubmit = async (values) => {
 		const res = await post("/auth/register", values);
-		console.log(res);
+		
 		if (res.error) {
 			handleError(res.error);
 			return;
@@ -61,7 +61,7 @@ const Register = () => {
 	}
 
   return (
-		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: "-100pt"}}>
 			<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Create Account</h2>
 				<form onSubmit={form.onSubmit(handleSubmit)}>
@@ -102,6 +102,7 @@ const Register = () => {
 							type="submit"
 							variant="filled" 
 							radius="lg"
+							mt="1.5rem"
 							style={ButtonStyle}
 						>
 							Create account!

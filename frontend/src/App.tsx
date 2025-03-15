@@ -5,6 +5,7 @@ import Register from './pages/Register'
 import { createTheme, MantineProvider } from '@mantine/core'
 import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
+import WaveHeader from './assets/WaveHeader'
 
 function App() {
 	const theme = createTheme({
@@ -21,6 +22,7 @@ function App() {
     <>
 			<MantineProvider theme={theme} >
 				<Notifications />
+				<WaveHeader />
 				<BrowserRouter>
 					<Routes>
 						<Route index element={<Home />} />
