@@ -11,15 +11,17 @@ const Groups = () => {
 	useEffect(() => {
 		const getGroups = async () => {
 			const res = await get('/users/groups');
+			console.log(res)
 			if (res.error) {
 				handleError(res.error);
 				return;
 			}
-			setGroups(res.groups);
+			setGroups(res);
 		}
 
 		getGroups();
 	}, [])
+
 
   return (
     <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
@@ -32,7 +34,7 @@ const Groups = () => {
 					wrap={{ base: "nowrap", sm: "wrap" }}
           direction={{ base: "column", sm: "row" }}
         >
-          {groups.map((group, index) => (
+          {groups.length > 0 && groups.map((group, index) => (
             <GroupCard key={index} group={group} />
           ))}
         </Flex>

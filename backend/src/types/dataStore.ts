@@ -15,7 +15,7 @@ export const readData = () => {
 	console.log("red")
 	if (!fs.existsSync(DATABASE)) {
 		console.log("insd")
-		fs.writeFileSync(DATABASE, JSON.stringify({ users: [], group: [], buckets: [], items: [] }, null, 2), "utf-8");
+		fs.writeFileSync(DATABASE, JSON.stringify({ users: [], groups: [], buckets: [], items: [] }, null, 2), "utf-8");
 	}
 	data = JSON.parse(fs.readFileSync(DATABASE, "utf-8"));
 };

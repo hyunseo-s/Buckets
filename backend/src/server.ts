@@ -53,9 +53,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     // Check if the token is still valid:
-    const existingToken = localStorage.getItem("token");
-    decodeJWT(existingToken)
-    const { token } = await login(req, res) as any;
+    await login(req, res);
 
   } catch (error) {
     return res.status(400).json({ error: error.message })
@@ -157,10 +155,10 @@ app.get('/group/:groupId', (req: Request, res: Response) => {
 
 // get groups that user is a part of 
 app.get('/users/groups', (req: Request, res: Response) => {
-  const existingToken = localStorage.getItem("token");
-  const id = decodeJWT(existingToken)
-
+	const token = req.header('Authorization').split(" ")[1];
+  const id = decodeJWT(token)
   const groups = getAllGroups(id);
+	console.log("group", groups)
   res.status(200).json(groups);
 });
 
@@ -218,8 +216,7 @@ app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
 
 app.post('/item/add', (req: Request, res: Response) => {
   try {
-    const existingToken = localStorage.getItem("token");
-    const id = decodeJWT(existingToken)
+		const id = decodeJWT(req.header('Authorization').split(" ")[1])
     const params = req.body;
     params.addedBy = id;
 
