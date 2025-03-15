@@ -36,7 +36,7 @@ app.post('/auth/register', async (req: Request, res: Response) => {
     const newToken = await register(req, res);
     localStorage.setItem("jwtToken", String(newToken));
   } catch (error) {
-    return res.status(400).json(error)
+    return res.status(400).json({ error: error.message })
   }
 })
 
@@ -50,7 +50,7 @@ app.post('/auth/login', async (req: Request, res: Response) => {
     const { token } = await login(req, res) as any;
     localStorage.setItem("jwtToken", token);
   } catch (error) {
-    return res.status(400).json(error)
+    return res.status(400).json({ error: error.message })
   }
 })
 
@@ -58,7 +58,7 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
   try {
     localStorage.removeItem("jwtToken");
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json({ error: error.message });
   }
 })
 
