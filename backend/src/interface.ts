@@ -1,13 +1,14 @@
 export interface Database {
     users: User[];
-    group: Groups[];
+    groups: Groups[];
     buckets: Buckets[];
     items: Items[];
-  }
+}
 
 export interface User {
     id: string;
     username: string;
+    email: string;
     password: string;
     groups: string[];
     friends: string[];
@@ -18,7 +19,7 @@ export interface Groups {
     groupId: string;
     groupName: string,
     members: string[],
-    buckets: string[]
+    buckets: string[],
 }
 
 export interface Buckets {
@@ -30,10 +31,11 @@ export interface Buckets {
 
 export interface Items {
     itemId: string;
-    bucketId: string;
+    itemName: string;
     itemDesc: string;
     itemUrl: string;
     addedBy: string;
     images: string;
     likes: number;
+    bucketId: string;
 }
