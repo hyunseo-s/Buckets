@@ -39,8 +39,8 @@ const Login = () => {
     },
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-			password: (value) => (value ? null : 'Invalid password'),
+      	email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+		password: (value) => (value ? null : 'Invalid password'),
     },
   });
 

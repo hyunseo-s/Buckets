@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Menu, Button, Modal, TextInput, Select, FileInput, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBucket, IconPlus, IconDroplet, IconUsersGroup } from '@tabler/icons-react';
+import { GroupModal } from './GroupModal';
+import { ItemModal } from './ItemModal';
+import { BucketModal } from './BucketModal';
 
 
 export const AddButton = () => {
@@ -24,98 +27,58 @@ export const AddButton = () => {
   const [itemURL, setItemURL] = useState<string>('');
   const [itemImage, setItemImage] = useState<File[]>([]);
   // const [itemBuckets, setItemBuckets] = useState<List>([]);
+  const [itemAllocations, setItemAllocations] = useState([{ bucketId: null, groupId: null }]);
 
+  const groups = [
+    {
+      groupId: "justin",
+      groupName: "justin1"
+    },
+    {
+      groupId: "edison",
+      groupName: "edison1"
+    },
+    {
+      groupId: "elizabeth",
+      groupName: "elizabeth1"
+    },
+  ]
+
+  const buckets = [
+    {
+      groupId: "justin",
+      bucketName: "justinBucket",
+      bucketId: "justinBBA"
+    },
+    {
+      groupId: "justin",
+      bucketName: "justinBucket2",
+      bucketId: "justinBBB"
+    },
+    {
+      groupId: "justin",
+      bucketName: "justinBucket3",
+      bucketId: "justinBBC"
+    },
+    {
+      groupId: "elizabeth",
+      bucketName: "elizabethBucket",
+      bucketId: "elizabethBBA"
+    },
+    {
+      groupId: "elizabeth",
+      bucketName: "elizabethBucket2",
+      bucketId: "elizabethBBB"
+    },
+    {
+      groupId: "edison",
+      bucketName: "edisonBucket2",
+      bucketId: "edisonBBB"
+    },
+  ]
 
   return (
     <>
-      {/* Add Group Modal FELIX */}
-      <Modal opened={openedAddGroup} onClose={closeAddGroup} title="Add Group" centered>
-        {/* Form content for Add Group */}
-      </Modal>
-      
-      {/* Add Bucket Modal */}
-      <Modal opened={openedAddBucket} onClose={closeAddBucket} title="Add Bucket" centered>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          console.log('Bucket Name:', bucketName, 'Selected Group:', selectedBucketGroupOption);
-          closeAddBucket();
-        }}>
-          <TextInput
-            label="Bucket Name"
-            placeholder="Enter bucket name"
-            value={bucketName}
-            onChange={(event) => setBucketName(event.currentTarget.value)}
-            required
-          />
-          <Select
-            label="Add to group"
-            placeholder="Select group"
-            data={['Group 1', 'Group 2', 'Group 3']}
-            value={selectedBucketGroupOption}
-            onChange={(value) => setBucketSelectedGroupOption(value)}
-            required
-          />
-          <Button type="submit" fullWidth mt="md" color={buttonColor}>
-            Add Bucket!
-          </Button>
-        </form>
-      </Modal>
-
-      {/* Add Item Modal */}
-      <Modal opened={openedAddItem} onClose={closeAddItem} title="Add Item" centered>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          console.log('Item Name:', itemName, 'Item URL:', itemURL);
-          closeAddItem();
-        }}>
-          <TextInput
-            label="Item Name"
-            placeholder="Enter item name"
-            value={itemName}
-            onChange={(event) => setItemName(event.currentTarget.value)}
-            required
-          />
-          <TextInput
-            label="Item URL"
-            placeholder="Enter item URL"
-            value={itemURL}
-            onChange={(event) => setItemURL(event.currentTarget.value)}
-          />
-          <FileInput
-            label="Upload Item Images"
-            placeholder="Choose images"
-            value={itemImage}
-            onChange={setItemImage}
-            accept="image/*"
-            clearable
-            multiple
-          />
-          <Group>
-            <Select
-              label="Add to group"
-              placeholder="Select group"
-              data={['Group 1', 'Group 2', 'Group 3']}
-              // value={selectedBucketGroupOption}
-              // onChange={(value) => setBucketSelectedGroupOption(value)}
-              required
-            />
-            <Select
-              label="Add to bucket"
-              placeholder="Select bucket"
-              data={['Bucket 1', 'Bucket 2', 'Bucket 3']}
-              value={selectedBucketGroupOption}
-              onChange={(value) => setBucketSelectedGroupOption(value)}
-              required
-              disabled
-            />
-          </Group>
-          <Button type="submit" fullWidth mt="md" color={buttonColor}>
-            Add Item!
-          </Button>
-        </form>
-      </Modal>
-
-      {/* Floating Add Button Menu */}
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <Button
@@ -160,6 +123,9 @@ export const AddButton = () => {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
+      < GroupModal openedAddGroup={openedAddGroup} closeAddGroup={closeAddGroup} />
+      < ItemModal openedAddItem={openedAddItem} closeAddItem={closeAddItem} />
+      < BucketModal openedAddBucket={openedAddBucket} closeAddBucket={closeAddBucket} />
     </>
   );
 };
