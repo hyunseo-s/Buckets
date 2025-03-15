@@ -3,7 +3,17 @@ import { useEffect, useState } from "react";
 import { IconCheck, IconLinkPlus } from '@tabler/icons-react';
 import { handleError, handleSuccess } from "../utils/handlers";
 import { useForm } from "@mantine/form";
-import { get } from "../utils/apiClient";
+import { get, post } from "../utils/apiClient";
+
+export interface User {
+	id: string;
+	username: string;
+	email: string;
+	password: string;
+	groups: string[];
+	friends: string[];
+	buckets: string[];
+}
 
 export const GroupModal = ({ 
   openedAddGroup, 
@@ -26,12 +36,11 @@ export const GroupModal = ({
 
 
   // Call API to get users
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
 
 	useEffect(() => {
 		const generateUsernames = async () => {
-			const res = await get('/users/all', {});
-
+			const res = await get('/users/all');
 			if (res.error) {
 				handleError(res.error);
 				return;
@@ -45,12 +54,12 @@ export const GroupModal = ({
 	// e.preventDefault();
 	// console.log('Group Name:', groupName);
 	// console.log('Friends:', selectedFriends);
-	// closeAddGroup();
+	// 
 
-	const handleSubmit = async (values) => {
+	const handleSubmit = async (values: { groupName: string, selectedFriends: string[]}) => {
 
-		const memberIds = values.selectFriends.map(username => usernameToId(username));
-
+		const memberIds = values.selectedFriends.map(username => usernameToId(username));
+		console.log(values)
 		const params = {
 			groupName: values.groupName,
 			memberIds: memberIds
@@ -62,13 +71,14 @@ export const GroupModal = ({
 			return;
 		}
 
-		handleSuccess(res.message);
+		handleSuccess(res.message ?? "Success!");
+		closeAddGroup();
 	};	
 
 	const usernameToId = (username: string) => {
 		const foundUsers = users.filter(user => user.username === username);
 		if (foundUsers.length == 0) return null;
-		return foundUsers[0].userId ?? null;
+		return foundUsers[0].id ?? null;
 	}
 
 		return (
@@ -79,6 +89,7 @@ export const GroupModal = ({
           label="Group Name"
           placeholder="Enter group name"
           required
+					key={form.key('groupName')}
         />
         <MultiSelect
           label="Friends"
@@ -86,6 +97,7 @@ export const GroupModal = ({
           data={users.map(user => user.username)} // Dynamically limited to 2 options
           searchable
 					limit={6}
+					key={form.key('selectedFriends')}
           hidePickedOptions
         />
         <Group wrap="nowrap">
