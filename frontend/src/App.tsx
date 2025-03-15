@@ -7,6 +7,7 @@ import { createTheme, MantineProvider } from '@mantine/core'
 import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
 import WaveHeader from './assets/WaveHeader'
+import './App.css';
 
 function App() {
 	const theme = createTheme({

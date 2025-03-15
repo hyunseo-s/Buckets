@@ -15,68 +15,6 @@ export const AddButton = () => {
   const [openedAddBucket, { open: openAddBucket, close: closeAddBucket }] = useDisclosure(false);
   const [openedAddItem, { open: openAddItem, close: closeAddItem }] = useDisclosure(false);
 
-  // Add bucket form data
-  const [bucketName, setBucketName] = useState<string>('');
-  const [selectedBucketGroupOption, setBucketSelectedGroupOption] = useState<string | null>(null);
-
-  // Add group form data
-  
-  
-  // Add item form data
-  const [itemName, setItemName] = useState<string>('');
-  const [itemURL, setItemURL] = useState<string>('');
-  const [itemImage, setItemImage] = useState<File[]>([]);
-  // const [itemBuckets, setItemBuckets] = useState<List>([]);
-  const [itemAllocations, setItemAllocations] = useState([{ bucketId: null, groupId: null }]);
-
-  const groups = [
-    {
-      groupId: "justin",
-      groupName: "justin1"
-    },
-    {
-      groupId: "edison",
-      groupName: "edison1"
-    },
-    {
-      groupId: "elizabeth",
-      groupName: "elizabeth1"
-    },
-  ]
-
-  const buckets = [
-    {
-      groupId: "justin",
-      bucketName: "justinBucket",
-      bucketId: "justinBBA"
-    },
-    {
-      groupId: "justin",
-      bucketName: "justinBucket2",
-      bucketId: "justinBBB"
-    },
-    {
-      groupId: "justin",
-      bucketName: "justinBucket3",
-      bucketId: "justinBBC"
-    },
-    {
-      groupId: "elizabeth",
-      bucketName: "elizabethBucket",
-      bucketId: "elizabethBBA"
-    },
-    {
-      groupId: "elizabeth",
-      bucketName: "elizabethBucket2",
-      bucketId: "elizabethBBB"
-    },
-    {
-      groupId: "edison",
-      bucketName: "edisonBucket2",
-      bucketId: "edisonBBB"
-    },
-  ]
-
   return (
     <>
       <Menu shadow="md" width={200}>
@@ -123,9 +61,9 @@ export const AddButton = () => {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      < GroupModal openedAddGroup={openedAddGroup} closeAddGroup={closeAddGroup} />
+      {/* < GroupModal openedAddGroup={openedAddGroup} closeAddGroup={closeAddGroup} /> */}
       < ItemModal openedAddItem={openedAddItem} closeAddItem={closeAddItem} />
-      < BucketModal openedAddBucket={openedAddBucket} closeAddBucket={closeAddBucket} />
+      {/* < BucketModal openedAddBucket={openedAddBucket} closeAddBucket={closeAddBucket} /> */}
     </>
   );
 };
