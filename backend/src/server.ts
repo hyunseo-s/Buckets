@@ -295,8 +295,11 @@ app.put('/item/edit', (req: Request, res: Response) => {
 
 app.put('/item/toggleLike', (req: Request, res: Response) => {
   try {
+    const existingToken = localStorage.getItem("token");
+    const id = decodeJWT(existingToken);
+
     const { itemId } = req.body;
-    const result = upvoteItem(itemId);
+    const result = upvoteItem(itemId, id);
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
