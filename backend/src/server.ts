@@ -9,7 +9,7 @@ import sui from 'swagger-ui-express';
 import fs, { write } from 'fs';
 import path from 'path';
 import process from 'process';
-import { readData, writeData } from './types/dataStore'
+import { clear, readData, writeData } from './types/dataStore'
 import { login, register } from './types/auth';
 import { createItem, removeItem } from './types/items';
 import { decodeJWT } from './utilis';
@@ -36,10 +36,8 @@ const HOST: string = process.env.IP || '127.0.0.1';
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
-readData();
-
 // ====================================================================
-//  ================= AUTH ===================
+//  =============================== AUTH ==============================
 // ====================================================================
 
 app.post('/auth/register', async (req: Request, res: Response) => {
@@ -92,19 +90,19 @@ app.post('/group/create', (req: Request, res: Response) => {
   }
 });
 
-app.delete('/groups/:groupId', (req: Request, res: Response) => {
-  const { groupId } = req.params;
+app.delete('/group/:groupId', (req: Request, res: Response) => {
   try {
-      const updatedGroups = deleteGroup(groupId);
-      res.status(200).json({ message: 'Group deleted', updatedGroups });
+    const groupId = req.params.groupId as string;
+    const updatedGroups = deleteGroup(groupId);
+    res.status(200).json({ message: 'Group deleted', updatedGroups });
   } catch (error) {
-      res.status(404).json({ error: error.message });
+    res.status(404).json({ error: error.message });
   } finally {
     writeData()
   }
 });
 
-app.post('/groups/:groupId/members', (req: Request, res: Response) => {
+app.post('/group/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
   const { memberIds }: { memberIds: string[] } = req.body;
   try {
@@ -117,7 +115,7 @@ app.post('/groups/:groupId/members', (req: Request, res: Response) => {
   }
 });
 
-app.delete('/groups/:groupId/members', (req: Request, res: Response) => {
+app.delete('/group/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
   const { memberIds }: { memberIds: string[] } = req.body;
   try {
@@ -131,7 +129,7 @@ app.delete('/groups/:groupId/members', (req: Request, res: Response) => {
 });
 
 // edit group name so far - not sure what else we can edit
-app.put('/groups/:groupId', (req: Request, res: Response) => {
+app.put('/group/:groupId', (req: Request, res: Response) => {
   const { groupId } = req.params;
   const { updatedGroupName }: { updatedGroupName: string } = req.body;
   try {
@@ -145,7 +143,7 @@ app.put('/groups/:groupId', (req: Request, res: Response) => {
 });
 
 // get one group
-app.get('/groups/:groupId', (req: Request, res: Response) => {
+app.get('/group/:groupId', (req: Request, res: Response) => {
   const { groupId } = req.params;
   try {
     const group = getGroup(groupId);
@@ -157,6 +155,10 @@ app.get('/groups/:groupId', (req: Request, res: Response) => {
   }
 });
 
+
+// ====================================================================
+//  ================= USER ===================
+// ====================================================================
 // get groups that user is a part of 
 app.get('/users/:userId/groups', (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -231,6 +233,16 @@ app.post('/item/remove', (req: Request, res: Response) => {
   }
 });
 
+app.delete('/clear', (req: Request, res: Response) => {
+  try {
+    const result = clear();
+    return res.status(200).json(result);
+  } finally {
+    writeData()
+  }
+});
+
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
@@ -252,7 +264,8 @@ app.use((req: Request, res: Response) => {
 
 // start server
 const server = app.listen(PORT, HOST, () => {
-  // DO NOT CHANGE THIS LINE
+  readData();
+
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
 });
 

@@ -43,7 +43,7 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
 
     const { email, password } = req.body;
-    const db = readData();
+    const db = getData();
   
     const user = db.users.find((u: User) => u.email === email);
     if (!user) {
