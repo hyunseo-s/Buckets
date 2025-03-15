@@ -4,39 +4,41 @@ import bcrypt from "bcryptjs";
 import { User, Database } from "../interface";
 import { v4 } from 'uuid';
 import { getData, readData, writeData } from "./dataStore";
+import { createGroup } from "./groups";
 
 const JWT_SECRET = "TOPSECRET";
 
 // Register a new user
 export const register = async (req: Request, res: Response) => {
-    const { email, username, password } = req.body;
-    console.log(email,username,password)
-    
-    const db: Database = getData();
-  
-    if (db.users.some((user) => user.email === email)) {
-        throw new Error("User already exists");
-    }
-  
-    // const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser: User = {
-        id: String(v4()),
-        username,
-        email,
-        password: password,
-        groups: [],
-        friends: [],
-        buckets: [],
-    };
+	const { email, username, password } = req.body;
+	console.log(email,username,password)
+	
+	const db: Database = getData();
 
-    db.users.push(newUser);
+	if (db.users.some((user) => user.email === email)) {
+		throw new Error("User already exists");
+	}
 
-  
-    const user = db.users.find((u) => u.email === email);
+	const id = v4()
+	// const hashedPassword = await bcrypt.hash(password, 10);
+	const newUser: User = {
+		id,
+		username,
+		email,
+		password: password,
+		groups: [],
+		friends: [],
+		buckets: [],
+	};
 
-    const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+	db.users.push(newUser);
+	const user = db.users.find((u) => u.email === email);
 
-    res.status(201).json({ message: "Registration success", token });
+	const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+	createGroup("My Buckets", [id])
+
+	return ({ message: "Registration success", token });
 }
 
 // User login function

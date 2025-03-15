@@ -4,6 +4,7 @@ import { IconCheck, IconLinkPlus } from '@tabler/icons-react';
 import { handleError, handleSuccess } from "../utils/handlers";
 import { useForm } from "@mantine/form";
 import { get, post } from "../utils/apiClient";
+import { useGroups } from "../context/GroupsProvider";
 
 export interface User {
 	id: string;
@@ -33,6 +34,8 @@ export const GroupModal = ({
 		validate: {
 		},
 	});
+
+	const { refreshGroups } = useGroups();
 
 
   // Call API to get users
@@ -74,6 +77,7 @@ export const GroupModal = ({
 		}
 		handleSuccess(res.message ?? "Success!");
 		closeAddGroup();
+		refreshGroups();
 	};	
 
 	const usernameToId = (username: string) => {
