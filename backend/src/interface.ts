@@ -38,7 +38,15 @@ export interface Item {
     itemUrl: string;
     addedBy: string;
     images: string[];
-    likes: number;
+    likes: string[];
     bucketId: string;
     active: boolean;
+}
+
+export interface Token {
+    access_token: string;
+    refresh_token?: string;
+    scope: string;
+    token_type: string;
+    expiry_date: number;
 }

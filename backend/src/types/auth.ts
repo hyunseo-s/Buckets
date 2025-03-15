@@ -36,7 +36,7 @@ export const register = async (req: Request, res: Response) => {
 
 	const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
-	createGroup("My Buckets", [id])
+	createGroup("My Buckets", [id]);
 
 	return ({ message: "Registration success", token });
 }
