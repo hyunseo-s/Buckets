@@ -42,7 +42,7 @@ const Login = () => {
 
 	const handleSubmit = async (values) => {
 		const res = await post("/auth/login", values);
-		console.log(res);
+		localStorage.setItem("token", res.token);
 	}
 
   return (

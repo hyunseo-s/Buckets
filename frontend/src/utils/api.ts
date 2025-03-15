@@ -11,7 +11,7 @@ export const createRequest = async (url, requestType, body) => {
   if (body !== undefined) {
       options.body = JSON.stringify(body);
   }
-  return fetch(`http://localhost:${config.BACKEND_PORT}${url}`, options)
+  return fetch(`${config.url}:${config.port}${url}`, options)
   .then((response) => response.json())
   .then((json) => {
     if ("error" in json) {
