@@ -1,6 +1,6 @@
 import express, { json, Request, Response } from 'express';
 import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './types/groups';
-import { createBucket, deleteBucket, getBucket, getAllBuckets } from './types/buckets'
+import { createBucket, deleteBucket, getBucket, getAllBuckets, getBucketItems } from './types/buckets'
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
@@ -210,6 +210,18 @@ app.get('/buckets/:bucketId', (req: Request, res: Response) => {
   const { bucketId } = req.params;
   const bucket = getBucket(bucketId);
   res.status(200).json(bucket);
+});
+
+app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
+  const { bucketId } = req.params;
+  try {
+    const allItems = getBucketItems(bucketId);
+    res.status(200).json({ items: allItems });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
+  }
 });
 
 // all buckets for a specific group
