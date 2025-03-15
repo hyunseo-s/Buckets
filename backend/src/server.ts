@@ -12,6 +12,10 @@ import path from 'path';
 import process from 'process';
 import { register, login } from './auth.ts' 
 import { decodeJWT } from './utilis.ts';
+import { createItem, removeItem } from './items'
+import { readData, writeData } from './dataStore'
+import { login, register } from './auth';
+
 
 // Set up web app
 const app = express();
@@ -33,6 +37,9 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
+
+readData();
+writeData();
 
 app.post('/group/create', (req: Request, res: Response) => {
   const { groupName, memberIds }: { groupName: string, memberIds: [User] } = req.body;
@@ -169,6 +176,30 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
   }
 })
 
+app.post('/item/add', (req: Request, res: Response) => {
+  try {
+    // GETE ID
+
+    const { name, desc, uri, image, bucketId } = req.body;
+    const result = createItem(id, name, desc, uri, image, bucketId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({error: error.message })
+  }
+});
+
+app.post('/item/remove', (req: Request, res: Response) => {
+  try {
+    const { itemId } = req.body;
+    const result = removeItem(itemId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({error: error.message })
+  }
+});
+
+writeData();
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
@@ -201,11 +232,15 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
+<<<<<<< HEAD
 function decodeJWT(existingToken: string | null) {
   throw new Error('Function not implemented.');
 }
 
 function decodeJWT(existingToken: string | null) {
+=======
+function jwtDecode(arg0: string) {
+>>>>>>> Elizabeth_backend
   throw new Error('Function not implemented.');
 }
 
