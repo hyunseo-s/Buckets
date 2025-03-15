@@ -156,9 +156,11 @@ app.get('/group/:groupId', (req: Request, res: Response) => {
 });
 
 // get groups that user is a part of 
-app.get('/users/:userId/groups', (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const groups = getAllGroups(userId);
+app.get('/users/groups', (req: Request, res: Response) => {
+  const existingToken = localStorage.getItem("token");
+  const id = decodeJWT(existingToken)
+
+  const groups = getAllGroups(id);
   res.status(200).json(groups);
 });
 
@@ -214,7 +216,7 @@ app.post('/item/add', (req: Request, res: Response) => {
     const existingToken = localStorage.getItem("token");
     const id = decodeJWT(existingToken)
     const params = req.body;
-    params.id = id;
+    params.addedBy = id;
 
     const result = createItem(params)
     return res.status(200).json(result);
