@@ -19,8 +19,7 @@ const GroupBuckets = () => {
   const [title, setTitle] = useState<string>('');
 
   const fetchBuckets = async (gid: string) => {
-    let v;
-    const res = await get(`/groups/${gid}/buckets`, v);
+    const res = await get(`/groups/${gid}/buckets`);
     setBuckets(JSON.parse(res));
   }
 
