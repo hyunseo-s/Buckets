@@ -14,10 +14,6 @@ import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 import { getUser } from './types/user';
-import { google } from "googleapis";
-import { getCal } from './calendar/script';
-import { OAuth2Client } from 'google-auth-library';
-import { Token } from './interface';
 
 // Set up web app
 const app = express();
@@ -324,14 +320,6 @@ app.put('/item/toggleActive', (req: Request, res: Response) => {
   }
 });
 
-app.get('/user/cal', (req: Request, res: Response) => {
-  const credentials = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/src/calendar/credentials.json"), "utf8"));
-  const { client_id, client_secret, redirect_uris } = credentials.web;
-  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-  
-  getCal(oAuth2Client)
-});
-
 app.delete('/clear', (req: Request, res: Response) => {
   try {
     const result = clear();
@@ -375,7 +363,3 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
-function getFreeTime(oAuth2Client: OAuth2Client) {
-  throw new Error('Function not implemented.');
-}
-
