@@ -11,7 +11,6 @@ let data: Database = {
 	items: [],
 }
 
-
 // Read user info from the json file
 const readData = () => {
 	if (!fs.existsSync(USERS_FILE)) {

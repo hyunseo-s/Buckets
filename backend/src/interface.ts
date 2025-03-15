@@ -3,11 +3,12 @@ export interface Database {
     groups: Groups[];
     buckets: Buckets[];
     items: Items[];
-  }
+}
 
 export interface User {
     id: string;
     username: string;
+    email: string;
     password: string;
     groups: string[];
     friends: string[];
