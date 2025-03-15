@@ -1,7 +1,9 @@
+import { MyButton } from "../components/MyButton";
+
 const Home = () => {
 	return (
 		<>
-			Home
+			<MyButton />
 		</>
 	)
 }
