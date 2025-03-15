@@ -11,7 +11,7 @@ import path from 'path';
 import process from 'process';
 import { clear, readData, writeData } from './types/dataStore'
 import { login, register } from './types/auth';
-import { createItem, removeItem } from './types/items';
+import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 
 
@@ -106,10 +106,10 @@ app.post('/group/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
   const { memberIds }: { memberIds: string[] } = req.body;
   try {
-      const updatedMembers = addToGroup(groupId, memberIds);
-      res.status(200).json({ message: 'Members added', updatedMembers });
+    const updatedMembers = addToGroup(groupId, memberIds);
+    res.status(200).json({ message: 'Members added', updatedMembers });
   } catch (error) {
-      res.status(404).json({ error: error.message });
+    res.status(404).json({ error: error.message });
   } finally {
     writeData()
   }
@@ -155,16 +155,17 @@ app.get('/group/:groupId', (req: Request, res: Response) => {
   }
 });
 
-
-// ====================================================================
-//  ================= USER ===================
-// ====================================================================
 // get groups that user is a part of 
 app.get('/users/:userId/groups', (req: Request, res: Response) => {
   const { userId } = req.params;
   const groups = getAllGroups(userId);
   res.status(200).json(groups);
 });
+
+
+// ====================================================================
+//  ================= BUCKETS ===================
+// ====================================================================
 
 app.post('/buckets', (req: Request, res: Response) => {
   const { bucketName, groupId }: { bucketName: string, groupId: string } = req.body;
@@ -204,6 +205,9 @@ app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
 });
 
 
+// ====================================================================
+//  ================= ITEMS ===================
+// ====================================================================
 
 app.post('/item/add', (req: Request, res: Response) => {
   try {
@@ -228,6 +232,42 @@ app.post('/item/remove', (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({error: error.message })
+  } finally {
+    writeData()
+  }
+});
+
+app.put('/item/edit', (req: Request, res: Response) => {
+  try {
+    const params = req.body;
+    const result = editItem(params);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  } finally {
+    writeData()
+  }
+});
+
+app.put('/item/toggleLike', (req: Request, res: Response) => {
+  try {
+    const { itemId } = req.body;
+    const result = upvoteItem(itemId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  } finally {
+    writeData()
+  }
+});
+
+app.put('/item/toggleActive', (req: Request, res: Response) => {
+  try {
+    const { itemId } = req.body;
+    const result = toggleActiveItem(itemId);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
   } finally {
     writeData()
   }
