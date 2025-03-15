@@ -22,7 +22,7 @@ function createItem(
 		bucketId,
 	});
 
-	return {};
+	return {}; 
 }
 
 function removeItem(itemId: string) {
