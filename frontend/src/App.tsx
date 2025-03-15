@@ -4,10 +4,13 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import MyBuckets from './pages/MyBuckets'
 import '@mantine/carousel/styles.css';
+import GroupBuckets from './pages/GroupBuckets'
+import { AddButton } from './components/AddButton'
 import { createTheme, MantineProvider } from '@mantine/core'
 import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
-import GroupBuckets from './pages/GroupBuckets'
+import WaveHeader from './assets/WaveHeader'
+import './App.css';
 
 function App() {
 	const theme = createTheme({
@@ -24,6 +27,7 @@ function App() {
     <>
 			<MantineProvider theme={theme} >
 				<Notifications />
+				<WaveHeader />
 				<BrowserRouter>
 					<Routes>
 						<Route index element={<Home />} />
@@ -34,6 +38,7 @@ function App() {
 						<Route path="groups" element={<Groups />} />
 					</Routes>
 				</BrowserRouter>
+				<AddButton />
 			</MantineProvider>
     </>
   )

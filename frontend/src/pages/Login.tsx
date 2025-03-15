@@ -39,8 +39,8 @@ const Login = () => {
     },
 
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-			password: (value) => (value ? null : 'Invalid password'),
+      	email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+		password: (value) => (value ? null : 'Invalid password'),
     },
   });
 
@@ -58,7 +58,7 @@ const Login = () => {
 	}
 
   return (
-		<div style={{ height: "80vh", display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: "-120pt"}}>
 			<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Login</h2>
 				<form onSubmit={form.onSubmit(handleSubmit)}>
@@ -83,6 +83,7 @@ const Login = () => {
 							type="submit"
 							variant="filled" 
 							radius="lg"
+							mt="1.5rem"
 							style={ButtonStyle}
 						>
 							Login
@@ -94,7 +95,7 @@ const Login = () => {
 						Don't have a bucket?
 					</p>
 					<div style={{ display: "flex", justifyContent: "space-around"}}>
-						<Anchor href="/register" style={TextStyle}>
+						<Anchor onClick={() => navigate("/register")} style={TextStyle}>
 							Create an account!
 						</Anchor>
 					</div>

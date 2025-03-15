@@ -2,33 +2,26 @@ import { Flex } from '@mantine/core';
 import { SearchBar, GroupCard } from '../components';
 import { useEffect, useState } from 'react';
 import { get } from '../utils/apiClient';
-import { useNavigate } from 'react-router';
-
-interface Groups {
-  groupId: string;
-  groupName: string,
-  members: string[],
-  buckets: string[],
-}
+import { handleError } from '../utils/handlers';
+import { Group } from '../types';
 
 const Groups = () => {
-  const [groups, setGroups] = useState<Groups[]>([]);
-  const navigate = useNavigate();
+  const [groups, setGroups] = useState<Group[]>([]);
 
-  const fetchGroups = async () => {
-    let v;
-    const raw = await get(`/users/groups`, v);
-    const res: Groups[] = JSON.parse(raw);
-    setGroups(res);
-  }
+	useEffect(() => {
+		const getGroups = async () => {
+			const res = await get('/users/groups');
+			console.log(res)
+			if (res.error) {
+				handleError(res.error);
+				return;
+			}
+			setGroups(res);
+		}
 
-  useEffect(() => {
-    fetchGroups()
-  }, [])
+		getGroups();
+	}, [])
 
-  const handleClick = (id: string) => {
-    navigate(`/grp-buckets/${id}`)
-  }
 
   return (
     <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
@@ -41,8 +34,8 @@ const Groups = () => {
 					wrap={{ base: "nowrap", sm: "wrap" }}
           direction={{ base: "column", sm: "row" }}
         >
-          {groups.map((group, index) => (
-            <GroupCard key={index} onClick={() => {handleClick(group.groupId)}} {...group}/>
+          {groups.length > 0 && groups.map((group, index) => (
+            <GroupCard key={index} group={group} />
           ))}
         </Flex>
       </div>

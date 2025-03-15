@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 // core styles are required for all packages
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '@mantine/dropzone/styles.css';
+
 
 
 // other css files are required only if

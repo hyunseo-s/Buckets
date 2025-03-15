@@ -1,15 +1,13 @@
 // https://ui.mantine.dev/category/article-cards/#image-card
 import { IconUser, IconBucket } from '@tabler/icons-react';
 import { Card, Center, Group, Text, useMantineTheme } from '@mantine/core';
+import { Group as GroupType } from "../../types";
 
-interface Groups {
-  groupId: string;
-  groupName: string,
-  members: string[],
-  buckets: string[],
+interface GroupCardProps {
+	group: GroupType;
 }
 
-export const GroupCard = (props: Groups) => {
+export const GroupCard = ({ group }: GroupCardProps) => {
   const theme = useMantineTheme();
 
   // Define styles as variables
@@ -71,7 +69,7 @@ export const GroupCard = (props: Groups) => {
       shadow="lg"
 			m={{ base: 'auto', sm: '0' }}
       style={cardStyle}
-			w={{ base: '80%', sm: '45%' }}
+			w={{ base: '90%', sm: '45%' }}
       radius="md"
       component="a"
       href="https://mantine.dev/"
@@ -83,25 +81,24 @@ export const GroupCard = (props: Groups) => {
       <div style={contentStyle}>
         <div>
           <Text size="lg" style={titleStyle} weight={500}>
-            {props.groupName}
+						{group.groupName}
           </Text>
 
           <Group justify="space-between" gap="xs">
             <Text size="sm" style={authorStyle}>
-              Robert Gluesticker
+              {group.groupName}
             </Text>
-
             <Group gap="lg">
               <Center>
                 <IconBucket size={16} stroke={1.5} color={theme.colors.dark[2]} />
                 <Text size="sm" style={bodyTextStyle}>
-                  {props.buckets.length}
+                  {group.buckets.length}
                 </Text>
               </Center>
               <Center>
                 <IconUser size={16} stroke={1.5} color={theme.colors.dark[2]} />
                 <Text size="sm" style={bodyTextStyle}>
-                  {props.members.length}
+									{group.members.length}
                 </Text>
               </Center>
             </Group>

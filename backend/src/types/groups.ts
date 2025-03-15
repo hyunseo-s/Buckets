@@ -102,6 +102,6 @@ export function getGroup(groupId: string) {
 export function getAllGroups(memberId: string) {
     const database = getData();
     const groups = database.groups;
-
+		
     return groups.filter(group => group.members.includes(memberId));
 }

@@ -1,0 +1,14 @@
+.bucket-multiselect .mantine-MultiSelect-pillsList {
+  flex-direction: row;
+	gap: '6px';
+	flex-wrap: nowrap;
+}
+
+.bucket-multiselect .mantine-MultiSelect-input {
+  overflow-y: scroll;
+}
+
+.bucket-multiselect .mantine-MultiSelect-section {
+	background-color: white;
+	height: "80%";
+}
