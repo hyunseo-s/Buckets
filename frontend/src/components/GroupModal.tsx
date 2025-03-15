@@ -64,14 +64,12 @@ export const GroupModal = ({
 			groupName: groupName,
 			memberIds: memberIds
 		}
-		console.log(params)
 		const res = await post("/group/create", params);
 		
 		if (res.error) {
 			handleError(res.error);
 			return;
 		}
-		console.log(res)
 		handleSuccess(res.message ?? "Success!");
 		closeAddGroup();
 		refreshGroups();
