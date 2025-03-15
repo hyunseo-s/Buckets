@@ -1,6 +1,5 @@
-import { Container, createTheme, Divider, Flex, MantineThemeProvider, Title } from "@mantine/core"
+import { Container, Divider, Flex, Title } from "@mantine/core"
 import ItemCard, { ItemDetails } from "../components/ItemCard.tsx"
-import classes from './MyBuckets.module.css';
 import DropdownMenu from "../components/DropdownMenu.tsx";
 import { useState } from "react";
 
@@ -13,24 +12,12 @@ const items : ItemDetails[] = [{
   link: 'https://www.ramblers.com.au/blog/sunset-skydives/'
 }]
 
-const theme = createTheme({
-  components: {
-    Title: Title.extend({
-      classNames: {
-        root: classes.heading,
-      },
-    }),
-  },
-});
-
 const MyBuckets = () => {
   const [active, setActive] = useState(0);
 
   return (
   <Flex direction='column' align='flex-start'>
-    <MantineThemeProvider theme={theme}>
-      <Title size="h1">My Buckets</Title>
-    </MantineThemeProvider>
+      <Title size="h1" style={{fontWeight: "400"}}>My Buckets</Title>
     <Flex direction='row' gap="lg">
       {buckets.map((bucket, index) => {
         console.log(active)
