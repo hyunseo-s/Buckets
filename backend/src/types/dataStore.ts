@@ -20,6 +20,7 @@ export const readData = () => {
 
 // Write to the database file 
 export const writeData = () => {
+    console.log("es")
     fs.writeFileSync(DATABASE, JSON.stringify(data, null, 2), "utf-8");
 };
 

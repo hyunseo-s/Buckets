@@ -21,8 +21,10 @@ let data = {
   }],
   items: [{
     itemId: 2,
+    name: "asd",
     desc: "this is my item",
     URL: "https"
     dateAdded: "24-12-04",
+    bucketId: 3,
   }],
 }
