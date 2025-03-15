@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { register, login } from './auth.ts' 
+import { decodeJWT } from './utilis.ts';
 
 // Set up web app
 const app = express();
@@ -40,6 +41,11 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
+    // Check if the token is still valid:
+    const existingToken = localStorage.getItem("jwtToken");
+
+    decodeJWT(existingToken)
+
     const { token } = await login(req, res) as any;
     localStorage.setItem("jwtToken", token);
   } catch (error) {
@@ -87,3 +93,11 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
+function decodeJWT(existingToken: string | null) {
+  throw new Error('Function not implemented.');
+}
+
+function decodeJWT(existingToken: string | null) {
+  throw new Error('Function not implemented.');
+}
+
