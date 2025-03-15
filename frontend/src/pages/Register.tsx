@@ -60,6 +60,7 @@ const Register = () => {
 
 		handleSuccess(res.message);
 		localStorage.setItem("token", res.token);
+		refreshGroups();
 		navigate('/groups');
 	}
 
