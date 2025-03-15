@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { User, Database } from "../interface";
 import { v4 } from 'uuid';
 import { getData, readData, writeData } from "./dataStore";
+import { createGroup } from "./groups";
 
 const JWT_SECRET = "TOPSECRET";
 
@@ -18,9 +19,10 @@ export const register = async (req: Request, res: Response) => {
         throw new Error("User already exists");
     }
   
+		const id = v4()
     // const hashedPassword = await bcrypt.hash(password, 10);
     const newUser: User = {
-        id: String(v4()),
+        id,
         username,
         email,
         password: password,
@@ -30,11 +32,11 @@ export const register = async (req: Request, res: Response) => {
     };
 
     db.users.push(newUser);
-
-  
     const user = db.users.find((u) => u.email === email);
 
     const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+		createGroup("My Buckets", [id])
 
     res.status(201).json({ message: "Registration success", token });
 }
