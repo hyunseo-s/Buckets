@@ -1,19 +1,19 @@
 import express, { json, Request, Response } from 'express';
-import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './groups';
-import { createBucket, deleteBucket, getBucket, getAllBuckets } from './buckets'
-import { User } from './interface'
+import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './types/groups';
+import { createBucket, deleteBucket, getBucket, getAllBuckets } from './types/buckets'
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import YAML from 'yaml';
 import sui from 'swagger-ui-express';
-import fs from 'fs';
+import fs, { write } from 'fs';
 import path from 'path';
 import process from 'process';
+import { readData, writeData } from './types/dataStore'
+import { login, register } from './types/auth';
+import { createItem, removeItem } from './types/items';
 import { decodeJWT } from './utilis';
-import { createItem, removeItem } from './items'
-import { readData, writeData } from './dataStore'
-import { login, register } from './auth';
+
 
 // Set up web app
 const app = express();
@@ -37,15 +37,58 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 
 readData();
-writeData();
+
+// ====================================================================
+//  ================= AUTH ===================
+// ====================================================================
+
+app.post('/auth/register', async (req: Request, res: Response) => {
+  try {
+    const newToken = await register(req, res);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  } finally {
+    writeData();
+  }
+})
+
+app.post('/auth/login', async (req: Request, res: Response) => {
+  try {
+    // Check if the token is still valid:
+    const existingToken = localStorage.getItem("token");
+    decodeJWT(existingToken)
+    const { token } = await login(req, res) as any;
+
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  } finally {
+    writeData();
+  }
+})
+
+app.post('/auth/logout', async (req: Request, res: Response) => {
+  try {
+    
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  } finally {
+    writeData()
+  }
+})
+
+// ====================================================================
+//  ================= GROUP ===================
+// ====================================================================
 
 app.post('/group/create', (req: Request, res: Response) => {
-  const { groupName, memberIds }: { groupName: string, memberIds: [User] } = req.body;
+  const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
   try {
-      const groupId = createGroup(groupName, memberIds);
-      res.status(201).json({ message: 'Group created', groupId });
+    const groupId = createGroup(groupName, memberIds);
+    res.status(201).json({ message: 'Group created', groupId });
   } catch (error) {
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
+  } finally {
+    writeData()
   }
 });
 
@@ -56,28 +99,34 @@ app.delete('/groups/:groupId', (req: Request, res: Response) => {
       res.status(200).json({ message: 'Group deleted', updatedGroups });
   } catch (error) {
       res.status(404).json({ error: error.message });
+  } finally {
+    writeData()
   }
 });
 
 app.post('/groups/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { memberIds }: { memberIds: [User] } = req.body;
+  const { memberIds }: { memberIds: string[] } = req.body;
   try {
       const updatedMembers = addToGroup(groupId, memberIds);
       res.status(200).json({ message: 'Members added', updatedMembers });
   } catch (error) {
       res.status(404).json({ error: error.message });
+  } finally {
+    writeData()
   }
 });
 
 app.delete('/groups/:groupId/members', (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const { memberIds }: { memberIds: [User] } = req.body;
+  const { memberIds }: { memberIds: string[] } = req.body;
   try {
-      const updatedMembers = removeFromGroup(groupId, memberIds);
-      res.status(200).json({ message: 'Members removed', updatedMembers });
+    const updatedMembers = removeFromGroup(groupId, memberIds);
+    res.status(200).json({ message: 'Members removed', updatedMembers });
   } catch (error) {
-      res.status(404).json({ error: error.message });
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData()
   }
 });
 
@@ -86,10 +135,12 @@ app.put('/groups/:groupId', (req: Request, res: Response) => {
   const { groupId } = req.params;
   const { updatedGroupName }: { updatedGroupName: string } = req.body;
   try {
-      const updatedGroupNameResponse = editGroup(groupId, updatedGroupName);
-      res.status(200).json({ message: 'Group name updated', updatedGroupNameResponse });
+    const updatedGroupNameResponse = editGroup(groupId, updatedGroupName);
+    res.status(200).json({ message: 'Group name updated', updatedGroupNameResponse });
   } catch (error) {
-      res.status(404).json({ error: error.message });
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
   }
 });
 
@@ -97,10 +148,12 @@ app.put('/groups/:groupId', (req: Request, res: Response) => {
 app.get('/groups/:groupId', (req: Request, res: Response) => {
   const { groupId } = req.params;
   try {
-      const group = getGroup(groupId);
-      res.status(200).json(group);
+    const group = getGroup(groupId);
+    res.status(200).json(group);
   } catch (error) {
-      res.status(404).json({ error: error.message });
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
   }
 });
 
@@ -118,16 +171,20 @@ app.post('/buckets', (req: Request, res: Response) => {
       res.status(201).json({ message: 'Bucket created', bucketId });
   } catch (error) {
       res.status(500).json({ error: error.message });
+  } finally {
+    writeData();
   }
 });
 
 app.delete('/buckets/:bucketId', (req: Request, res: Response) => {
   const { bucketId } = req.params;
   try {
-      const updatedBuckets = deleteBucket(bucketId);
-      res.status(200).json({ message: 'Bucket removed', updatedBuckets });
+    const updatedBuckets = deleteBucket(bucketId);
+    res.status(200).json({ message: 'Bucket removed', updatedBuckets });
   } catch (error) {
-      res.status(404).json({ error: error.message });
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
   }
 });
 
@@ -144,46 +201,21 @@ app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
   res.status(200).json(buckets);
 });
 
-app.post('/auth/register', async (req: Request, res: Response) => {
-  try {
-    const newToken = await register(req, res);
-  } catch (error) {
-    return res.status(400).json({ error: error.message })
-  }
-})
 
-app.post('/auth/login', async (req: Request, res: Response) => {
-  try {
-    // Check if the token is still valid:
-    const existingToken = localStorage.getItem("token");
-
-    decodeJWT(existingToken)
-
-    const { token } = await login(req, res) as any;
-
-  } catch (error) {
-    return res.status(400).json({ error: error.message })
-  }
-})
-
-app.post('/auth/logout', async (req: Request, res: Response) => {
-  try {
-    
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-})
 
 app.post('/item/add', (req: Request, res: Response) => {
   try {
-    // GETE ID
     const existingToken = localStorage.getItem("token");
     const id = decodeJWT(existingToken)
-    const { name, desc, uri, image, bucketId } = req.body;
-    const result = createItem(id, name, desc, uri, image, bucketId);
+    const params = req.body;
+    params.id = id;
+
+    const result = createItem(params)
     return res.status(200).json(result);
   } catch (error) {
-    return res.status(400).json({error: error.message })
+    return res.status(400).json({ error: error.message })
+  } finally {
+    writeData();
   }
 });
 
@@ -194,10 +226,10 @@ app.post('/item/remove', (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({error: error.message })
+  } finally {
+    writeData()
   }
 });
-
-writeData();
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
@@ -231,5 +263,3 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
-
-

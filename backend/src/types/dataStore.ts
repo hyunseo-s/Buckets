@@ -1,6 +1,5 @@
 import fs from 'fs';
-import path from 'path';
-import { Database } from './interface'
+import { Database } from '../interface'
 
 const DATABASE = "database.json"
 
@@ -12,7 +11,7 @@ let data: Database = {
 }
 
 // Read the database file
-const readData = () => {
+export const readData = () => {
     if (!fs.existsSync(DATABASE)) {
         fs.writeFileSync(DATABASE, JSON.stringify({ users: [], group: [], buckets: [], items: [] }, null, 2), "utf-8");
     }
@@ -20,16 +19,11 @@ const readData = () => {
 };
 
 // Write to the database file 
-const writeData = () => {
+export const writeData = () => {
+    console.log("es")
     fs.writeFileSync(DATABASE, JSON.stringify(data, null, 2), "utf-8");
 };
 
-function getData() {
+export function getData() {
   return data;
-}
-
-export {
-	readData,
-    getData,
-	writeData,
 }
