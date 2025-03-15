@@ -1,6 +1,17 @@
 import { Button, Modal, Select, TextInput } from "@mantine/core";
+import { useState } from "react";
 
-export const BucketModal = ({ openedAddBucket, closeAddBucket }) => {
+export const BucketModal = ({
+  openedAddBucket,
+  closeAddBucket,
+}: {
+  openedAddBucket: boolean;
+  closeAddBucket: () => void;
+}) => {
+  
+  const [bucketName, setBucketName] = useState<string>('');
+  const [selectedBucketGroupOption, setBucketSelectedGroupOption] = useState<string | null>(null);
+
   return (
     <Modal opened={openedAddBucket} onClose={closeAddBucket} title="Add Bucket" centered>
       <form onSubmit={(e) => {
@@ -23,7 +34,7 @@ export const BucketModal = ({ openedAddBucket, closeAddBucket }) => {
           onChange={(value) => setBucketSelectedGroupOption(value)}
           required
         />
-        <Button type="submit" fullWidth mt="md" color={buttonColor}>
+        <Button type="submit" fullWidth mt="md" color={"rgba(23, 148, 250, 1)"}>
           Add Bucket!
         </Button>
       </form>

@@ -133,8 +133,6 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 				bucketId: bucketIds, 
 			};
 	
-			console.log(params);
-	
 			const res = await post("/item/add", params);
 	
 			if (res.error) {

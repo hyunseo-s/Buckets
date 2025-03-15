@@ -61,9 +61,9 @@ export const AddButton = () => {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      {/* < GroupModal openedAddGroup={openedAddGroup} closeAddGroup={closeAddGroup} /> */}
+      < GroupModal openedAddGroup={openedAddGroup} closeAddGroup={closeAddGroup} />
       < ItemModal openedAddItem={openedAddItem} closeAddItem={closeAddItem} />
-      {/* < BucketModal openedAddBucket={openedAddBucket} closeAddBucket={closeAddBucket} /> */}
+      < BucketModal openedAddBucket={openedAddBucket} closeAddBucket={closeAddBucket} />
     </>
   );
 };
