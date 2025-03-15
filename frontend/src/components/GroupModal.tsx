@@ -56,11 +56,6 @@ export const GroupModal = ({
 		getUsernames();
 	}, []);
 
-	// e.preventDefault();
-	// console.log('Group Name:', groupName);
-	// console.log('Friends:', members);
-	// 
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -87,12 +82,15 @@ export const GroupModal = ({
 		if (foundUsers.length == 0) return null;
 		return foundUsers[0].id ?? null;
 	}
-
+	const InputStyle = {
+		margin: "2rem auto",
+	}
 		return (
 			<Modal opened={openedAddGroup} onClose={closeAddGroup} title="Add Group" centered>
 				<div style={{padding: "1rem" }}>
 				<form onSubmit={handleSubmit}>
         <TextInput
+					style={InputStyle}
           label="Group Name"
           placeholder="Group Name"
 					value={groupName}
@@ -101,6 +99,7 @@ export const GroupModal = ({
 					key={form.key('groupName')}
         />
         <MultiSelect
+					style={InputStyle}
           label="Friends"
           placeholder="Add friends"
 					value={members}
