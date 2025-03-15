@@ -2,7 +2,14 @@
 import { IconUser, IconBucket } from '@tabler/icons-react';
 import { Card, Center, Group, Text, useMantineTheme } from '@mantine/core';
 
-export const GroupCard = () => {
+interface Groups {
+  groupId: string;
+  groupName: string,
+  members: string[],
+  buckets: string[],
+}
+
+export const GroupCard = (props: Groups) => {
   const theme = useMantineTheme();
 
   // Define styles as variables
@@ -76,7 +83,7 @@ export const GroupCard = () => {
       <div style={contentStyle}>
         <div>
           <Text size="lg" style={titleStyle} weight={500}>
-            Journey to Swiss Alps
+            {props.groupName}
           </Text>
 
           <Group justify="space-between" gap="xs">
@@ -88,13 +95,13 @@ export const GroupCard = () => {
               <Center>
                 <IconBucket size={16} stroke={1.5} color={theme.colors.dark[2]} />
                 <Text size="sm" style={bodyTextStyle}>
-                  7847
+                  {props.buckets.length}
                 </Text>
               </Center>
               <Center>
                 <IconUser size={16} stroke={1.5} color={theme.colors.dark[2]} />
                 <Text size="sm" style={bodyTextStyle}>
-                  5
+                  {props.members.length}
                 </Text>
               </Center>
             </Group>
