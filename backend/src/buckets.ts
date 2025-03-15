@@ -1,39 +1,32 @@
-import { Buckets } from './interface';
-import { v4 as uuidv4 } from 'uuid';
+import { getData } from './dataStore';
+import { Bucket } from './interface';
+import { v4 } from 'uuid';
 
-//
-//
-//
-//
-//
-//
-//
-const database = {};
-
-// pass through name, group id
-// returns bucket id
-export function createBucket(bucketName: String, groupId: String) {
-    //let database = getData();
-    let buckets = database["buckets"];
-    let id = uuidv4();
+// This function takes in the bucket name and group id, and returns the bucket id
+export function createBucket(bucketName: string, groupId: string) {
+    const database = getData();
+    const buckets = database.buckets;
     
-    let Bucket = {
-        bucketId: id,
+    const bucketId = v4();
+
+    const bucket: Bucket = {
+        bucketId: bucketId,
         bucketName: bucketName,
-        gId: groupId,
+        groupId: groupId,
         items: []
     };
 
-    buckets.push(Bucket);
+    buckets.push(bucket);
 
-    return id;
+    return bucketId;
 }
 
-// pass through bucketId
-// return true or false
-export function deleteBucket(findBucketId: String) {
-    //let database = getData();
-    let buckets = database["buckets"];
+// Function to delete the given bucketId
+export function deleteBucket(findBucketId: string) {
+
+    const database = getData();
+    const buckets = database.buckets;
+
     const bucketExists = buckets.some(bucket => bucket.bucketId === findBucketId);
     
     if (!bucketExists) {
@@ -41,19 +34,17 @@ export function deleteBucket(findBucketId: String) {
     }
 
     return buckets.filter(bucket => bucket.bucketId !== findBucketId);
-
 }
 
-export function getBucket(findBucketId: String) {
-    //let database = getData();
-    let buckets = database["buckets"];
-
+export function getBucket(findBucketId: string) {
+    const database = getData();
+    const buckets = database.buckets;
     return buckets.filter(bucket => bucket.bucketId === findBucketId);
 }
 
-export function getAllBuckets(groupId: String) {
-    //let database = getData();
-    let buckets = database["buckets"];
+export function getAllBuckets(groupId: string) {
+    const database = getData();
+    const buckets = database.buckets;
 
-    return buckets.filter(bucket => bucket.gId === groupId);
+    return buckets.filter(bucket => bucket.groupId === groupId);
 }
