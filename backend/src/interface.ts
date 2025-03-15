@@ -36,7 +36,7 @@ export interface Item {
     itemUrl: string;
     addedBy: string;
     images: string[];
-    likes: number;
+    likes: string[];
     bucketId: string;
     active: boolean;
 }

@@ -8,7 +8,7 @@ interface CreateItemType {
     itemUrl: string, 
     addedBy: string, 
     images: string[], 
-    likes: number, 
+    likes: string[], 
     bucketIds: string[],
     active: boolean
 }
@@ -36,7 +36,7 @@ export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucket
       itemUrl,
       addedBy,
       images,
-      likes: 0,
+      likes: [],
       bucketId: bucketId,
       active: true,
     };
@@ -77,17 +77,19 @@ export function removeItem(itemId: string) {
     database.items = items.filter(item => item.itemId !== itemId);
 }
 
-export function upvoteItem(itemId: string) {
+export function upvoteItem(itemId: string, id: string) {
     const database = getData();
     const items = database.items;
 
-    const itemIndex = items.findIndex(item => item.itemId === itemId);
+    const index = items.findIndex((item) => item.itemId === itemId);
     
-    if (itemIndex === -1) {
-        throw new Error(`Item with ID ${itemId} not found`);
+    if (index === -1) {
+      items[index].likes.push(id);
+    } else {
+      items.splice(index, 1);
     }
 
-    items[itemIndex].likes += 1;
+    return { likes: items[index].likes};
 }
 
 export function toggleActiveItem(itemId: string) {

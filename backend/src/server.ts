@@ -292,8 +292,11 @@ app.put('/item/edit', (req: Request, res: Response) => {
 
 app.put('/item/toggleLike', (req: Request, res: Response) => {
   try {
+    const existingToken = localStorage.getItem("token");
+    const id = decodeJWT(existingToken);
+
     const { itemId } = req.body;
-    const result = upvoteItem(itemId);
+    const result = upvoteItem(itemId, id);
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
@@ -322,29 +325,29 @@ app.get('/user/cal', (req: Request, res: Response) => {
   getCal(oAuth2Client)
 });
 
-export function getNewToken(oAuth2Client: OAuth2Client) {
-    const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: "offline",
-        scope: SCOPES,
-    });
+// export function getNewToken(oAuth2Client: OAuth2Client) {
+//     const authUrl = oAuth2Client.generateAuthUrl({
+//         access_type: "offline",
+//         scope: SCOPES,
+//     });
 
-    console.log("Authorize this app by visiting this URL:", authUrl);
-    open(authUrl);
+//     console.log("Authorize this app by visiting this URL:", authUrl);
+//     open(authUrl);
 
-    app.get("/", async (req: Request, res: Response) => {
-        const code = req.query.code;
-        try {
-            const { tokens } : Token = oAuth2Client.getToken(code as string);
-            oAuth2Client.setCredentials(tokens);
-            fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
-            res.send("Authentication successful! You can close this tab.");
-            getFreeTime(oAuth2Client);
-        } catch (error) {
-            console.error("Error retrieving access token", error);
-            res.send("Authentication failed. Check console for details.");
-        }
-    });
-}
+//     app.get("/", async (req: Request, res: Response) => {
+//         const code = req.query.code;
+//         try {
+//             const { tokens } : Token = oAuth2Client.getToken(code as string);
+//             oAuth2Client.setCredentials(tokens);
+//             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
+//             res.send("Authentication successful! You can close this tab.");
+//             getFreeTime(oAuth2Client);
+//         } catch (error) {
+//             console.error("Error retrieving access token", error);
+//             res.send("Authentication failed. Check console for details.");
+//         }
+//     });
+// }
 
 
 app.delete('/clear', (req: Request, res: Response) => {
