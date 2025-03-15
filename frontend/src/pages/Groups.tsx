@@ -1,8 +1,27 @@
 import { Flex } from '@mantine/core';
 import { SearchBar, GroupCard } from '../components';
+import { useEffect, useState } from 'react';
+import { get } from '../utils/apiClient';
+import { handleError } from '../utils/handlers';
+import { Group } from '../types';
 
 const Groups = () => {
-  const groups = [0, 1, 2, 3, 4];
+  const [groups, setGroups] = useState<Group[]>([]);
+
+	useEffect(() => {
+		const getGroups = async () => {
+			const res = await get('/users/groups');
+			console.log(res)
+			if (res.error) {
+				handleError(res.error);
+				return;
+			}
+			setGroups(res);
+		}
+
+		getGroups();
+	}, [])
+
 
   return (
     <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
@@ -15,8 +34,8 @@ const Groups = () => {
 					wrap={{ base: "nowrap", sm: "wrap" }}
           direction={{ base: "column", sm: "row" }}
         >
-          {groups.map((group, index) => (
-            <GroupCard key={index} />
+          {groups.length > 0 && groups.map((group, index) => (
+            <GroupCard key={index} group={group} />
           ))}
         </Flex>
       </div>

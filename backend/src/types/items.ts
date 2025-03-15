@@ -7,7 +7,7 @@ interface CreateItemType {
     itemDesc: string, 
     itemUrl: string, 
     addedBy: string, 
-    images: string, 
+    images: string[], 
     likes: number, 
     bucketIds: string[],
     active: boolean
@@ -18,7 +18,7 @@ interface EditItemType {
     itemName: string, 
     itemDesc: string,
     itemUrl: string, 
-    itemImage: string,
+    itemImage: string[],
     bucketId: string,
     acitve: boolean
 }
