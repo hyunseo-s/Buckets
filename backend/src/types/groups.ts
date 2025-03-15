@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { Group, User } from './interface';
+import { Group, User } from '../interface';
 import { v4 as uuidv4 } from 'uuid';
 
 // Function to create the group, given the name and the members

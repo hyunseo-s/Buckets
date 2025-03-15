@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Database } from './interface'
+import { Database } from '../interface'
 
 const DATABASE = "database.json"
 
