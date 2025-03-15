@@ -2,21 +2,10 @@ import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { User, Groups, Buckets, Items } from "./interface";
 
 const JWT_SECRET = "TOPSECRET";
 const USERS_FILE = "users.json"
-
-interface User {
-    id: string;
-    username: string;
-    password: string;
-    // groups: [Groups];
-    // friends: [Friends];
-    // buckets: [Buckets];
-    groups: string;
-    friends: string;
-    buckets: string;
-}
 
 // Read user info from the json file
 const readUsers = (): User[] => {
@@ -53,7 +42,7 @@ export const register = async (req: Request, res: Response) => {
                             password: hashedPassword, 
                             groups: "", 
                             friends: "", 
-                            buckets: "" };
+                            buckets: ""};
 
     users.push(newUser);
     writeUsers(users);
