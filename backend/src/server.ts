@@ -67,17 +67,17 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
   }
 })
 
-app.post('/item/add', (req: Request, res: Response) => {
-  try {
-    // GETE ID
+// app.post('/item/add', (req: Request, res: Response) => {
+//   try {
+//     // GET ID !!!!!
 
-    const { name, desc, uri, image, bucketId } = req.body;
-    const result = createItem(id, name, desc, uri, image, bucketId);
-    return res.status(200).json(result);
-  } catch (error) {
-    return res.status(400).json({error: error.message })
-  }
-});
+//     const { name, desc, uri, image, bucketId } = req.body;
+//     const result = createItem(id, name, desc, uri, image, bucketId);
+//     return res.status(200).json(result);
+//   } catch (error) {
+//     return res.status(400).json({error: error.message })
+//   }
+// });
 
 app.post('/item/remove', (req: Request, res: Response) => {
   try {
@@ -123,15 +123,7 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
-<<<<<<< HEAD
-function jwtDecode(arg0: string) {
-=======
+
 function decodeJWT(existingToken: string | null) {
   throw new Error('Function not implemented.');
 }
-
-function decodeJWT(existingToken: string | null) {
->>>>>>> 12b09b0acd8e9fbea1305a7bb87e77240847856a
-  throw new Error('Function not implemented.');
-}
-
