@@ -13,6 +13,7 @@ import { clear, readData, writeData } from './types/dataStore'
 import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
+import { getUser } from './types/user';
 
 // Set up web app
 const app = express();
@@ -175,6 +176,16 @@ app.get('/users/me', (req: Request, res: Response) => {
   const id = decodeJWT(token);
 
   res.status(200).json(id);
+});
+
+app.get('/users/:userId/profile', (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const user = getUser(userId);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 });
 
 
