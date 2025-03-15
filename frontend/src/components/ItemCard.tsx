@@ -1,6 +1,7 @@
-import { Card, Text, Group, Anchor, Image } from '@mantine/core';
+import { Card, Text, Group, Anchor, Image, ActionIcon } from '@mantine/core';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
-import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded';
+import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import { useState } from 'react';
 import { Carousel } from '@mantine/carousel'
@@ -9,6 +10,7 @@ const CAROUSEL_HEIGHT = 325
 
 export type ItemDetails = {
     title: string,
+    type: boolean,
     likes: number,
     images: string[],
     link: string
@@ -43,11 +45,16 @@ const ItemCard = (props: ItemDetails) => {
       </Card.Section>
       <Group justify='space-between' mt={'md'}>
         <Text fw={500}>{props.title}</Text>
-        <Group gap="xs" align='center'>
-          {like ? <FavoriteRoundedIcon color='error' onClick={handleLike} /> : <FavoriteBorderRoundedIcon onClick={handleLike}/>}
-          <Text size='sm'>{likeCount}</Text>
-          <Anchor href={props.link} target="_blank" c={'blue'}><InsertLinkRoundedIcon/></Anchor>
-        </Group>
+        {props.type
+          ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button">
+            <CloseRoundedIcon/>
+          </ActionIcon>
+          : <Group gap="xs" align='center'>
+              {like ? <FavoriteRoundedIcon color='error' onClick={handleLike} /> : <FavoriteBorderRoundedIcon onClick={handleLike}/>}
+              <Text size='sm'>{likeCount}</Text>
+              <Anchor href={props.link} target="_blank" c={'blue'}><OpenInNewRoundedIcon/></Anchor>
+          </Group>
+        }
       </Group>
     </Card>
   )

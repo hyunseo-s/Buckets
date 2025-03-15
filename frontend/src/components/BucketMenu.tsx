@@ -1,23 +1,24 @@
 import { Button, Menu } from '@mantine/core'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
-export type DropdownDetails = {
+export type BucketMenuDetails = {
   index: number,
   name: string,
   isFocused: boolean
-  listener: (e: number) => void
+  buttonListener: (e: number) => void
+  editListener: (e: boolean) => void
+  renameListener: (e: boolean) => void
 }
 
-const DropdownMenu = (props: DropdownDetails) => {
+const BucketMenu = (props: BucketMenuDetails) => {
   const handleClick = () => {
-    props.listener(props.index)
+    props.buttonListener(props.index)
   }
 
   return (
     <Menu shadow="md" width={200}>
       <Button.Group>
-        <Button variant={props.isFocused ? 'light' : 'subtle'} onClick={handleClick}>{props.name}</Button>
-
+        <Button variant={props.isFocused ? 'light' : 'outline'} onClick={handleClick}>{props.name}</Button>
         {props.isFocused &&
           <Menu.Target>
             <Button variant='light' px='xs'><MoreHorizIcon /></Button>
@@ -26,10 +27,10 @@ const DropdownMenu = (props: DropdownDetails) => {
       </Button.Group>
 
       <Menu.Dropdown>
-        <Menu.Item>
+        <Menu.Item onClick={() => props.renameListener(true)}>
           Rename Bucket
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item onClick={() => props.editListener(true)}>
           Edit Items
         </Menu.Item>
         <Menu.Item color="red">
@@ -40,4 +41,4 @@ const DropdownMenu = (props: DropdownDetails) => {
   )
 }
 
-export default DropdownMenu
+export default BucketMenu

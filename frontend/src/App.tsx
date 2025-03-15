@@ -7,6 +7,7 @@ import '@mantine/carousel/styles.css';
 import { createTheme, MantineProvider } from '@mantine/core'
 import Groups from './pages/Groups'
 import { Notifications } from '@mantine/notifications'
+import GroupBuckets from './pages/GroupBuckets'
 
 function App() {
 	const theme = createTheme({
@@ -29,6 +30,7 @@ function App() {
 						<Route path="login" element={<Login />} />
 						<Route path="register" element={<Register />} />
 						<Route path="my-buckets" element={<MyBuckets />} />
+						<Route path="grp-buckets" element={<GroupBuckets />} />
 						<Route path="groups" element={<Groups />} />
 					</Routes>
 				</BrowserRouter>
