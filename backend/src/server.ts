@@ -156,7 +156,7 @@ app.get('/group/:groupId', (req: Request, res: Response) => {
 // get groups that user is a part of 
 app.get('/users/groups', (req: Request, res: Response) => {
 	const token = req.header('Authorization').split(" ")[1];
-  const id = decodeJWT(token)
+  const id = decodeJWT(token);
   const groups = getAllGroups(id);
 	console.log("group", groups)
   res.status(200).json(groups);
@@ -216,7 +216,8 @@ app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
 
 app.post('/item/add', (req: Request, res: Response) => {
   try {
-		const id = decodeJWT(req.header('Authorization').split(" ")[1])
+		const token = req.header('Authorization').split(" ")[1];
+  	const id = decodeJWT(token)
     const params = req.body;
     params.addedBy = id;
 
