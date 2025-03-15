@@ -2,92 +2,78 @@ import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { User, Groups, Buckets, Items } from "./interface";
+import { User, Database } from "./interface";
+import { v4 } from 'uuid';
+import { readData, writeData } from "./dataStore";
 
 const JWT_SECRET = "TOPSECRET";
-const USERS_FILE = "users.json"
 
-// Read user info from the json file
-const readUsers = (): User[] => {
-
-    if (!fs.existsSync(USERS_FILE)) {
-        fs.writeFileSync(USERS_FILE, "[]", "utf-8");
-    
-    }
-    const data = fs.readFileSync(USERS_FILE, "utf-8");
-    return JSON.parse(data);
-};
-
-// Write user info into the json file
-const writeUsers = (users: User[]) => {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), "utf-8");
-};
-
-// User register function
+// Register a new user
 export const register = async (req: Request, res: Response) => {
-
-    // Retrieve the input username and password
-    const { username, password } = req.body;
-    const users = readUsers();
-
-    // Check if the user already exists
-    if (users.some((user) => user.username === username)) {
-        return res.status(400).json({ message: "Existing user" });
+    const { email, username, password } = req.body;
+    
+    const db: Database = readData();
+  
+    if (db.users.some((user) => user.email === email)) {
+        throw new Error("User already exists");
     }
-
-    // Generate hashed password and create new user
+  
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser: User = { id: Date.now().toString(), 
-                            username, 
-                            password: hashedPassword, 
-                            groups: "", 
-                            friends: "", 
-                            buckets: ""};
+    const newUser: User = {
+        id: String(v4()),
+        username,
+        email,
+        password: hashedPassword,
+        groups: [],
+        friends: [],
+        buckets: [],
+    };
 
-    users.push(newUser);
-    writeUsers(users);
+    db.users.push(newUser);
+    writeData();
 
-    res.status(201).json({ message: "Registered" });
-};
+    const dbnew = readData();
+  
+    const user = dbnew.users.find((u) => u.email === email);
+
+    const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.status(201).json({ message: "Registration success", token });
+}
 
 // User login function
 export const login = async (req: Request, res: Response) => {
 
-    // Fetch the input username and password
-    const { username, password } = req.body;
-    const users = readUsers();
-
-    // Check if user exists
-    const user = users.find((u) => u.username === username);
+    const { email, password } = req.body;
+    const db = readData();
+  
+    const user = db.users.find((u) => u.email === email);
     if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        throw new Error("Invalid credentials");
     }
-
+  
     const isMatch = await bcrypt.compare(password, user.password);
-    
-    // Check if the password matches
     if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        throw new Error("Invalid credentials");
     }
-
-    // Generate JWT token with TTL 1 hour
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
-
-    res.json({ token });
+  
+    const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+  
+    res.status(201).json({ message: "Login success", token });
 };
 
 // Middleware to verify JWT token
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-        return res.status(401).json({ message: "Unauthorized: No token provided" });
+        throw new Error("No token provided");
     }
 
     const token = authHeader.split(" ")[1];
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
-        return res.status(403).json({ message: "Forbidden: Invalid token" });
+            throw new Error("Invalid token");
         }
         (req as any).user = decoded;
         next();
