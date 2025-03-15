@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { MantineProvider } from '@mantine/core'
+import { AddButton } from './components/AddButton'
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
 						<Route path="register" element={<Register />} />
 					</Routes>
 				</BrowserRouter>
+				<AddButton />
 			</MantineProvider>
     </>
   )
