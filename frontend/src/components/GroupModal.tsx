@@ -27,7 +27,7 @@ export const GroupModal = ({
 		mode: 'uncontrolled',
 		initialValues: {
 			groupName: '',
-			selectedFriends: [],
+			members: [],
 		},
 
 		validate: {
@@ -37,9 +37,11 @@ export const GroupModal = ({
 
   // Call API to get users
   const [users, setUsers] = useState<User[]>([]);
+	const [members, setMembers] = useState<string[]>([]);
+	const [groupName, setGroupName] = useState<string>('');
 
 	useEffect(() => {
-		const generateUsernames = async () => {
+		const getUsernames = async () => {
 			const res = await get('/users/all');
 			if (res.error) {
 				handleError(res.error);
@@ -48,29 +50,30 @@ export const GroupModal = ({
 			setUsers(res.users);
 		}
 
-		generateUsernames();
+		getUsernames();
 	}, []);
 
 	// e.preventDefault();
 	// console.log('Group Name:', groupName);
-	// console.log('Friends:', selectedFriends);
+	// console.log('Friends:', members);
 	// 
 
-	const handleSubmit = async (values: { groupName: string, selectedFriends: string[]}) => {
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-		const memberIds = values.selectedFriends.map(username => usernameToId(username));
-		console.log(values)
+		const memberIds = members.map(username => usernameToId(username));
 		const params = {
-			groupName: values.groupName,
+			groupName: groupName,
 			memberIds: memberIds
 		}
+		console.log(params)
 		const res = await post("/group/create", params);
 		
 		if (res.error) {
 			handleError(res.error);
 			return;
 		}
-
+		console.log(res)
 		handleSuccess(res.message ?? "Success!");
 		closeAddGroup();
 	};	
@@ -84,20 +87,24 @@ export const GroupModal = ({
 		return (
 			<Modal opened={openedAddGroup} onClose={closeAddGroup} title="Add Group" centered>
 				<div style={{padding: "1rem" }}>
-				<form onSubmit={form.onSubmit(handleSubmit)}>
+				<form onSubmit={handleSubmit}>
         <TextInput
           label="Group Name"
-          placeholder="Enter group name"
+          placeholder="Group Name"
+					value={groupName}
+					onChange={(e) => setGroupName(e.target.value)}
           required
 					key={form.key('groupName')}
         />
         <MultiSelect
           label="Friends"
           placeholder="Add friends"
+					value={members}
+					onChange={(e) => setMembers(e)}
           data={users.map(user => user.username)} // Dynamically limited to 2 options
           searchable
 					limit={6}
-					key={form.key('selectedFriends')}
+					key={form.key('members')}
           hidePickedOptions
         />
         <Group wrap="nowrap">
