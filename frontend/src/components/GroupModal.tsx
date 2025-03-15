@@ -71,6 +71,8 @@ export const GroupModal = ({
 			return;
 		}
 		handleSuccess(res.message ?? "Success!");
+		setMembers([]);
+		setGroupName('');
 		closeAddGroup();
 		refreshGroups();
 	};	
@@ -80,9 +82,9 @@ export const GroupModal = ({
 		if (foundUsers.length == 0) return null;
 		return foundUsers[0].id ?? null;
 	}
-	const InputStyle = {
-		margin: "2rem auto",
-	}
+		const InputStyle = {
+			margin: "2rem auto",
+		}
 		return (
 			<Modal opened={openedAddGroup} onClose={closeAddGroup} title="Add Group" centered>
 				<div style={{padding: "1rem" }}>

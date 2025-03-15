@@ -227,8 +227,15 @@ app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
 // all buckets for a specific group
 app.get('/groups/:groupId/buckets', (req: Request, res: Response) => {
   const { groupId } = req.params;
-  const buckets = getAllBuckets(groupId);
-  res.status(200).json(buckets);
+  
+	try {
+    const buckets = getAllBuckets(groupId);
+  	res.status(200).json(buckets);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  } finally {
+    writeData();
+  }
 });
 
 

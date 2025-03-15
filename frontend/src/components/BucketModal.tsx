@@ -21,7 +21,9 @@ export const BucketModal = ({
 		if (foundUsers.length == 0) return null;
 		return foundUsers[0].groupId ?? null;
 	}
-
+	const InputStyle = {
+		margin: "2rem auto",
+	}
   const handleSubmit = async (e) => {
     e.preventDefault();
     const groupId = groupNameToId(selectedBucketGroupOption ?? "")
@@ -44,6 +46,7 @@ export const BucketModal = ({
     <Modal opened={openedAddBucket} onClose={closeAddBucket} title="Add Bucket" centered>
       <form onSubmit={handleSubmit}>
         <TextInput
+					style={InputStyle}
           label="Bucket Name"
           placeholder="Enter bucket name"
           value={bucketName}
@@ -51,6 +54,7 @@ export const BucketModal = ({
           required
         />
         <Select
+					style={InputStyle}
           label="Add to group"
           placeholder="Select group"
           data={groups.map(group => group.groupName)}
