@@ -1,5 +1,10 @@
-import { Container } from "@mantine/core"
+import { Container, createTheme, Divider, Flex, MantineThemeProvider, Title } from "@mantine/core"
 import ItemCard, { ItemDetails } from "../components/ItemCard.tsx"
+import classes from './MyBuckets.module.css';
+import DropdownMenu from "../components/DropdownMenu.tsx";
+import { useState } from "react";
+
+const buckets: string[] = ['Bucket 1', 'Bucket 2']
 
 const items : ItemDetails[] = [{
   title: 'Hello',
@@ -8,9 +13,33 @@ const items : ItemDetails[] = [{
   link: 'https://www.ramblers.com.au/blog/sunset-skydives/'
 }]
 
+const theme = createTheme({
+  components: {
+    Title: Title.extend({
+      classNames: {
+        root: classes.heading,
+      },
+    }),
+  },
+});
+
 const MyBuckets = () => {
+  const [active, setActive] = useState(0);
+
   return (
-  <div>
+  <Flex direction='column' align='flex-start'>
+    <MantineThemeProvider theme={theme}>
+      <Title size="h1">My Buckets</Title>
+    </MantineThemeProvider>
+    <Flex direction='row' gap="lg">
+      {buckets.map((bucket, index) => {
+        console.log(active)
+        console.log(index)
+        console.log(index === active)
+        return <DropdownMenu key={index} name={bucket} isFocused={index === active} listener={setActive}/>
+      })}
+    </Flex>
+    <Divider mt='md' mb="3rem" w='100%'/>
     <Container size={325} >
       {items.map((item, index) => {
         return (
@@ -18,7 +47,7 @@ const MyBuckets = () => {
         )
       })}
     </Container>
-  </div>
+  </Flex>
   )
 }
 
