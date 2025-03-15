@@ -48,7 +48,13 @@ export const register = async (req: Request, res: Response) => {
     db.users.push(newUser);
     writeDatabase(db);
 
-    res.status(201).json({ message: "Registration success" });
+    const dbnew = readDatabase();
+  
+    const user = dbnew.users.find((u) => u.username === username);
+
+    const token = jwt.sign({ user: user.id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.status(201).json({ message: "Registration success", token });
 }
 
 // User login function

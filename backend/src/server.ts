@@ -33,7 +33,8 @@ const HOST: string = process.env.IP || '127.0.0.1';
 
 app.post('/auth/register', async (req: Request, res: Response) => {
   try {
-    await register(req, res);
+    const newToken = await register(req, res);
+    localStorage.setItem("jwtToken", String(newToken));
   } catch (error) {
     return res.status(400).json(error)
   }
