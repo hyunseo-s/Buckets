@@ -4,34 +4,36 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Function to create the group, given the name and the members
 export function createGroup(groupName: string, memberIds: string[]) {
-    const database = getData();
-    const groups = database.groups;
-    const groupId = uuidv4();
-    
-    const group: Group = {
-        groupId: groupId,
-        groupName: groupName,
-        members: memberIds,
-        buckets: []
-    };
+	const database = getData();
+	const groups = database.groups;
+	const groupId = uuidv4();
+	
+	const group: Group = {
+		groupId: groupId,
+		groupName: groupName,
+		members: memberIds,
+		buckets: []
+	};
 
-    groups.push(group);
+	groups.push(group);
 
-    return groupId;
+	return groupId;
 }
 
 // Function to delete the groups given the id
 export function deleteGroup(findGroupId: string) {
-    const database = getData();
-    const groups = database.groups;
+	const database = getData();
+	let groups = database.groups;
 
-    const groupExists = groups.some(group => group.groupId === findGroupId);
-    
-    if (!groupExists) {
-        throw new Error(`Group with ID ${findGroupId} not found`);
-    }
+	const index = groups.findIndex(group => group.groupId === findGroupId);
+	
+	if (index === -1) {
+		throw new Error(`Group with ID ${findGroupId} not found`);
+	}
 
-    return groups.filter(group => group.groupId !== findGroupId);
+	groups.splice(index, 1);
+
+	return {};
 }
 
 // passes through groupId and members to add
