@@ -156,9 +156,11 @@ app.get('/group/:groupId', (req: Request, res: Response) => {
 });
 
 // get groups that user is a part of 
-app.get('/users/:userId/groups', (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const groups = getAllGroups(userId);
+app.get('/users/groups', (req: Request, res: Response) => {
+  const existingToken = localStorage.getItem("token");
+  const id = decodeJWT(existingToken)
+
+  const groups = getAllGroups(id);
   res.status(200).json(groups);
 });
 
