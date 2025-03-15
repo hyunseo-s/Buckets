@@ -2,7 +2,7 @@ import { Button, Menu } from '@mantine/core'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 export type DropdownDetails = {
-  key: number,
+  index: number,
   name: string,
   isFocused: boolean
   listener: (e: number) => void
@@ -10,7 +10,7 @@ export type DropdownDetails = {
 
 const DropdownMenu = (props: DropdownDetails) => {
   const handleClick = () => {
-    props.listener(props.key)
+    props.listener(props.index)
   }
 
   return (
