@@ -78,6 +78,12 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     });
 };
 
+export const getAllUsers = () => {
+	const data = getData();
+
+	return { users: data.users }
+}
+
 // // Get user profile (protected route)
 // export const getProfile = (req: Request, res: Response) => {
 //   res.json({ message: "Profile data", user: (req as any).user });
