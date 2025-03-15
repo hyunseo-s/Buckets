@@ -1,9 +1,11 @@
-import { MyButton } from "../components/MyButton";
+import { Button } from '@mantine/core';
+import { useNavigate } from 'react-router';
 
 const Home = () => {
+	const navigate = useNavigate();
 	return (
 		<>
-			<MyButton />
+			<Button onClick={() => navigate('/login')} variant="filled">Login</Button>
 		</>
 	)
 }
