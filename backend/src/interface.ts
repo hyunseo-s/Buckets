@@ -1,8 +1,8 @@
 export interface Database {
     users: User[];
-    groups: Groups[];
-    buckets: Buckets[];
-    items: Items[];
+    groups: Group[];
+    buckets: Bucket[];
+    items: Item[];
 }
 
 export interface User {
@@ -15,27 +15,28 @@ export interface User {
     buckets: string[];
 }
 
-export interface Groups {
+export interface Group {
     groupId: string;
     groupName: string,
     members: string[],
     buckets: string[],
 }
 
-export interface Buckets {
+export interface Bucket {
     bucketId: string;
     bucketName: string;
-    gid: string;
+    groupId: string;
     items: string[]
 }
 
-export interface Items {
+export interface Item {
     itemId: string;
     itemName: string;
     itemDesc: string;
     itemUrl: string;
     addedBy: string;
-    images: string;
+    images: string[];
     likes: number;
     bucketId: string;
+    active: boolean;
 }
