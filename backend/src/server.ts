@@ -169,6 +169,14 @@ app.get('/users/all', (req: Request, res: Response) => {
   res.status(200).json(users);
 });
 
+// get the user id
+app.get('/users/me', (req: Request, res: Response) => {
+  const existingToken = localStorage.getItem("token");
+  const id = decodeJWT(existingToken)
+
+  res.status(200).json(id);
+});
+
 
 // ====================================================================
 //  ================= BUCKETS ===================
