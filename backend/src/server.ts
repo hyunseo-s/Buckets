@@ -76,9 +76,11 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/group/create', (req: Request, res: Response) => {
-  const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
+	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
+	const token = req.header('Authorization').split(" ")[1];
+  const id = decodeJWT(token);
   try {
-    const groupId = createGroup(groupName, memberIds);
+    const groupId = createGroup(groupName, [...memberIds, id]);
     res.status(201).json({ message: 'Group created', groupId });
   } catch (error) {
     res.status(500).json({ error: error.message });
