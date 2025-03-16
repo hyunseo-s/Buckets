@@ -51,6 +51,10 @@ export const GroupCard = ({ group }: GroupCardProps) => {
 		backgroundImage: 'url(https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)'
   };
 
+	if (group.images && group.images.length > 0) {
+		imageStyle.backgroundImage = `url(${group.images[0]})`
+	}
+
   const overlayStyle = {
     position: 'absolute',
     top: '20%',

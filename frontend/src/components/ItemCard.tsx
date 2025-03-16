@@ -1,55 +1,113 @@
-import { Card, Text, Group, Anchor, Image, ActionIcon } from '@mantine/core';
+import { Card, Text, Group, Anchor, Image, ActionIcon, Flex } from '@mantine/core';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Carousel } from '@mantine/carousel'
+import { handleError, handleSuccess } from '../utils/handlers';
+import { get, post, put } from '../utils/apiClient';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useGroups } from '../context/GroupsProvider';
 
 const CAROUSEL_HEIGHT = 325
 
 export type ItemDetails = {
+    id: string
     title: string,
+    desc: string,
     type: boolean,
-    likes: number,
+    likes: string[],
     images: string[],
-    link: string
+    link: string,
+		bucketId: string,
 }
 
 const ItemCard = (props: ItemDetails) => {
   const [like, setLike] = useState(false);
-  const [likeCount, setLikeCount] = useState(props.likes)
+  const [likeCount, setLikeCount] = useState(0);
+  const [visible, setVisible] = useState(true);
 
-  const handleLike = () => {
-    if (like) {
-        setLikeCount(likeCount - 1)
-    } else {
-        setLikeCount(likeCount + 1)
+	const { refreshItemsOfBucket } = useGroups();
+
+  useEffect(() => {
+    const userId = async () => {
+      const raw = await get('/users/me');
+
+      if (props.likes.length > 0 && props.likes.includes(raw.id)) {
+        setLike(true)
+      } else {
+        setLike(false)
+      }
     }
 
-    setLike(!like)
+    userId()
+  }, [props.likes])
+
+
+  const handleLike = async () => {
+    const res = await put("/item/toggleLike", { itemId : props.id });
+    if (res.error) {
+      handleError(res.error);
+      return;
+    }
+
+    if (like) {
+      setLikeCount(likeCount - 1)
+    } else {
+      setLikeCount(likeCount + 1)
+    }
+
+    setLike(!like);
   }
+
+  const handleVisibility = () => {
+    setVisible(!visible)
+  }
+
+		const handleDelete = async () => {
+			const res = await post("/item/remove", { itemId: props.id });
+	
+			if (res.error) {
+				handleError(res.error);
+				return;
+			}
+	
+			handleSuccess(res.message);
+			refreshItemsOfBucket(props.bucketId);
+		}
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
-        <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length !== 1} withControls={props.images.length !== 1}>
-            {props.images.map((image, index) => {
+        {visible ? 
+          <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length > 1} withControls={props.images.length > 1}>
+            {props.images.length > 0 ? props.images.map((image, index) => {
                 return (
-                    <Carousel.Slide key={index}>
-                        <Image src={image} radius="md" h={CAROUSEL_HEIGHT}/>
-                    </Carousel.Slide>
+                  <Carousel.Slide key={index}>
+                    <Image src={image} radius="md" h={CAROUSEL_HEIGHT} onError={(e) => (e.currentTarget.src = "https://archive.org/download/placeholder-image//placeholder-image.jpg")}/>
+                  </Carousel.Slide>
                 )
-            })}
-        </Carousel>
+            }) : <Image src={"https://archive.org/download/placeholder-image//placeholder-image.jpg"} radius="md" h={CAROUSEL_HEIGHT} onError={(e) => (e.currentTarget.src = "https://archive.org/download/placeholder-image//placeholder-image.jpg")}/> }
+          </Carousel>
+          : <Flex h={CAROUSEL_HEIGHT} p='lg' direction='column' gap='lg'>
+            <Text c={'gray'}>Description</Text>
+            <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
+              <Text>{props.desc}</Text>
+            </div>
+          </Flex>
+        }
       </Card.Section>
-      <Group justify='space-between' mt={'md'}>
-        <Text fw={500}>{props.title}</Text>
+      <Group justify='space-between' mt={'md'} wrap='nowrap' style={{overflowX: "clip"}}>
+        <Group gap="xs" align='center' wrap='nowrap' style={{overflowX: "clip"}} maw={"70%"}>
+          <Text fw={500} >{props.title}</Text>
+          <ActionIcon variant="light" color='gray' radius="xl" aria-label="More Details Button" onClick={handleVisibility}><MoreHorizIcon /></ActionIcon>
+        </Group>
         {props.type
-          ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button">
+          ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button" onClick={handleDelete}>
             <CloseRoundedIcon/>
           </ActionIcon>
-          : <Group gap="xs" align='center'>
+          : <Group gap="xs" wrap='nowrap' style={{overflowX: "clip"}} >
               {like ? <FavoriteRoundedIcon color='error' onClick={handleLike} /> : <FavoriteBorderRoundedIcon onClick={handleLike}/>}
               <Text size='sm'>{likeCount}</Text>
               <Anchor href={props.link} target="_blank" c={'blue'}><OpenInNewRoundedIcon/></Anchor>
