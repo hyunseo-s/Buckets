@@ -67,7 +67,7 @@ const Register = () => {
 
 			const params = {
 				...values,
-				image: dataUrl
+				profileImage: dataUrl
 			}
 			const res = await post("/auth/register", params);
 			
