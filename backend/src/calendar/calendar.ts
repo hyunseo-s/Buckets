@@ -5,7 +5,7 @@ import { DateInput, DateTime, Interval } from "luxon";
 import { exec } from 'child_process';
 import path from "path";
 import { getCal, writeCal } from "../types/dataStore";
-import { FreeTime, FreeTimeDay, FreeTimeSlot, PersonAvailability } from "../interface";
+import { FreeTime, FreeTimeDay, FreeTimeSlot } from "../interface";
 import { getGroupID } from "../utilis";
 
 const app = express();
@@ -22,12 +22,12 @@ const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_u
 
 export const getCalendar = async (itemId: string) => {
     try {
-        const token = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
-        oAuth2Client.setCredentials(token);
-        getFreeTime(oAuth2Client, itemId);
+			const token = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
+			oAuth2Client.setCredentials(token);
+			getFreeTime(oAuth2Client, itemId);
     } catch (err) {
-        console.log("No existing token found. Requesting new authentication...");
-        getNewToken(oAuth2Client, itemId);
+			console.log("No existing token found. Requesting new authentication...");
+			getNewToken(oAuth2Client, itemId);
     }
 };
 
@@ -67,136 +67,15 @@ function getNewToken(oAuth2Client: any, itemId: string) {
             oAuth2Client.setCredentials(tokens);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             res.send("Authentication successful! You can close this tab.");
-            // let calData2 = await getFreeTime(oAuth2Client, itemId);
-
-            let calData2 = {
-                "itemId": "2",
-                "groupId": "10",
-                "availability": [
-                  {
-                    "date": "2025-03-16",
-                    "free_at": [
-                      {
-                        "start": "2025-03-16T00:00:00.000+11:00",
-                        "end": "2025-03-16T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-17",
-                    "free_at": [
-                      {
-                        "start": "2025-03-17T00:00:00.000+11:00",
-                        "end": "2025-03-17T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-18",
-                    "free_at": [
-                      {
-                        "start": "2025-03-18T00:00:00.000+11:00",
-                        "end": "2025-03-18T09:00:00.000+11:00"
-                      },
-                      {
-                        "start": "2025-03-18T10:00:00.000+11:00",
-                        "end": "2025-03-18T13:30:00.000+11:00"
-                      },
-                      {
-                        "start": "2025-03-18T14:30:00.000+11:00",
-                        "end": "2025-03-18T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-19",
-                    "free_at": [
-                      {
-                        "start": "2025-03-19T00:00:00.000+11:00",
-                        "end": "2025-03-19T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-20",
-                    "free_at": [
-                      {
-                        "start": "2025-03-20T00:00:00.000+11:00",
-                        "end": "2025-03-20T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-21",
-                    "free_at": [
-                      {
-                        "start": "2025-03-21T00:00:00.000+11:00",
-                        "end": "2025-03-21T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-22",
-                    "free_at": [
-                      {
-                        "start": "2025-03-22T00:00:00.000+11:00",
-                        "end": "2025-03-22T23:59:59.999+11:00"
-                      }
-                    ]
-                  }
-                ]
-              }
+            let calData2 = await getFreeTime(oAuth2Client, itemId);
 
             let data = getCal();
-            // let calData1 = data.find((cal) => cal.itemId === itemId);
-
-            let calData1 = {
-                "itemId": "4",
-                "groupId": "10",
-                "availability": [
-                  {
-                    "date": "2025-03-17",
-                    "free_at": [
-                      {
-                        "start": "2025-03-17T15:00:00.000+11:00",
-                        "end": "2025-03-17T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-18",
-                    "free_at": [
-                      {
-                        "start": "2025-03-19T00:00:00.000+11:00",
-                        "end": "2025-03-19T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-19",
-                    "free_at": [
-                      {
-                        "start": "2025-03-19T00:00:00.000+11:00",
-                        "end": "2025-03-19T23:59:59.999+11:00"
-                      }
-                    ]
-                  },
-                  {
-                    "date": "2025-03-22",
-                    "free_at": [
-                      {
-                        "start": "2025-03-22T00:00:00.000+11:00",
-                        "end": "2025-03-22T23:59:59.999+11:00"
-                      }
-                    ]
-                  }
-                ]
-              }
+            let calData1 = data.find((cal) => cal.itemId === itemId);
 
             if (!calData1) {
-                data.push(calData2);
+							data.push(calData2);
             } else {
-                findOverlappingTimes(calData1, calData2);
+							calData1.availability = findOverlappingTimes(calData1, calData2);
             }
 
             writeCal();
@@ -341,4 +220,4 @@ function findOverlappingTimes(cal1: FreeTime, cal2: FreeTime): FreeTimeDay[] {
 // 	return { people: people.map(p => p.username), common_free_times: commonAvailability };
 // }
 
-// app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

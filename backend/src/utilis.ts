@@ -32,6 +32,9 @@ export async function fetchUnsplashImages(query: string) {
 export function getGroupID(itemId: string) {
   const data = getData();
 
-  const bucketId = data.items.find((item) => item.itemId === itemId).bucketId;
-  return data.buckets.find((bucket) => bucket.bucketId === bucketId).groupId;
+  const bucketId = data.items.find((item) => item.itemId === itemId);
+
+  if (bucketId) {
+    return data.buckets.find((bucket) => bucket.bucketId === bucketId.bucketId).groupId;
+  }
 }
