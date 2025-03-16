@@ -67,9 +67,18 @@ function getNewToken(oAuth2Client: any, itemId: string) {
             oAuth2Client.setCredentials(tokens);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             res.send("Authentication successful! You can close this tab.");
-            let calData2 = getFreeTime(oAuth2Client, itemId);
-            let calData1 = getCal();
-            findOverlappingTimes(calData1, calData2)
+            let calData2 = await getFreeTime(oAuth2Client, itemId);
+
+            let data = getCal();
+						let calData1 = data.find((cal) => cal.itemId === itemId);
+
+						if (!calData1) {
+							data.push(calData2);
+						} else {
+							findOverlappingTimes(calData1, calData2);
+						}
+
+						writeCal();
         } catch (error) {
             console.error("Error retrieving access token", error);
             res.send("Authentication failed. Check console for details.");
@@ -133,12 +142,7 @@ async function getFreeTime(auth: any, itemId: string) {
 		availability: freeSlots,
 	};
 
-	const calData = getCal();
-	calData.push(result);
-	writeCal();
-
 	return result;
-
 }
 
   
