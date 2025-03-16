@@ -12,6 +12,7 @@ const calendar = google.calendar("v3");
 const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
 const TOKEN_PATH = "token.json";
 const PORT = 8000;
+const SYDNEY_TZ = 'Australia/Sydney';
 
 // Load client secrets
 const credentials = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/src/calendar/credentials.json"), "utf8"));
@@ -65,7 +66,9 @@ function getNewToken(oAuth2Client: any) {
             oAuth2Client.setCredentials(tokens);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             res.send("Authentication successful! You can close this tab.");
-            getFreeTime(oAuth2Client);
+            let calData2 = getFreeTime(oAuth2Client);
+            let calData1 = getCal();
+            findOverlappingTimes(calData1, calData2)
         } catch (error) {
             console.error("Error retrieving access token", error);
             res.send("Authentication failed. Check console for details.");
@@ -73,69 +76,69 @@ function getNewToken(oAuth2Client: any) {
     });
 }
 
-// async function getFreeTime(auth: any) {
-//     const now = DateTime.now().setZone("Australia/Sydney");
-//     const freeSlots: FreeTimeDay[] = [];
+async function getFreeTime(auth: any) {
+    const now = DateTime.now().setZone(SYDNEY_TZ);
+    const freeSlots: FreeTimeDay[] = [];
 
-//     for (let i = 0; i < 7; i++) {
-//         const dayStart = now.plus({ days: i }).startOf("day");
-//         const dayEnd = now.plus({ days: i }).endOf("day");
+    for (let i = 0; i < 7; i++) {
+        const dayStart = now.plus({ days: i }).startOf("day");
+        const dayEnd = now.plus({ days: i }).endOf("day");
 
-//         const freeBusyResponse = await calendar.freebusy.query({
-//             auth,
-//             requestBody: {
-//                 timeMin: dayStart.toISO()!,
-//                 timeMax: dayEnd.toISO()!,
-//                 timeZone: "Australia/Sydney",
-//                 items: [{ id: "primary" }],
-//             },
-//         });
+        const freeBusyResponse = await calendar.freebusy.query({
+            auth,
+            requestBody: {
+                timeMin: dayStart.toISO()!,
+                timeMax: dayEnd.toISO()!,
+                timeZone: SYDNEY_TZ,
+                items: [{ id: "primary" }],
+            },
+        });
 
-//         const busyTimes = freeBusyResponse.data.calendars?.["primary"]?.busy?.map(b => ({
-//             start: b.start ? DateTime.fromISO(b.start, { zone: "Australia/Sydney" }) : null,
-//             end: b.end ? DateTime.fromISO(b.end, { zone: "Australia/Sydney" }) : null
-//         })).filter(b => b.start && b.end) as { start: DateTime; end: DateTime; }[] || [];
+        const busyTimes = freeBusyResponse.data.calendars?.["primary"]?.busy?.map(b => ({
+            start: b.start ? DateTime.fromISO(b.start, { zone: SYDNEY_TZ }) : null,
+            end: b.end ? DateTime.fromISO(b.end, { zone: SYDNEY_TZ }) : null
+        })).filter(b => b.start && b.end) as { start: DateTime; end: DateTime; }[] || [];
 
-//         const freeTimes: FreeTimeSlot[] = [];
-//         let startOfFreeSlot = dayStart;
+        const freeTimes: FreeTimeSlot[] = [];
+        let startOfFreeSlot = dayStart;
 
-//         for (const { start, end } of busyTimes) {
-//             if (startOfFreeSlot < start) {
-//                 freeTimes.push({
-//                     start: startOfFreeSlot.toISO()!,
-//                     end: start.toISO()!
-//                 });
-//             }
-//             startOfFreeSlot = end > startOfFreeSlot ? end : startOfFreeSlot;
-//         }
+        for (const { start, end } of busyTimes) {
+            if (startOfFreeSlot < start) {
+                freeTimes.push({
+                    start: startOfFreeSlot.toISO()!,
+                    end: start.toISO()!
+                });
+            }
+            startOfFreeSlot = end > startOfFreeSlot ? end : startOfFreeSlot;
+        }
 
-//         if (startOfFreeSlot < dayEnd) {
-//             freeTimes.push({
-//                 start: startOfFreeSlot.toISO()!,
-//                 end: dayEnd.toISO()!
-//             });
-//         }
+        if (startOfFreeSlot < dayEnd) {
+            freeTimes.push({
+                start: startOfFreeSlot.toISO()!,
+                end: dayEnd.toISO()!
+            });
+        }
 
-//         freeSlots.push({
-//             date: dayStart.toISODate()!,
-//             free_at: freeTimes
-//         });
-//     }
+        freeSlots.push({
+            date: dayStart.toISODate()!,
+            free_at: freeTimes
+        });
+    }
 
-//     const result: FreeTime = {
-//         itemId: "Justin",
-//         groupId: "",
-//         availability: freeSlots,
-//     };
+    const result: FreeTime = {
+        itemId: "Justin",
+        groupId: "",
+        availability: freeSlots,
+    };
 
-//     const calData = getCal();
-//     calData.push(result);
+    const calData = getCal();
+    calData.push(result);
 
-//     writeCal();
-//     return result;
-// }
+    writeCal();
+    return result;
+}
 
-const SYDNEY_TZ = 'Australia/Sydney';
+
   
 function findOverlappingTimes(cal1: FreeTime, cal2: FreeTime): FreeTimeDay[] {
     const mapAvailability = (availability: FreeTimeDay[]) => {
@@ -178,43 +181,43 @@ function findOverlappingTimes(cal1: FreeTime, cal2: FreeTime): FreeTimeDay[] {
     return overlapping;
 }
 
-function findCommonFreeTimes(people: PersonAvailability[]) {
-    const commonAvailability: FreeTimeDay[] = [];
+// function findCommonFreeTimes(people: PersonAvailability[]) {
+//     const commonAvailability: FreeTimeDay[] = [];
 
-    const calData = getCal();
+//     const calData = getCal();
 
-    // On the first go, it should just return the entire thing as the availability
+//     // On the first go, it should just return the entire thing as the availability
 
-    // On second run onwards, it should filter down the available dates
+//     // On second run onwards, it should filter down the available dates
 
-    if (people.length === 0) return { people: [], common_free_times: [] };
+//     if (people.length === 0) return { people: [], common_free_times: [] };
 
-    const dates = people[0].availability.map((entry: { date: any; }) => entry.date);
+//     const dates = people[0].availability.map((entry: { date: any; }) => entry.date);
 
-    for (const date of dates) {
-        const allFreeTimes = people.map(person => {
-            const dayAvailability = person.availability.find((entry: { date: any; }) => entry.date === date);
-            return dayAvailability ? dayAvailability.free_at.map((slot: { start: any; end: any; }) => Interval.fromISO(`${slot.start}/${slot.end}`)) : [];
-        });
+//     for (const date of dates) {
+//         const allFreeTimes = people.map(person => {
+//             const dayAvailability = person.availability.find((entry: { date: any; }) => entry.date === date);
+//             return dayAvailability ? dayAvailability.free_at.map((slot: { start: any; end: any; }) => Interval.fromISO(`${slot.start}/${slot.end}`)) : [];
+//         });
 
-        const commonFree = allFreeTimes.reduce((common, personFreeTimes) => {
-            return common.filter((slot1: { overlaps: (arg0: any) => any; }) => personFreeTimes.some((slot2: any) => slot1.overlaps(slot2)))
-                         .map((slot1: { overlaps: (arg0: any) => any; start: DateInput; end: DateInput; }) => {
-                             const overlap = personFreeTimes.find((slot2: any) => slot1.overlaps(slot2));
-                             return overlap ? Interval.fromDateTimes(
-                                 slot1.start! > overlap.start! ? slot1.start! : overlap.start!,
-                                 slot1.end! < overlap.end! ? slot1.end! : overlap.end!
-                             ) : slot1;
-                         });
-        }, allFreeTimes[0] || []);
+//         const commonFree = allFreeTimes.reduce((common, personFreeTimes) => {
+//             return common.filter((slot1: { overlaps: (arg0: any) => any; }) => personFreeTimes.some((slot2: any) => slot1.overlaps(slot2)))
+//                          .map((slot1: { overlaps: (arg0: any) => any; start: DateInput; end: DateInput; }) => {
+//                              const overlap = personFreeTimes.find((slot2: any) => slot1.overlaps(slot2));
+//                              return overlap ? Interval.fromDateTimes(
+//                                  slot1.start! > overlap.start! ? slot1.start! : overlap.start!,
+//                                  slot1.end! < overlap.end! ? slot1.end! : overlap.end!
+//                              ) : slot1;
+//                          });
+//         }, allFreeTimes[0] || []);
 
-        commonAvailability.push({
-            date,
-            free_at: commonFree.map((slot: { start: any; end: any; }) => ({ start: slot.start!.toISO()!, end: slot.end!.toISO()! }))
-        });
-    }
+//         commonAvailability.push({
+//             date,
+//             free_at: commonFree.map((slot: { start: any; end: any; }) => ({ start: slot.start!.toISO()!, end: slot.end!.toISO()! }))
+//         });
+//     }
 
-    return { people: people.map(p => p.username), common_free_times: commonAvailability };
-}
+//     return { people: people.map(p => p.username), common_free_times: commonAvailability };
+// }
 
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+// app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
