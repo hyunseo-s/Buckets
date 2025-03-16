@@ -57,6 +57,7 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
         {props.buckets && props.buckets.length > 0 && props.buckets.map((bucket, index) => {
           return <BucketMenu key={index} index={index} name={bucket.bucketName} isFocused={index === active} buttonListener={setActive} editListener={setEdit} renameListener={setRename}/>
         })}
+        {props.buckets && props.buckets.length <= 0 && <p>You currently have not buckets. To add a bucket, click the + on the bottom right</p>}
       </Flex>
 			<Group justify="space-between" gap="1rem">
 				<AIButton bucket={active == null ? null : props.buckets[active]} />

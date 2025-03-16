@@ -11,7 +11,7 @@ const Groups = () => {
 	const { groups } = useGroups();
 
   return (
-    <Flex dir="column" justify="space-between" style={{ height: "80vh" }}>
+    <Flex dir="column" justify="space-between" style={{ height: "100vh", marginTop: '125px' }}>
       <div style={{ width: "60%", minWidth: "300px", margin: "2rem auto" }}>
         <SearchBar query={query} setQuery={setQuery}/>
         <Flex

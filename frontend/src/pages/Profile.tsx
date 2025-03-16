@@ -48,39 +48,71 @@ const Profile = () => {
   return (
     <div 
       style={{
-        flexDirection: 'column',
-        height: '100vh',
+        flexDirection: 'row',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
         gap: '40px',
+        marginTop: '150px'
       }}
     >
-      <Avatar 
-        src={userData && userData.profileImg ? userData.profileImg : null} 
-        alt="You" 
-        size={100}
-      />
       <div
         style={{
+          flexGrow: 1,
           display: 'flex',
-          flexDirection:'column',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20vh',
           alignItems: 'center',
         }}
       >
-        <Title>
-          {userData && userData.username}
-        </Title>
-        <Title size={12}>
-          {userData && userData.email}
-        </Title>
+        <Avatar 
+          src={userData && userData.profileImg ? userData.profileImg : null} 
+          alt="You" 
+          size={200}
+        />
       </div>
-      <Button
-        onClick={handleLogout}
+      <div
+        style={{
+          flexGrow: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: '#D5EEFF',
+          marginTop: '100px',
+          marginRight: '50px',
+          borderRadius: '5px',
+          height: "50vh",
+        }}
       >
-        Logout
-      </Button>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection:'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '40px'
+          }}
+        >
+          <Title>
+            Your Profile:
+          </Title>
+          <div>
+            <Title size={25}>
+              Username: {userData && userData.username}
+            </Title>
+            <Title size={25}>
+              Email: {userData && userData.email}
+            </Title>
+          </div>
+          <Button
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
+
+      </div>
+
     </div>
   );
 }
