@@ -67,10 +67,131 @@ function getNewToken(oAuth2Client: any, itemId: string) {
             oAuth2Client.setCredentials(tokens);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             res.send("Authentication successful! You can close this tab.");
-            let calData2 = await getFreeTime(oAuth2Client, itemId);
+            // let calData2 = await getFreeTime(oAuth2Client, itemId);
+
+            let calData2 = {
+                "itemId": "2",
+                "groupId": "10",
+                "availability": [
+                  {
+                    "date": "2025-03-16",
+                    "free_at": [
+                      {
+                        "start": "2025-03-16T00:00:00.000+11:00",
+                        "end": "2025-03-16T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-17",
+                    "free_at": [
+                      {
+                        "start": "2025-03-17T00:00:00.000+11:00",
+                        "end": "2025-03-17T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-18",
+                    "free_at": [
+                      {
+                        "start": "2025-03-18T00:00:00.000+11:00",
+                        "end": "2025-03-18T09:00:00.000+11:00"
+                      },
+                      {
+                        "start": "2025-03-18T10:00:00.000+11:00",
+                        "end": "2025-03-18T13:30:00.000+11:00"
+                      },
+                      {
+                        "start": "2025-03-18T14:30:00.000+11:00",
+                        "end": "2025-03-18T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-19",
+                    "free_at": [
+                      {
+                        "start": "2025-03-19T00:00:00.000+11:00",
+                        "end": "2025-03-19T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-20",
+                    "free_at": [
+                      {
+                        "start": "2025-03-20T00:00:00.000+11:00",
+                        "end": "2025-03-20T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-21",
+                    "free_at": [
+                      {
+                        "start": "2025-03-21T00:00:00.000+11:00",
+                        "end": "2025-03-21T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-22",
+                    "free_at": [
+                      {
+                        "start": "2025-03-22T00:00:00.000+11:00",
+                        "end": "2025-03-22T23:59:59.999+11:00"
+                      }
+                    ]
+                  }
+                ]
+              }
 
             let data = getCal();
-            let calData1 = data.find((cal) => cal.itemId === itemId);
+            // let calData1 = data.find((cal) => cal.itemId === itemId);
+
+            let calData1 = {
+                "itemId": "4",
+                "groupId": "10",
+                "availability": [
+                  {
+                    "date": "2025-03-17",
+                    "free_at": [
+                      {
+                        "start": "2025-03-17T15:00:00.000+11:00",
+                        "end": "2025-03-17T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-18",
+                    "free_at": [
+                      {
+                        "start": "2025-03-19T00:00:00.000+11:00",
+                        "end": "2025-03-19T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-19",
+                    "free_at": [
+                      {
+                        "start": "2025-03-19T00:00:00.000+11:00",
+                        "end": "2025-03-19T23:59:59.999+11:00"
+                      }
+                    ]
+                  },
+                  {
+                    "date": "2025-03-22",
+                    "free_at": [
+                      {
+                        "start": "2025-03-22T00:00:00.000+11:00",
+                        "end": "2025-03-22T23:59:59.999+11:00"
+                      }
+                    ]
+                  }
+                ]
+              }
 
             if (!calData1) {
                 data.push(calData2);
