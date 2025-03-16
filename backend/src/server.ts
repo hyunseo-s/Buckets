@@ -174,7 +174,7 @@ app.get('/users/me', (req: Request, res: Response) => {
   const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
 
-  res.status(200).json(id);
+  res.status(200).json({id: id});
 });
 
 app.get('/users/:userId/profile', (req: Request, res: Response) => {
