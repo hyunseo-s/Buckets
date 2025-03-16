@@ -66,14 +66,14 @@ const ItemCard = (props: ItemDetails) => {
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
         {visible ? 
-          <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length !== 1} withControls={props.images.length !== 1}>
-            {props.images.length > 0 && props.images.map((image, index) => {
+          <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length > 1} withControls={props.images.length > 1}>
+            {props.images.length > 0 ? props.images.map((image, index) => {
                 return (
                   <Carousel.Slide key={index}>
                     <Image src={image} radius="md" h={CAROUSEL_HEIGHT} onError={(e) => (e.currentTarget.src = "https://archive.org/download/placeholder-image//placeholder-image.jpg")}/>
                   </Carousel.Slide>
                 )
-            })}
+            }) : <Image src={"https://archive.org/download/placeholder-image//placeholder-image.jpg"} radius="md" h={CAROUSEL_HEIGHT} onError={(e) => (e.currentTarget.src = "https://archive.org/download/placeholder-image//placeholder-image.jpg")}/> }
           </Carousel>
           : <Flex h={CAROUSEL_HEIGHT} p='lg' direction='column' gap='lg'>
             <Text c={'gray'}>Description</Text>
