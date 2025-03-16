@@ -5,9 +5,10 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import { useEffect, useState } from 'react';
 import { Carousel } from '@mantine/carousel'
-import { handleError } from '../utils/handlers';
-import { get, put } from '../utils/apiClient';
+import { handleError, handleSuccess } from '../utils/handlers';
+import { get, post, put } from '../utils/apiClient';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useGroups } from '../context/GroupsProvider';
 
 const CAROUSEL_HEIGHT = 325
 
@@ -18,13 +19,16 @@ export type ItemDetails = {
     type: boolean,
     likes: string[],
     images: string[],
-    link: string
+    link: string,
+		bucketId: string,
 }
 
 const ItemCard = (props: ItemDetails) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [visible, setVisible] = useState(true);
+
+	const { refreshItemsOfBucket } = useGroups();
 
   useEffect(() => {
     const userId = async () => {
@@ -61,6 +65,17 @@ const ItemCard = (props: ItemDetails) => {
     setVisible(!visible)
   }
 
+		const handleDelete = async () => {
+			const res = await post("/item/remove", { itemId: props.id });
+	
+			if (res.error) {
+				handleError(res.error);
+				return;
+			}
+	
+			handleSuccess(res.message);
+			refreshItemsOfBucket(props.bucketId);
+		}
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -89,7 +104,7 @@ const ItemCard = (props: ItemDetails) => {
           <ActionIcon variant="light" color='gray' radius="xl" aria-label="More Details Button" onClick={handleVisibility}><MoreHorizIcon /></ActionIcon>
         </Group>
         {props.type
-          ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button">
+          ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button" onClick={handleDelete}>
             <CloseRoundedIcon/>
           </ActionIcon>
           : <Group gap="xs" wrap='nowrap' style={{overflowX: "clip"}} >
