@@ -4,6 +4,7 @@ import open from "open";
 import fs from "fs";
 import { DateTime, Interval } from "luxon";
 import { exec } from 'child_process';
+import path from "path";
 
 const app = express();
 const calendar = google.calendar("v3");
@@ -27,7 +28,7 @@ interface PersonAvailability {
 }
 
 // Load client secrets
-const credentials = JSON.parse(fs.readFileSync("/Users/justinson/Desktop/Buckets/backend/src/calendar/credentials.json", "utf8"));
+const credentials = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/src/calendar/credentials.json"), "utf8"));
 const { client_id, client_secret, redirect_uris } = credentials.web;
 const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
