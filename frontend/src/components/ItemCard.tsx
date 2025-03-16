@@ -40,6 +40,7 @@ const ItemCard = (props: ItemDetails) => {
     userId()
   }, [props.likes])
 
+
   const handleLike = async () => {
     const res = await put("/item/toggleLike", { itemId : props.id });
     if (res.error) {
@@ -59,6 +60,7 @@ const ItemCard = (props: ItemDetails) => {
   const handleVisibility = () => {
     setVisible(!visible)
   }
+
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -81,16 +83,16 @@ const ItemCard = (props: ItemDetails) => {
           </Flex>
         }
       </Card.Section>
-      <Group justify='space-between' mt={'md'}>
-        <Group gap="xs" align='center'>
-          <Text fw={500}>{props.title}</Text>
+      <Group justify='space-between' mt={'md'} wrap='nowrap' style={{overflowX: "clip"}}>
+        <Group gap="xs" align='center' wrap='nowrap' style={{overflowX: "clip"}} maw={"70%"}>
+          <Text fw={500} >{props.title}</Text>
           <ActionIcon variant="light" color='gray' radius="xl" aria-label="More Details Button" onClick={handleVisibility}><MoreHorizIcon /></ActionIcon>
         </Group>
         {props.type
           ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button">
             <CloseRoundedIcon/>
           </ActionIcon>
-          : <Group gap="xs" align='center'>
+          : <Group gap="xs" wrap='nowrap' style={{overflowX: "clip"}} >
               {like ? <FavoriteRoundedIcon color='error' onClick={handleLike} /> : <FavoriteBorderRoundedIcon onClick={handleLike}/>}
               <Text size='sm'>{likeCount}</Text>
               <Anchor href={props.link} target="_blank" c={'blue'}><OpenInNewRoundedIcon/></Anchor>

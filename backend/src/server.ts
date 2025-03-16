@@ -365,7 +365,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 
 	const bucket = getBucket(bucketId);
 	const allItems = getBucketItems(bucketId);
-	console.log(bucket)
+
 	const prompt = `
 		Given the current list titled ${bucket.bucketName} with the items 
 		${allItems.map(item => (`{ ${item.itemName}: , ${item.itemDesc}`)).join(', ')}
@@ -373,15 +373,15 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		{ 
 			items: [
 				{
-					itemName: name of first recommendation,
+					itemName: name of first recommendation less than 16 characters long,
 					itemDesc: description of first recommendation
 				},
 				{
-					itemName: name of second recommendation,
+					itemName: name of second recommendation less than 16 characters long,
 					itemDesc: description of second recommendation
 				},
 				{
-					itemName: name of third recommendation,
+					itemName: name of third recommendation less than 16 characters long,
 					itemDesc: description of third recommendation
 				}
 			]
@@ -398,7 +398,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		const jsonData = await JSON.parse(itemsString.slice(7, -4));
 		const data = await Promise.all(jsonData.items.map(async (item) => {
 		const imageUrl = await fetchUnsplashImages(item.itemName);
-	
+			
 			return ({
 				itemName: item.itemName,
 				itemDesc: item.itemDesc,
