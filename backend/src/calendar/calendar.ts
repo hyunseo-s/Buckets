@@ -2,9 +2,11 @@ import { google } from "googleapis";
 import express from "express";
 import open from "open";
 import fs from "fs";
-import { DateTime, Interval } from "luxon";
+import { DateInput, DateTime, Interval } from "luxon";
 import { exec } from 'child_process';
 import path from "path";
+import { getCal, writeCal } from "../types/dataStore";
+import { FreeTime, FreeTimeDay, FreeTimeSlot, PersonAvailability } from "../interface";
 
 const app = express();
 const calendar = google.calendar("v3");
@@ -12,36 +14,19 @@ const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
 const TOKEN_PATH = "token.json";
 const PORT = 8000;
 
-interface FreeTimeSlot {
-    start: string;
-    end: string;
-}
-
-interface FreeTimeDay {
-    date: string;
-    free_at: FreeTimeSlot[];
-}
-
-interface PersonAvailability {
-    name: string;
-    availability: FreeTimeDay[];
-}
-
 // Load client secrets
 const credentials = JSON.parse(fs.readFileSync(path.join(process.cwd(), "/src/calendar/credentials.json"), "utf8"));
 const { client_id, client_secret, redirect_uris } = credentials.web;
 const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-export const getCalendar = async () => {
+export const getCalendar = async (itemId: string) => {
     try {
         const token = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
         oAuth2Client.setCredentials(token);
         getFreeTime(oAuth2Client);
-        console.log("A")
     } catch (err) {
         console.log("No existing token found. Requesting new authentication...");
         getNewToken(oAuth2Client);
-        console.log("B")
     }
 };
 
@@ -52,8 +37,23 @@ function getNewToken(oAuth2Client: any) {
     });
 
     console.log("Authorize this app by visiting this URL:", authUrl);
-    exec(authUrl); // Works on macOS
+    
+        // Detect OS and open in Chrome accordingly
+    const openChrome = () => {
+        const platform = process.platform;
+        
+        if (platform === 'win32') {
+            exec(`start chrome "${authUrl}"`);
+        } else if (platform === 'darwin') {
+            exec(`open -a "Google Chrome" "${authUrl}"`);
+        } else if (platform === 'linux') {
+            exec(`google-chrome "${authUrl}"`);
+        } else {
+            console.error('Unsupported OS');
+        }
+    };
 
+    openChrome();
 
     app.get("/", async (req, res) => {
         const code = req.query.code as string | undefined;
@@ -67,15 +67,12 @@ function getNewToken(oAuth2Client: any) {
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             res.send("Authentication successful! You can close this tab.");
             getFreeTime(oAuth2Client);
-            // console.log("C")
         } catch (error) {
             console.error("Error retrieving access token", error);
             res.send("Authentication failed. Check console for details.");
         }
     });
 }
-
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 
 async function getFreeTime(auth: any) {
     const now = DateTime.now().setZone("Australia/Sydney");
@@ -126,16 +123,16 @@ async function getFreeTime(auth: any) {
         });
     }
 
-    const result: PersonAvailability = {
-        name: "Justin",
+    const result: FreeTime = {
+        itemId: "Justin",
+        groupId: "",
         availability: freeSlots,
     };
 
-    console.log(freeSlots)
+    const calData = getCal();
+    calData.push(result);
 
-    fs.writeFileSync("./free_slots.json", JSON.stringify(result, null, 2));
-    console.log("Free time slots saved to free_slots.json");
-
+    writeCal();
     return result;
 }
 
@@ -144,18 +141,18 @@ function findCommonFreeTimes(people: PersonAvailability[]) {
 
     if (people.length === 0) return { people: [], common_free_times: [] };
 
-    const dates = people[0].availability.map(entry => entry.date);
+    const dates = people[0].availability.map((entry: { date: any; }) => entry.date);
 
     for (const date of dates) {
         const allFreeTimes = people.map(person => {
-            const dayAvailability = person.availability.find(entry => entry.date === date);
-            return dayAvailability ? dayAvailability.free_at.map(slot => Interval.fromISO(`${slot.start}/${slot.end}`)) : [];
+            const dayAvailability = person.availability.find((entry: { date: any; }) => entry.date === date);
+            return dayAvailability ? dayAvailability.free_at.map((slot: { start: any; end: any; }) => Interval.fromISO(`${slot.start}/${slot.end}`)) : [];
         });
 
         const commonFree = allFreeTimes.reduce((common, personFreeTimes) => {
-            return common.filter(slot1 => personFreeTimes.some(slot2 => slot1.overlaps(slot2)))
-                         .map(slot1 => {
-                             const overlap = personFreeTimes.find(slot2 => slot1.overlaps(slot2));
+            return common.filter((slot1: { overlaps: (arg0: any) => any; }) => personFreeTimes.some((slot2: any) => slot1.overlaps(slot2)))
+                         .map((slot1: { overlaps: (arg0: any) => any; start: DateInput; end: DateInput; }) => {
+                             const overlap = personFreeTimes.find((slot2: any) => slot1.overlaps(slot2));
                              return overlap ? Interval.fromDateTimes(
                                  slot1.start! > overlap.start! ? slot1.start! : overlap.start!,
                                  slot1.end! < overlap.end! ? slot1.end! : overlap.end!
@@ -165,9 +162,11 @@ function findCommonFreeTimes(people: PersonAvailability[]) {
 
         commonAvailability.push({
             date,
-            free_at: commonFree.map(slot => ({ start: slot.start!.toISO()!, end: slot.end!.toISO()! }))
+            free_at: commonFree.map((slot: { start: any; end: any; }) => ({ start: slot.start!.toISO()!, end: slot.end!.toISO()! }))
         });
     }
 
     return { people: people.map(p => p.name), common_free_times: commonAvailability };
 }
+
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

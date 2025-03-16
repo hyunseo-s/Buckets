@@ -51,3 +51,19 @@ export interface Token {
     token_type: string;
     expiry_date: number;
 }
+
+export interface FreeTime {
+    itemId: string;
+    groupId: string;
+    availability: FreeTimeDay[];
+}
+
+export interface FreeTimeSlot {
+    start: string;
+    end: string;
+}
+
+export interface FreeTimeDay {
+    date: string;
+    free_at: FreeTimeSlot[];
+}

@@ -47,7 +47,7 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
 app.get('/calendar', async (req: Request, res: Response) => {
   try {
-    const result = await getCalendar()
+    const result = await getCalendar(req.query.itemId)
     res.status(201).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
