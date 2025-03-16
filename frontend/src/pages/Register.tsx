@@ -1,14 +1,16 @@
-import { Group, PasswordInput, TextInput, Button, Anchor } from '@mantine/core';
+import { Group, PasswordInput, TextInput, Button, Anchor, FileInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { post } from '../utils/apiClient';
 import { handleError, handleSuccess } from '../utils/handlers';
 import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGroups } from '../context/GroupsProvider';
+import { IconPhotoScan } from '@tabler/icons-react';
 
 const Register = () => {
 	const navigate = useNavigate();
 	const { refreshGroups } = useGroups();
+	const [ image, setImage ] = useState<File | null>(null);
 
 	const ButtonStyle = {
 		width: "10rem",
@@ -51,17 +53,38 @@ const Register = () => {
   });
 
 	const handleSubmit = async (values) => {
-		const res = await post("/auth/register", values);
-		
-		if (res.error) {
-			handleError(res.error);
-			return;
+		const filePromise = (file: File): Promise<string> => {
+			return new Promise<string>((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				reader.readAsDataURL(file);
+			});
+		};
+
+		try {
+			const dataUrl = await filePromise(image);
+
+			const params = {
+				...values,
+				image: dataUrl
+			}
+			const res = await post("/auth/register", params);
+			
+			if (res.error) {
+				handleError(res.error);
+				return;
+			}
+			handleSuccess(res.message);
+			localStorage.setItem("token", res.token);
+			refreshGroups();
+			navigate('/groups');
+
+		} catch (error) {
+			console.error("Error converting files:", error);
+			handleError("Failed to convert images.");
 		}
 
-		handleSuccess(res.message);
-		localStorage.setItem("token", res.token);
-		refreshGroups();
-		navigate('/groups');
 	}
 
 	useEffect(() => {
@@ -81,6 +104,16 @@ const Register = () => {
 						placeholder="Name"
 						key={form.key('name')}
 						{...form.getInputProps('name')}
+					/>
+					<FileInput
+						style={InputStyle}
+						rightSection={<IconPhotoScan style={{color: '#CED4DA'}}/>}
+						label="Images"
+						accept="image/png,image/jpeg"
+						placeholder="Upload images"
+						multiple
+						value={file}
+						onChange={setFile}
 					/>
 					<TextInput
 						style={InputStyle}

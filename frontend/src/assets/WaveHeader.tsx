@@ -1,4 +1,4 @@
-import { Button, Title } from "@mantine/core";
+import { Avatar, Button, Title } from "@mantine/core";
 import { IconUserCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -7,6 +7,7 @@ const WaveHeader = () => {
   const navigate = useNavigate();
 
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+  const [profileImage, setProfileImage] = useState(null)
 
   useEffect(() => {
     const updateToken = () => setToken(localStorage.getItem("token"));
@@ -58,8 +59,10 @@ const WaveHeader = () => {
             flexDirection: "row",
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '15px'
+            gap: '15px',
+            cursor: "pointer",
           }}
+          onClick={token ? () => navigate('/groups') : () => navigate('/')}
         >
           <svg width="41" height="42" viewBox="0 0 62 63" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M55.3685 56.9622C52.265 63.1693 22.8606 62.9477 16.6535 56.9622C16.0309 48.4637 11.3318 24.0868 9.88625 8.45651C9.44289 -1.98709 63.5614 -0.613491 61.095 7.34811L59.8816 29.7143L58.5515 52.9719H55.6071L55.3685 56.9622Z" fill="#1781FA"/>
@@ -88,13 +91,20 @@ const WaveHeader = () => {
           </filter>
           </defs>
           </svg>
-          <Title>Bucket</Title>
+          <Title style={{color: "rgba(23, 148, 250, 1)"}}>Bucket</Title>
         </div>
         {token 
-          ? <IconUserCircle
+          ? <Avatar 
+              src="avatar.png" 
+              alt="it's me" 
+              style={{cursor: "pointer"}}
               onClick={() => navigate('/profile')}
-              size={40} 
             />
+          // <IconUserCircle
+          //     style={{color: "rgba(23, 148, 250, 1)"}}
+          //     onClick={() => navigate('/profile')}
+          //     size={40} 
+          //   />
           : <></>
         }
       </div>
