@@ -18,13 +18,13 @@ export const AIButton = ({bucket}: { bucket: Bucket | null}) => {
 
 
 		if (res) {
-			console.log(res)
+
 			await Promise.all(res.map(item => {
 				const params = { 
 					itemName: item.itemName, 
 					itemDesc: item.itemDesc, 
 					itemUrl: '',  
-					images: [],  // Converted Data URLs
+					images: item.images,  // Converted Data URLs
 					bucketIds: [ bucket.bucketId ], 
 				};
 				return post("/item/add", params);
@@ -36,7 +36,7 @@ export const AIButton = ({bucket}: { bucket: Bucket | null}) => {
 	}
 
 	return (
-		<Button onClick={handleClick} disabled={bucket === null} rightSection={<IconSparkles size={14} />}>
+		<Button variant="gradient" onClick={handleClick} disabled={bucket === null} rightSection={<IconSparkles size={14} />}>
 			AI Suggest
 		</Button>
 	)

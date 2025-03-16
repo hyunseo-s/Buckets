@@ -9,13 +9,14 @@ import sui from 'swagger-ui-express';
 import fs, { write } from 'fs';
 import path from 'path';
 import process from 'process';
-import { clear, readData, writeData } from './types/dataStore'
+import { clear, getCal, readCal, readData, writeData } from './types/dataStore'
 import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT, fetchUnsplashImages } from './utilis';
 import { getUser } from './types/user';
 import { askGemini } from './gemini/client';
 import { getCalendar } from './calendar/calendar';
+import { FreeTime } from './interface';
 
 
 // Set up web app
@@ -47,12 +48,16 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
 app.get('/calendar', async (req: Request, res: Response) => {
   try {
-    const result = await getCalendar()
-    res.status(201).json({ data: result, message: "Successfully retrieved calendar"  });
+    const itemId = req.query.itemId as string
+    await getCalendar(itemId);
+    const data = getCal()
+    const result = data.find((item: FreeTime) => item.itemId === itemId)
+    res.status(201).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
 })
+
 // ====================================================================
 //  =============================== AUTH ==============================
 // ====================================================================
@@ -304,7 +309,7 @@ app.post('/item/remove', (req: Request, res: Response) => {
   try {
     const { itemId } = req.body;
     const result = removeItem(itemId);
-    return res.status(200).json(result);
+    return res.status(200).json({message: "Successfully removed item" });
   } catch (error) {
     return res.status(400).json({error: error.message })
   } finally {
@@ -365,7 +370,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 
 	const bucket = getBucket(bucketId);
 	const allItems = getBucketItems(bucketId);
-	console.log(bucket)
+
 	const prompt = `
 		Given the current list titled ${bucket.bucketName} with the items 
 		${allItems.map(item => (`{ ${item.itemName}: , ${item.itemDesc}`)).join(', ')}
@@ -373,15 +378,15 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		{ 
 			items: [
 				{
-					itemName: name of first recommendation,
+					itemName: name of first recommendation less than 16 characters long,
 					itemDesc: description of first recommendation
 				},
 				{
-					itemName: name of second recommendation,
+					itemName: name of second recommendation less than 16 characters long,
 					itemDesc: description of second recommendation
 				},
 				{
-					itemName: name of third recommendation,
+					itemName: name of third recommendation less than 16 characters long,
 					itemDesc: description of third recommendation
 				}
 			]
@@ -390,15 +395,27 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		Only return this directly.
 	`;
 
-	
-	
+	const	itemsString = await askGemini(prompt);
+
+	const jsonData = await JSON.parse(itemsString.slice(7, -4));
+
+	const data = await Promise.all(jsonData.items.map(async (item: { itemName: string; itemDesc: any; }) => {
+		const imageUrl = await fetchUnsplashImages(item.itemName);
+
+		return ({
+			itemName: item.itemName,
+			itemDesc: item.itemDesc,
+			images: imageUrl == null ? [] : [ imageUrl ]
+		});
+	}))
+
   try {
 		const	itemsString = await askGemini(prompt);
 	
 		const jsonData = await JSON.parse(itemsString.slice(7, -4));
 		const data = await Promise.all(jsonData.items.map(async (item) => {
 		const imageUrl = await fetchUnsplashImages(item.itemName);
-	
+			
 			return ({
 				itemName: item.itemName,
 				itemDesc: item.itemDesc,
