@@ -14,7 +14,7 @@ export const BucketModal = ({
   
   const [bucketName, setBucketName] = useState<string>('');
   const [selectedBucketGroupOption, setBucketSelectedGroupOption] = useState<string | null>(null);
-	const { groups, refreshGroups } = useGroups();
+	const { groups, refreshGroups, refreshBucketsOfGroup } = useGroups();
 
   const groupNameToId = (groupName: string) => {
 		const foundUsers = groups.filter(group => group.groupName === groupName);
@@ -40,6 +40,7 @@ export const BucketModal = ({
     handleSuccess(res.message ?? "Success!");
     closeAddBucket();
 		refreshGroups();
+		if (groupId) refreshBucketsOfGroup(groupId);
   };	
 
   return (

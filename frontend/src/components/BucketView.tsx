@@ -3,9 +3,9 @@ import ItemCard from "./ItemCard.tsx"
 import BucketMenu from "./BucketMenu.tsx";
 import { PropsWithChildren, useEffect, useState } from "react";
 import SortMenu from "./SortMenu.tsx";
-import { get } from "../utils/apiClient.ts";
 import { Bucket, Item } from "../types.ts";
 import { useGroups } from "../context/GroupsProvider.tsx";
+import { AIButton } from "./AIButton.tsx";
 
 const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}>) => {
   const [active, setActive] = useState<number | null>(null);
@@ -22,7 +22,7 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
 		if (active === null) {
 			return;
 		}
-		console.log("lol");
+
     refreshItemsOfBucket(props.buckets[active].bucketId);
   }, [active])
 
@@ -33,6 +33,13 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
   const handleClose = () => {
     setRename(false);
   }
+
+	useEffect(() => {
+		const getRecommendations = async () => {
+			
+		}
+		getRecommendations();
+	}, [active, props.buckets])
 
   return (
   <Flex direction='column' align='flex-start' m='7%'>
@@ -49,7 +56,10 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
           return <BucketMenu key={index} index={index} name={bucket.bucketName} isFocused={index === active} buttonListener={setActive} editListener={setEdit} renameListener={setRename}/>
         })}
       </Flex>
-      <SortMenu />
+			<Group justify="space-between" gap="1rem">
+				<AIButton bucket={active == null ? null : props.buckets[active]} />
+      	<SortMenu />
+			</Group>
     </Flex>
 
     <Dialog opened={rename} withCloseButton onClose={handleClose} size="lg" radius="md">
@@ -75,7 +85,7 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
 
     {/* Items Grid */}
     <Grid px='4rem' gutter={50}>
-      {items[props.buckets[active ?? 0].bucketId] && items[props.buckets[active ?? 0].bucketId].length > 0 && items[props.buckets[active ?? 0].bucketId].map((item, index) => {
+      {props.buckets[active ?? 0] && items[props.buckets[active ?? 0].bucketId] && items[props.buckets[active ?? 0].bucketId].length > 0 && items[props.buckets[active ?? 0].bucketId].map((item, index) => {
         return (
           <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>
             <ItemCard key={index} title={item.itemName} likes={item.likes} images={[item.images]} link={item.itemUrl} type={edit}/>
