@@ -59,10 +59,10 @@ const WaveHeader = () => {
 
   return (
     <div className="overflow-hidden w-full"
-      style={{ position: 'relative' }}
+      style={{ position: 'fixed', zIndex: 1000, top: 0, left: 0 }}
     >
       <svg
-        style={{ height: "120pt", width: "100%", position: 'absolute' }}
+        style={{ height: "120pt", width: "100%", position: 'fixed' }}
         viewBox="0 0 1440 160"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"

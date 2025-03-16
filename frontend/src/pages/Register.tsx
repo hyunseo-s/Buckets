@@ -93,7 +93,7 @@ const Register = () => {
 	}, [])
 
   return (
-	<div style={{ height: '100vh', display: "flex", flexDirection: "column", alignItems: "center", justifyContent: 'center'}}>
+	<div style={{ marginTop: '50px', height: '100vh', display: "flex", flexDirection: "column", alignItems: "center", justifyContent: 'center'}}>
 		<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Create Account</h2>
 				<form onSubmit={form.onSubmit(handleSubmit)}>
