@@ -304,7 +304,7 @@ app.post('/item/remove', (req: Request, res: Response) => {
   try {
     const { itemId } = req.body;
     const result = removeItem(itemId);
-    return res.status(200).json(result);
+    return res.status(200).json({message: "Successfully removed item" });
   } catch (error) {
     return res.status(400).json({error: error.message })
   } finally {
