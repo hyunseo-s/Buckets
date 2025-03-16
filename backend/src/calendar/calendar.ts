@@ -1,6 +1,5 @@
 import { google } from "googleapis";
 import express from "express";
-import open from "open";
 import fs from "fs";
 import { DateInput, DateTime, Interval } from "luxon";
 import { exec } from 'child_process';
@@ -136,39 +135,83 @@ async function getFreeTime(auth: any, itemId: string) {
 	writeCal();
 
 	return result;
+
 }
 
-function findCommonFreeTimes(people: PersonAvailability[]) {
-	const commonAvailability: FreeTimeDay[] = [];
+const SYDNEY_TZ = 'Australia/Sydney';
+  
+function findOverlappingTimes(cal1: FreeTime, cal2: FreeTime): FreeTimeDay[] {
+    const mapAvailability = (availability: FreeTimeDay[]) => {
+        return availability.reduce((acc, entry) => {
+        acc[entry.date] = entry.free_at;
+        return acc;
+        }, {} as Record<string, FreeTimeSlot[]>);
+    };
 
-	if (people.length === 0) return { people: [], common_free_times: [] };
+    const cal1Map = mapAvailability(cal1.availability);
+    const cal2Map = mapAvailability(cal2.availability);
+    const overlapping: FreeTimeDay[] = [];
 
-	const dates = people[0].availability.map((entry: { date: any; }) => entry.date);
-
-	for (const date of dates) {
-		const allFreeTimes = people.map(person => {
-			const dayAvailability = person.availability.find((entry: { date: any; }) => entry.date === date);
-			return dayAvailability ? dayAvailability.free_at.map((slot: { start: any; end: any; }) => Interval.fromISO(`${slot.start}/${slot.end}`)) : [];
-		});
-
-		const commonFree = allFreeTimes.reduce((common, personFreeTimes) => {
-			return common.filter((slot1: { overlaps: (arg0: any) => any; }) => personFreeTimes.some((slot2: any) => slot1.overlaps(slot2)))
-										.map((slot1: { overlaps: (arg0: any) => any; start: DateInput; end: DateInput; }) => {
-											const overlap = personFreeTimes.find((slot2: any) => slot1.overlaps(slot2));
-											return overlap ? Interval.fromDateTimes(
-												slot1.start! > overlap.start! ? slot1.start! : overlap.start!,
-												slot1.end! < overlap.end! ? slot1.end! : overlap.end!
-											) : slot1;
-										});
-		}, allFreeTimes[0] || []);
-
-		commonAvailability.push({
-				date,
-				free_at: commonFree.map((slot: { start: any; end: any; }) => ({ start: slot.start!.toISO()!, end: slot.end!.toISO()! }))
-		});
-	}
-
-	return { people: people.map(p => p.name), common_free_times: commonAvailability };
+    for (const date of Object.keys(cal1Map)) {
+        if (cal2Map[date]) {
+        const overlaps: FreeTimeSlot[] = [];
+        for (const slot1 of cal1Map[date]) {
+            for (const slot2 of cal2Map[date]) {
+            const overlapStart = DateTime.fromISO(slot1.start, { zone: SYDNEY_TZ }).toMillis();
+            const overlapEnd = DateTime.fromISO(slot1.end, { zone: SYDNEY_TZ }).toMillis();
+            const slot2Start = DateTime.fromISO(slot2.start, { zone: SYDNEY_TZ }).toMillis();
+            const slot2End = DateTime.fromISO(slot2.end, { zone: SYDNEY_TZ }).toMillis();
+            
+            const startMillis = Math.max(overlapStart, slot2Start);
+            const endMillis = Math.min(overlapEnd, slot2End);
+            
+            if (startMillis < endMillis) {
+                overlaps.push({
+                start: DateTime.fromMillis(startMillis, { zone: SYDNEY_TZ }).toISO() || '',
+                end: DateTime.fromMillis(endMillis, { zone: SYDNEY_TZ }).toISO() || ''
+                });
+            }
+            }
+        }
+        if (overlaps.length > 0) {
+            overlapping.push({ date, free_at: overlaps });
+        }
+        }
+    }
+    return overlapping;
 }
+
+// function findCommonFreeTimes(people: PersonAvailability[]) {
+// 	const commonAvailability: FreeTimeDay[] = [];
+
+// 	if (people.length === 0) return { people: [], common_free_times: [] };
+
+// 	const dates = people[0].availability.map((entry: { date: any; }) => entry.date);
+
+// 	for (const date of dates) {
+// 		const allFreeTimes = people.map(person => {
+// 			const dayAvailability = person.availability.find((entry: { date: any; }) => entry.date === date);
+// 			return dayAvailability ? dayAvailability.free_at.map((slot: { start: any; end: any; }) => Interval.fromISO(`${slot.start}/${slot.end}`)) : [];
+// 		});
+
+// 		const commonFree = allFreeTimes.reduce((common, personFreeTimes) => {
+// 			return common.filter((slot1: { overlaps: (arg0: any) => any; }) => personFreeTimes.some((slot2: any) => slot1.overlaps(slot2)))
+// 										.map((slot1: { overlaps: (arg0: any) => any; start: DateInput; end: DateInput; }) => {
+// 											const overlap = personFreeTimes.find((slot2: any) => slot1.overlaps(slot2));
+// 											return overlap ? Interval.fromDateTimes(
+// 												slot1.start! > overlap.start! ? slot1.start! : overlap.start!,
+// 												slot1.end! < overlap.end! ? slot1.end! : overlap.end!
+// 											) : slot1;
+// 										});
+// 		}, allFreeTimes[0] || []);
+
+// 		commonAvailability.push({
+// 				date,
+// 				free_at: commonFree.map((slot: { start: any; end: any; }) => ({ start: slot.start!.toISO()!, end: slot.end!.toISO()! }))
+// 		});
+// 	}
+
+// 	return { people: people.map(p => p.username), common_free_times: commonAvailability };
+// }
 
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
