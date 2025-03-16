@@ -2,12 +2,42 @@ import { Avatar, Button, Title } from "@mantine/core";
 import { IconUserCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { handleError } from "../utils/handlers";
+import { get } from "../utils/apiClient";
 
 const WaveHeader = () => {
   const navigate = useNavigate();
 
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [profileImage, setProfileImage] = useState(null)
+  const [userId, setUserId] = useState(null)
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const res = await get('/users/me');
+      if (res.error) {
+        handleError(res.error);
+        return;
+      }
+      setUserId(res);
+    }
+
+    getUserId();
+  }, [token]);
+
+  useEffect(() => {
+    const getProfileImage = async () => {
+      if (userId == null) return
+      const res = await get(`/users/${userId}/profile`);
+      if (res.error) {
+        handleError(res.error);
+        return;
+      }
+      setProfileImage(res.profileImg);
+    }
+
+    getProfileImage();
+  }, [userId]);
 
   useEffect(() => {
     const updateToken = () => setToken(localStorage.getItem("token"));
@@ -95,16 +125,11 @@ const WaveHeader = () => {
         </div>
         {token 
           ? <Avatar 
-              src="avatar.png" 
-              alt="it's me" 
+              src={profileImage ? profileImage : null} 
+              alt="You" 
               style={{cursor: "pointer"}}
               onClick={() => navigate('/profile')}
             />
-          // <IconUserCircle
-          //     style={{color: "rgba(23, 148, 250, 1)"}}
-          //     onClick={() => navigate('/profile')}
-          //     size={40} 
-          //   />
           : <></>
         }
       </div>

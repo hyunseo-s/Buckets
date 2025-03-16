@@ -67,7 +67,7 @@ const Register = () => {
 
 			const params = {
 				...values,
-				profileImage: image == null ? null : await filePromise(image)
+				profileImg: image == null ? null : await filePromise(image)
 			}
 			const res = await post("/auth/register", params);
 			
