@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { getGroup } from './groups';
 
 // This function takes in the bucket name and group id, and returns the bucket id
-export function createBucket(bucketName: string, groupId: string) {
+export function createBucket(bucketName: string, groupId: string, images: string[]) {
     const database = getData();
     const buckets = database.buckets;
     
@@ -14,7 +14,8 @@ export function createBucket(bucketName: string, groupId: string) {
       bucketId: bucketId,
       bucketName: bucketName,
       groupId: groupId,
-      items: []
+      items: [],
+      images,
     };
 
 		const group = getGroup(groupId);

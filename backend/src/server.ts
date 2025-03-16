@@ -15,6 +15,8 @@ import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from '
 import { decodeJWT, fetchUnsplashImages } from './utilis';
 import { getUser } from './types/user';
 import { askGemini } from './gemini/client';
+import { getCalendar } from './calendar/calendar';
+
 
 // Set up web app
 const app = express();
@@ -37,6 +39,20 @@ const HOST: string = process.env.IP || '127.0.0.1';
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
+
+// ====================================================================
+//  ============================ GOOGLE API ===========================
+// ====================================================================
+
+// IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
+app.get('/calendar', async (req: Request, res: Response) => {
+  try {
+    const result = await getCalendar()
+    res.status(201).json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  }
+})
 // ====================================================================
 //  =============================== AUTH ==============================
 // ====================================================================
@@ -78,11 +94,11 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
+	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
   try {
-    const groupId = createGroup(groupName, [...memberIds, id]);
+    const groupId = createGroup(groupName, [...memberIds, id], images);
     res.status(201).json({ message: 'Group created', groupId });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -194,9 +210,9 @@ app.get('/users/:userId/profile', (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/buckets', (req: Request, res: Response) => {
-  const { bucketName, groupId }: { bucketName: string, groupId: string } = req.body;
+  const { bucketName, groupId, images } = req.body;
   try {
-      const bucketId = createBucket(bucketName, groupId);
+      const bucketId = createBucket(bucketName, groupId, images);
       res.status(201).json({ message: 'Bucket created', bucketId });
   } catch (error) {
       res.status(500).json({ error: error.message });
@@ -296,8 +312,11 @@ app.put('/item/edit', (req: Request, res: Response) => {
 
 app.put('/item/toggleLike', (req: Request, res: Response) => {
   try {
+    const existingToken = localStorage.getItem("token");
+    const id = decodeJWT(existingToken);
+
     const { itemId } = req.body;
-    const result = upvoteItem(itemId);
+    const result = upvoteItem(itemId, id);
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
