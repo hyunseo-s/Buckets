@@ -49,6 +49,7 @@ const HOST: string = process.env.IP || '127.0.0.1';
 app.get('/calendar', async (req: Request, res: Response) => {
   try {
     const itemId = req.query.itemId as string
+    console.log(itemId)
     await getCalendar(itemId);
     const data = getCal()
     const result = data.find((item: FreeTime) => item.itemId === itemId)

@@ -21,13 +21,13 @@ interface DateRange {
 
 const Calendar = () => {
     const { id }= useParams();
-    const [availabilities, setAvailabilities] = useState()
     const [dateObjects, setDateObjects] = useState<DateObject[]>([])
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await get(`/calendar?=${id}`)
-            const newDateObjects = res.data.availability.map( (a) => ({
+            const res = await get(`/calendar?itemId=${id}`)
+            console.log(res)
+            const newDateObjects = res.availability.map((a) => ({
                 date: a.date, freeAt: a.free_at.map(f => ({ ...f, checked:false})), checked: false
             }))
             console.log("IVAN", newDateObjects);
