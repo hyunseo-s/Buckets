@@ -10,6 +10,7 @@ export interface User {
     username: string;
     email: string;
     password: string;
+    profileImg: string;
     groups: string[];
     friends: string[];
     buckets: string[];

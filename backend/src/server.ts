@@ -14,10 +14,7 @@ import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 import { getUser } from './types/user';
-import moment from 'moment-timezone';
-import { google } from 'googleapis';
 import { getCalendar } from './calendar/calendar';
-
 
 
 // Set up web app
@@ -382,4 +379,3 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
-
