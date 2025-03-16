@@ -12,6 +12,7 @@ import { Notifications } from '@mantine/notifications'
 import WaveHeader from './assets/WaveHeader'
 import './App.css';
 import { GroupsProvider } from './context/GroupsProvider'
+import Calendar from './pages/Calendar'
 
 function App() {
 	const theme = createTheme({
@@ -39,6 +40,7 @@ function App() {
 							<Route path="my-buckets/:gid" element={<MyBuckets />} />
 							<Route path="grp-buckets/:gid" element={<GroupBuckets />} />
 							<Route path="groups" element={<Groups />} />
+							<Route path="calendar" element={<Calendar />} />
 						</Routes>
 					</BrowserRouter>
 					<AddButton />

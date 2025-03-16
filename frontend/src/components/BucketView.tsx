@@ -88,7 +88,7 @@ const BucketView = (props: PropsWithChildren<{title : string, buckets: Bucket[]}
       {props.buckets[active ?? 0] && items[props.buckets[active ?? 0].bucketId] && items[props.buckets[active ?? 0].bucketId].length > 0 && items[props.buckets[active ?? 0].bucketId].map((item, index) => {
         return (
           <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>
-            <ItemCard key={index} title={item.itemName} likes={item.likes} images={[item.images]} link={item.itemUrl} type={edit} desc={item.itemDesc} id={item.itemId}/>
+            <ItemCard key={index} title={item.itemName} likes={item.likes} images={item.images} link={item.itemUrl} type={edit} desc={item.itemDesc} id={item.itemId}/>
           </Grid.Col>
         )
       })}
