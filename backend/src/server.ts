@@ -312,8 +312,8 @@ app.put('/item/edit', (req: Request, res: Response) => {
 
 app.put('/item/toggleLike', (req: Request, res: Response) => {
   try {
-    const existingToken = localStorage.getItem("token");
-    const id = decodeJWT(existingToken);
+    const token = req.header('Authorization').split(" ")[1];
+    const id = decodeJWT(token);
 
     const { itemId } = req.body;
     const result = upvoteItem(itemId, id);
