@@ -94,18 +94,32 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 //  ================= GROUP ===================
 // ====================================================================
 
-app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
+app.post('/group/create', async (req: Request, res: Response) => {
+	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
-  try {
-    const groupId = createGroup(groupName, [...memberIds, id], images);
-    res.status(201).json({ message: 'Group created', groupId });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  } finally {
-    writeData()
-  }
+	
+	const images = [];
+
+	try {
+		const imageUrl = await fetchUnsplashImages(groupName);
+		if (imageUrl) {
+			images.push(imageUrl)
+		}
+	} catch (error) {
+
+	} finally {
+			try {
+				const groupId = createGroup(groupName, [...memberIds, id], images);
+				res.status(201).json({ message: 'Group created', groupId });
+			} catch (error) {
+				res.status(500).json({ error: error.message });
+			} finally {
+				writeData()
+			}
+	}
+ 
+
 });
 
 app.delete('/group/:groupId', (req: Request, res: Response) => {
@@ -192,7 +206,7 @@ app.get('/users/me', (req: Request, res: Response) => {
   const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
 
-  res.status(200).json(id);
+  res.status(200).json({id: id});
 });
 
 app.get('/users/:userId/profile', (req: Request, res: Response) => {
@@ -291,7 +305,7 @@ app.post('/item/remove', (req: Request, res: Response) => {
   try {
     const { itemId } = req.body;
     const result = removeItem(itemId);
-    return res.status(200).json(result);
+    return res.status(200).json({message: "Successfully removed item" });
   } catch (error) {
     return res.status(400).json({error: error.message })
   } finally {
@@ -313,8 +327,8 @@ app.put('/item/edit', (req: Request, res: Response) => {
 
 app.put('/item/toggleLike', (req: Request, res: Response) => {
   try {
-    const existingToken = localStorage.getItem("token");
-    const id = decodeJWT(existingToken);
+    const token = req.header('Authorization').split(" ")[1];
+    const id = decodeJWT(token);
 
     const { itemId } = req.body;
     const result = upvoteItem(itemId, id);
@@ -352,7 +366,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 
 	const bucket = getBucket(bucketId);
 	const allItems = getBucketItems(bucketId);
-	console.log(bucket)
+
 	const prompt = `
 		Given the current list titled ${bucket.bucketName} with the items 
 		${allItems.map(item => (`{ ${item.itemName}: , ${item.itemDesc}`)).join(', ')}
@@ -360,15 +374,15 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		{ 
 			items: [
 				{
-					itemName: name of first recommendation,
+					itemName: name of first recommendation less than 16 characters long,
 					itemDesc: description of first recommendation
 				},
 				{
-					itemName: name of second recommendation,
+					itemName: name of second recommendation less than 16 characters long,
 					itemDesc: description of second recommendation
 				},
 				{
-					itemName: name of third recommendation,
+					itemName: name of third recommendation less than 16 characters long,
 					itemDesc: description of third recommendation
 				}
 			]
@@ -392,9 +406,20 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 	}))
 
   try {
+		const	itemsString = await askGemini(prompt);
+	
+		const jsonData = await JSON.parse(itemsString.slice(7, -4));
+		const data = await Promise.all(jsonData.items.map(async (item) => {
+		const imageUrl = await fetchUnsplashImages(item.itemName);
+			
+			return ({
+				itemName: item.itemName,
+				itemDesc: item.itemDesc,
+				images: imageUrl == null ? [] : [ imageUrl ]
+			});
+		}))
     res.status(200).json(data);
   } catch (error) {
-		console.log(error.message);
     res.status(404).json({ error: error.message });
   } finally {
     writeData();

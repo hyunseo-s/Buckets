@@ -21,7 +21,7 @@ export async function fetchUnsplashImages(query: string) {
   const data = await response.json();
 
   // Extract image URL
-  if (data && data.urls.small) {
+  if (data && data.urls && data.urls.small) {
     const imageUrl = data.urls.small;
 		return imageUrl;
   } else {

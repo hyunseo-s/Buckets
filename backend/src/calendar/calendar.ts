@@ -341,4 +341,4 @@ function findOverlappingTimes(cal1: FreeTime, cal2: FreeTime): FreeTimeDay[] {
 // 	return { people: people.map(p => p.username), common_free_times: commonAvailability };
 // }
 
-// app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
