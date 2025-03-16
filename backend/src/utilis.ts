@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from  "./config.json";
+import { getData } from "./types/dataStore";
 
 const SECRET = "TOPSECRET";
 
@@ -25,5 +26,15 @@ export async function fetchUnsplashImages(query: string) {
 		return imageUrl;
   } else {
     return null
+  }
+}
+
+export function getGroupID(itemId: string) {
+  const data = getData();
+
+  const bucketId = data.items.find((item) => item.itemId === itemId);
+
+  if (bucketId) {
+    return data.buckets.find((bucket) => bucket.bucketId === bucketId.bucketId).groupId;
   }
 }

@@ -9,13 +9,14 @@ import sui from 'swagger-ui-express';
 import fs, { write } from 'fs';
 import path from 'path';
 import process from 'process';
-import { clear, readData, writeData } from './types/dataStore'
+import { clear, getCal, readCal, readData, writeData } from './types/dataStore'
 import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT, fetchUnsplashImages } from './utilis';
 import { getUser } from './types/user';
 import { askGemini } from './gemini/client';
 import { getCalendar } from './calendar/calendar';
+import { FreeTime } from './interface';
 
 
 // Set up web app
@@ -47,12 +48,16 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
 app.get('/calendar', async (req: Request, res: Response) => {
   try {
-    const result = await getCalendar()
+    const itemId = req.query.itemId as string
+    await getCalendar(itemId);
+    const data = getCal()
+    const result = data.find((item: FreeTime) => item.itemId === itemId)
     res.status(201).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
 })
+
 // ====================================================================
 //  =============================== AUTH ==============================
 // ====================================================================
@@ -390,8 +395,20 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		Only return this directly.
 	`;
 
-	
-	
+	const	itemsString = await askGemini(prompt);
+
+	const jsonData = await JSON.parse(itemsString.slice(7, -4));
+
+	const data = await Promise.all(jsonData.items.map(async (item: { itemName: string; itemDesc: any; }) => {
+		const imageUrl = await fetchUnsplashImages(item.itemName);
+
+		return ({
+			itemName: item.itemName,
+			itemDesc: item.itemDesc,
+			images: imageUrl == null ? [] : [ imageUrl ]
+		});
+	}))
+
   try {
 		const	itemsString = await askGemini(prompt);
 	
