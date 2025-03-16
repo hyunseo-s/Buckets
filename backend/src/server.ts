@@ -47,7 +47,7 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
 app.get('/calendar', async (req: Request, res: Response) => {
   try {
-    const result = await getCalendar(req.query.itemId)
+    const result = await getCalendar(req.query.itemId as string)
     res.status(201).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
@@ -380,7 +380,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 
 	const jsonData = await JSON.parse(itemsString.slice(7, -4));
 
-	const data = await Promise.all(jsonData.items.map(async (item) => {
+	const data = await Promise.all(jsonData.items.map(async (item: { itemName: string; itemDesc: any; }) => {
 		const imageUrl = await fetchUnsplashImages(item.itemName);
 
 		return ({
