@@ -2,6 +2,7 @@ import fs from 'fs';
 import { Database, FreeTime } from '../interface'
 
 const DATABASE = "database.json"
+const calDB = "calData.json"
 
 let data: Database = {
 	users: [],
@@ -26,16 +27,16 @@ export const writeData = () => {
 };
 
 export const readCal = () => {
-	if (!fs.existsSync("calData.json")) {
-		fs.writeFileSync("calData.json", JSON.stringify([], null, 2), "utf-8");
+	if (!fs.existsSync(calDB)) {
+		fs.writeFileSync(calDB, JSON.stringify([], null, 2), "utf-8");
 	}
 	
-	calData = JSON.parse(fs.readFileSync("calData.json", "utf-8"));
+	calData = JSON.parse(fs.readFileSync(calDB, "utf-8"));
 };
 
-// Write to the "calData.json" file 
+// Write to the calDB file 
 export const writeCal = () => {
-	fs.writeFileSync("calData.json", JSON.stringify(calData, null, 2), "utf-8");
+	fs.writeFileSync(calDB, JSON.stringify(calData, null, 2), "utf-8");
 };
 
 export const clear = () => {
@@ -55,4 +56,4 @@ export function getData() {
 
 export function getCal() {
 	return calData;
-  }
+}
