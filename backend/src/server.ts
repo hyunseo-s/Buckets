@@ -376,24 +376,23 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		Only return this directly.
 	`;
 
-	const	itemsString = await askGemini(prompt);
-
-	const jsonData = await JSON.parse(itemsString.slice(7, -4));
-
-	const data = await Promise.all(jsonData.items.map(async (item) => {
-		const imageUrl = await fetchUnsplashImages(item.itemName);
-
-		return ({
-			itemName: item.itemName,
-			itemDesc: item.itemDesc,
-			images: imageUrl == null ? [] : [ imageUrl ]
-		});
-	}))
-
+	
+	
   try {
+		const	itemsString = await askGemini(prompt);
+	
+		const jsonData = await JSON.parse(itemsString.slice(7, -4));
+		const data = await Promise.all(jsonData.items.map(async (item) => {
+		const imageUrl = await fetchUnsplashImages(item.itemName);
+	
+			return ({
+				itemName: item.itemName,
+				itemDesc: item.itemDesc,
+				images: imageUrl == null ? [] : [ imageUrl ]
+			});
+		}))
     res.status(200).json(data);
   } catch (error) {
-		console.log(error.message);
     res.status(404).json({ error: error.message });
   } finally {
     writeData();

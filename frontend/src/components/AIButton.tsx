@@ -3,6 +3,7 @@ import { Bucket } from "../types";
 import { get, post } from "../utils/apiClient";
 import { useGroups } from "../context/GroupsProvider";
 import { IconSparkles } from "@tabler/icons-react";
+import { handleError } from "../utils/handlers";
 
 export const AIButton = ({bucket}: { bucket: Bucket | null}) => {
 	const { refreshItemsOfBucket } = useGroups();
@@ -10,6 +11,11 @@ export const AIButton = ({bucket}: { bucket: Bucket | null}) => {
 		console.log(bucket)
 		if (bucket == null) return;
 		const res = await get(`/buckets/${bucket.bucketId}/recommendations`);
+		if (res.error) {
+			handleError(res.error);
+			return;
+		}
+
 
 		if (res) {
 			console.log(res)
@@ -25,6 +31,7 @@ export const AIButton = ({bucket}: { bucket: Bucket | null}) => {
 			}))
 			
 			refreshItemsOfBucket(bucket.bucketId);
+
 		}
 	}
 
