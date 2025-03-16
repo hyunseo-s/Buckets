@@ -67,8 +67,8 @@ function getNewToken(oAuth2Client: any, itemId: string) {
             oAuth2Client.setCredentials(tokens);
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             res.send("Authentication successful! You can close this tab.");
-            let calData2 = getFreeTime(oAuth2Client, itemId);
-            let calData1 = getCal();
+            let calData1 = getFreeTime(oAuth2Client, itemId);
+            let calData2 = getCal();
             findOverlappingTimes(calData1, calData2)
         } catch (error) {
             console.error("Error retrieving access token", error);
