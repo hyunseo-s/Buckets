@@ -93,18 +93,32 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 //  ================= GROUP ===================
 // ====================================================================
 
-app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
+app.post('/group/create', async (req: Request, res: Response) => {
+	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
-  try {
-    const groupId = createGroup(groupName, [...memberIds, id], images);
-    res.status(201).json({ message: 'Group created', groupId });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  } finally {
-    writeData()
-  }
+	
+	const images = [];
+
+	try {
+		const imageUrl = await fetchUnsplashImages(groupName);
+		if (imageUrl) {
+			images.push(imageUrl)
+		}
+	} catch (error) {
+
+	} finally {
+			try {
+				const groupId = createGroup(groupName, [...memberIds, id], images);
+				res.status(201).json({ message: 'Group created', groupId });
+			} catch (error) {
+				res.status(500).json({ error: error.message });
+			} finally {
+				writeData()
+			}
+	}
+ 
+
 });
 
 app.delete('/group/:groupId', (req: Request, res: Response) => {
