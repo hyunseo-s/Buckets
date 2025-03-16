@@ -14,6 +14,11 @@ import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 import { getUser } from './types/user';
+import moment from 'moment-timezone';
+import { google } from 'googleapis';
+import { getCalendar } from './calendar/calendar';
+
+
 
 // Set up web app
 const app = express();
@@ -36,6 +41,20 @@ const HOST: string = process.env.IP || '127.0.0.1';
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
+
+// ====================================================================
+//  ============================ GOOGLE API ===========================
+// ====================================================================
+
+// IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
+app.get('/calendar', async (req: Request, res: Response) => {
+  try {
+    const result = await getCalendar()
+    res.status(201).json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  }
+})
 // ====================================================================
 //  =============================== AUTH ==============================
 // ====================================================================
@@ -55,7 +74,6 @@ app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     // Check if the token is still valid:
     await login(req, res);
-
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
@@ -78,11 +96,11 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
+	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
   try {
-    const groupId = createGroup(groupName, [...memberIds, id]);
+    const groupId = createGroup(groupName, [...memberIds, id], images);
     res.status(201).json({ message: 'Group created', groupId });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -194,9 +212,9 @@ app.get('/users/:userId/profile', (req: Request, res: Response) => {
 // ====================================================================
 
 app.post('/buckets', (req: Request, res: Response) => {
-  const { bucketName, groupId }: { bucketName: string, groupId: string } = req.body;
+  const { bucketName, groupId, images } = req.body;
   try {
-      const bucketId = createBucket(bucketName, groupId);
+      const bucketId = createBucket(bucketName, groupId, images);
       res.status(201).json({ message: 'Bucket created', bucketId });
   } catch (error) {
       res.status(500).json({ error: error.message });
@@ -227,7 +245,7 @@ app.get('/buckets/:bucketId/items', (req: Request, res: Response) => {
   const { bucketId } = req.params;
   try {
     const allItems = getBucketItems(bucketId);
-    res.status(200).json({ items: allItems });
+    res.status(200).json(allItems);
   } catch (error) {
     res.status(404).json({ error: error.message });
   } finally {
@@ -262,7 +280,7 @@ app.post('/item/add', (req: Request, res: Response) => {
     params.addedBy = id;
 
     const result = createItem(params)
-    return res.status(200).json(result);
+    res.status(201).json({ message: 'Item added to buckets!' });
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
@@ -296,8 +314,11 @@ app.put('/item/edit', (req: Request, res: Response) => {
 
 app.put('/item/toggleLike', (req: Request, res: Response) => {
   try {
+    const existingToken = localStorage.getItem("token");
+    const id = decodeJWT(existingToken);
+
     const { itemId } = req.body;
-    const result = upvoteItem(itemId);
+    const result = upvoteItem(itemId, id);
     return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
@@ -361,3 +382,4 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
+

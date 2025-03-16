@@ -36,7 +36,7 @@ export const register = async (req: Request, res: Response) => {
 
 	const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
-	createGroup("My Buckets", [id])
+	createGroup("My Buckets", [id]);
 
 	return ({ message: "Registration success", token });
 }
@@ -49,11 +49,12 @@ export const login = async (req: Request, res: Response) => {
   
     const user = db.users.find((u: User) => u.email === email);
     if (!user) {
+				console.log("1")
         throw new Error("Invalid credentials");
     }
-  
     // const isMatch = await bcrypt.compare(password, user.password);
-    const isMatch = password === user.password;
+	const isMatch = password === user.password;
+
     if (!isMatch) {
         throw new Error("Invalid credentials");
     }

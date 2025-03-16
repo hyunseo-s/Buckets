@@ -17,16 +17,18 @@ export interface User {
 
 export interface Group {
     groupId: string;
-    groupName: string,
-    members: string[],
-    buckets: string[],
+    groupName: string;
+    members: string[];
+    buckets: string[];
+    images: string[];
 }
 
 export interface Bucket {
     bucketId: string;
     bucketName: string;
     groupId: string;
-    items: string[]
+    items: string[];
+    images: string[];
 }
 
 export interface Item {
@@ -36,7 +38,15 @@ export interface Item {
     itemUrl: string;
     addedBy: string;
     images: string[];
-    likes: number;
+    likes: string[];
     bucketId: string;
     active: boolean;
+}
+
+export interface Token {
+    access_token: string;
+    refresh_token?: string;
+    scope: string;
+    token_type: string;
+    expiry_date: number;
 }

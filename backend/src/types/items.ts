@@ -1,6 +1,7 @@
 import { getData } from './dataStore'
 import { v4 } from 'uuid';
 import { Item } from '../interface';
+import { getBucket } from './buckets';
 
 interface CreateItemType {
     itemName: string, 
@@ -8,7 +9,7 @@ interface CreateItemType {
     itemUrl: string, 
     addedBy: string, 
     images: string[], 
-    likes: number, 
+    likes: string[], 
     bucketIds: string[],
     active: boolean
 }
@@ -27,22 +28,28 @@ interface EditItemType {
 export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucketIds}: CreateItemType) {
   const database = getData();
   const items = database.items;
-  
+  console.log({itemName, itemDesc, itemUrl, addedBy, images, bucketIds})
   for (const bucketId of bucketIds) {
+		const itemId = v4();
     const item: Item = {
-      itemId: v4(),
+      itemId: itemId,
       itemName,
       itemDesc,
       itemUrl,
       addedBy,
       images,
-      likes: 0,
+      likes: [],
       bucketId: bucketId,
       active: true,
     };
 
     items.push(item);
-  }
+		const bucket = getBucket(bucketId);
+		console.log(bucket);
+		if (bucket) {
+			bucket.items.push(itemId);
+		}
+	}
 }
 
 export function editItem({ itemId, itemName, itemDesc, itemUrl, itemImage, bucketId }: EditItemType) {
@@ -77,17 +84,19 @@ export function removeItem(itemId: string) {
     database.items = items.filter(item => item.itemId !== itemId);
 }
 
-export function upvoteItem(itemId: string) {
+export function upvoteItem(itemId: string, id: string) {
     const database = getData();
     const items = database.items;
 
-    const itemIndex = items.findIndex(item => item.itemId === itemId);
+    const index = items.findIndex((item) => item.itemId === itemId);
     
-    if (itemIndex === -1) {
-        throw new Error(`Item with ID ${itemId} not found`);
+    if (index === -1) {
+      items[index].likes.push(id);
+    } else {
+      items.splice(index, 1);
     }
 
-    items[itemIndex].likes += 1;
+    return { likes: items[index].likes};
 }
 
 export function toggleActiveItem(itemId: string) {

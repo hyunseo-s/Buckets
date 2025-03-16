@@ -3,6 +3,9 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import MyBuckets from './pages/MyBuckets'
+import '@mantine/carousel/styles.css';
+import GroupBuckets from './pages/GroupBuckets'
 import { AddButton } from './components/AddButton'
 import { createTheme, MantineProvider } from '@mantine/core'
 import Groups from './pages/Groups'
@@ -19,7 +22,7 @@ function App() {
 			md: '64em',
 			lg: '74em',
 			xl: '90em',
-		},
+		}
 	});
 
   return (
@@ -35,6 +38,9 @@ function App() {
 							<Route path="register" element={<Register />} />
 							<Route path="groups" element={<Groups />} />
 							<Route path="profile" element={<Profile />} />
+							<Route path="my-buckets/:gid" element={<MyBuckets />} />
+							<Route path="grp-buckets/:gid" element={<GroupBuckets />} />
+							<Route path="groups" element={<Groups />} />
 						</Routes>
 					</BrowserRouter>
 					<AddButton />
