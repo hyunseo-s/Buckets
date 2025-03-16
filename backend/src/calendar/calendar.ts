@@ -1,6 +1,5 @@
 import { google } from "googleapis";
 import express from "express";
-import open from "open";
 import fs from "fs";
 import { DateInput, DateTime, Interval } from "luxon";
 import { exec } from 'child_process';
@@ -74,70 +73,119 @@ function getNewToken(oAuth2Client: any) {
     });
 }
 
-async function getFreeTime(auth: any) {
-    const now = DateTime.now().setZone("Australia/Sydney");
-    const freeSlots: FreeTimeDay[] = [];
+// async function getFreeTime(auth: any) {
+//     const now = DateTime.now().setZone("Australia/Sydney");
+//     const freeSlots: FreeTimeDay[] = [];
 
-    for (let i = 0; i < 7; i++) {
-        const dayStart = now.plus({ days: i }).startOf("day");
-        const dayEnd = now.plus({ days: i }).endOf("day");
+//     for (let i = 0; i < 7; i++) {
+//         const dayStart = now.plus({ days: i }).startOf("day");
+//         const dayEnd = now.plus({ days: i }).endOf("day");
 
-        const freeBusyResponse = await calendar.freebusy.query({
-            auth,
-            requestBody: {
-                timeMin: dayStart.toISO()!,
-                timeMax: dayEnd.toISO()!,
-                timeZone: "Australia/Sydney",
-                items: [{ id: "primary" }],
-            },
-        });
+//         const freeBusyResponse = await calendar.freebusy.query({
+//             auth,
+//             requestBody: {
+//                 timeMin: dayStart.toISO()!,
+//                 timeMax: dayEnd.toISO()!,
+//                 timeZone: "Australia/Sydney",
+//                 items: [{ id: "primary" }],
+//             },
+//         });
 
-        const busyTimes = freeBusyResponse.data.calendars?.["primary"]?.busy?.map(b => ({
-            start: b.start ? DateTime.fromISO(b.start, { zone: "Australia/Sydney" }) : null,
-            end: b.end ? DateTime.fromISO(b.end, { zone: "Australia/Sydney" }) : null
-        })).filter(b => b.start && b.end) as { start: DateTime; end: DateTime; }[] || [];
+//         const busyTimes = freeBusyResponse.data.calendars?.["primary"]?.busy?.map(b => ({
+//             start: b.start ? DateTime.fromISO(b.start, { zone: "Australia/Sydney" }) : null,
+//             end: b.end ? DateTime.fromISO(b.end, { zone: "Australia/Sydney" }) : null
+//         })).filter(b => b.start && b.end) as { start: DateTime; end: DateTime; }[] || [];
 
-        const freeTimes: FreeTimeSlot[] = [];
-        let startOfFreeSlot = dayStart;
+//         const freeTimes: FreeTimeSlot[] = [];
+//         let startOfFreeSlot = dayStart;
 
-        for (const { start, end } of busyTimes) {
-            if (startOfFreeSlot < start) {
-                freeTimes.push({
-                    start: startOfFreeSlot.toISO()!,
-                    end: start.toISO()!
-                });
-            }
-            startOfFreeSlot = end > startOfFreeSlot ? end : startOfFreeSlot;
-        }
+//         for (const { start, end } of busyTimes) {
+//             if (startOfFreeSlot < start) {
+//                 freeTimes.push({
+//                     start: startOfFreeSlot.toISO()!,
+//                     end: start.toISO()!
+//                 });
+//             }
+//             startOfFreeSlot = end > startOfFreeSlot ? end : startOfFreeSlot;
+//         }
 
-        if (startOfFreeSlot < dayEnd) {
-            freeTimes.push({
-                start: startOfFreeSlot.toISO()!,
-                end: dayEnd.toISO()!
-            });
-        }
+//         if (startOfFreeSlot < dayEnd) {
+//             freeTimes.push({
+//                 start: startOfFreeSlot.toISO()!,
+//                 end: dayEnd.toISO()!
+//             });
+//         }
 
-        freeSlots.push({
-            date: dayStart.toISODate()!,
-            free_at: freeTimes
-        });
-    }
+//         freeSlots.push({
+//             date: dayStart.toISODate()!,
+//             free_at: freeTimes
+//         });
+//     }
 
-    const result: FreeTime = {
-        itemId: "Justin",
-        groupId: "",
-        availability: freeSlots,
+//     const result: FreeTime = {
+//         itemId: "Justin",
+//         groupId: "",
+//         availability: freeSlots,
+//     };
+
+//     const calData = getCal();
+//     calData.push(result);
+
+//     writeCal();
+//     return result;
+// }
+
+const SYDNEY_TZ = 'Australia/Sydney';
+  
+function findOverlappingTimes(cal1: FreeTime, cal2: FreeTime): FreeTimeDay[] {
+    const mapAvailability = (availability: FreeTimeDay[]) => {
+        return availability.reduce((acc, entry) => {
+        acc[entry.date] = entry.free_at;
+        return acc;
+        }, {} as Record<string, FreeTimeSlot[]>);
     };
 
-    const calData = getCal();
-    calData.push(result);
+    const cal1Map = mapAvailability(cal1.availability);
+    const cal2Map = mapAvailability(cal2.availability);
+    const overlapping: FreeTimeDay[] = [];
 
-    writeCal();
-    return result;
+    for (const date of Object.keys(cal1Map)) {
+        if (cal2Map[date]) {
+        const overlaps: FreeTimeSlot[] = [];
+        for (const slot1 of cal1Map[date]) {
+            for (const slot2 of cal2Map[date]) {
+            const overlapStart = DateTime.fromISO(slot1.start, { zone: SYDNEY_TZ }).toMillis();
+            const overlapEnd = DateTime.fromISO(slot1.end, { zone: SYDNEY_TZ }).toMillis();
+            const slot2Start = DateTime.fromISO(slot2.start, { zone: SYDNEY_TZ }).toMillis();
+            const slot2End = DateTime.fromISO(slot2.end, { zone: SYDNEY_TZ }).toMillis();
+            
+            const startMillis = Math.max(overlapStart, slot2Start);
+            const endMillis = Math.min(overlapEnd, slot2End);
+            
+            if (startMillis < endMillis) {
+                overlaps.push({
+                start: DateTime.fromMillis(startMillis, { zone: SYDNEY_TZ }).toISO() || '',
+                end: DateTime.fromMillis(endMillis, { zone: SYDNEY_TZ }).toISO() || ''
+                });
+            }
+            }
+        }
+        if (overlaps.length > 0) {
+            overlapping.push({ date, free_at: overlaps });
+        }
+        }
+    }
+    return overlapping;
 }
 
 function findCommonFreeTimes(people: PersonAvailability[]) {
     const commonAvailability: FreeTimeDay[] = [];
+
+    const calData = getCal();
+
+    // On the first go, it should just return the entire thing as the availability
+
+    // On second run onwards, it should filter down the available dates
 
     if (people.length === 0) return { people: [], common_free_times: [] };
 
@@ -166,7 +214,7 @@ function findCommonFreeTimes(people: PersonAvailability[]) {
         });
     }
 
-    return { people: people.map(p => p.name), common_free_times: commonAvailability };
+    return { people: people.map(p => p.username), common_free_times: commonAvailability };
 }
 
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

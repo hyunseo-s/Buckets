@@ -67,3 +67,8 @@ export interface FreeTimeDay {
     date: string;
     free_at: FreeTimeSlot[];
 }
+
+export interface PersonAvailability {
+    username: string;
+    availability: FreeTimeDay[];
+}
