@@ -1,14 +1,16 @@
-import { Group, PasswordInput, TextInput, Button, Anchor } from '@mantine/core';
+import { Group, PasswordInput, TextInput, Button, Anchor, FileInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { post } from '../utils/apiClient';
 import { handleError, handleSuccess } from '../utils/handlers';
 import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGroups } from '../context/GroupsProvider';
+import { IconPhotoScan } from '@tabler/icons-react';
 
 const Register = () => {
 	const navigate = useNavigate();
 	const { refreshGroups } = useGroups();
+	const [ image, setImage ] = useState<File | null>(null);
 
 	const ButtonStyle = {
 		width: "10rem",
@@ -51,17 +53,38 @@ const Register = () => {
   });
 
 	const handleSubmit = async (values) => {
-		const res = await post("/auth/register", values);
-		
-		if (res.error) {
-			handleError(res.error);
-			return;
+		const filePromise = (file: File): Promise<string> => {
+			return new Promise<string>((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				console.log(file)
+				reader.readAsDataURL(file);
+			});
+		};
+
+		try {
+
+			const params = {
+				...values,
+				profileImg: image == null ? null : await filePromise(image)
+			}
+			const res = await post("/auth/register", params);
+			
+			if (res.error) {
+				handleError(res.error);
+				return;
+			}
+			handleSuccess(res.message);
+			localStorage.setItem("token", res.token);
+			refreshGroups();
+			navigate('/groups');
+
+		} catch (error) {
+			console.error("Error converting files:", error);
+			handleError("Failed to convert images.");
 		}
 
-		handleSuccess(res.message);
-		localStorage.setItem("token", res.token);
-		refreshGroups();
-		navigate('/groups');
 	}
 
 	useEffect(() => {
@@ -70,8 +93,8 @@ const Register = () => {
 	}, [])
 
   return (
-		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: "-100pt"}}>
-			<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
+	<div style={{ marginTop: '50px', height: '100vh', display: "flex", flexDirection: "column", alignItems: "center", justifyContent: 'center'}}>
+		<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Create Account</h2>
 				<form onSubmit={form.onSubmit(handleSubmit)}>
 					<TextInput
@@ -81,6 +104,16 @@ const Register = () => {
 						placeholder="Name"
 						key={form.key('name')}
 						{...form.getInputProps('name')}
+					/>
+					<FileInput
+						clearable 
+						style={InputStyle}
+						leftSection={<IconPhotoScan style={{color: '#CED4DA'}}/>}
+						label="Image"
+						accept="image/png,image/jpeg"
+						placeholder="Upload images"
+						value={image}
+						onChange={setImage}
 					/>
 					<TextInput
 						style={InputStyle}

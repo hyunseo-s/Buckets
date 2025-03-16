@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
 import Register from './pages/Register'
 import MyBuckets from './pages/MyBuckets'
 import '@mantine/carousel/styles.css';
@@ -30,13 +31,14 @@ function App() {
 			<MantineProvider theme={theme} >
 				<GroupsProvider>
 					<Notifications />
-					<WaveHeader />
 					<BrowserRouter>
+						<WaveHeader />	
 						<Routes>
 							<Route index element={<Home />} />
 							<Route path="login" element={<Login />} />
 							<Route path="register" element={<Register />} />
 							<Route path="groups" element={<Groups />} />
+							<Route path="profile" element={<Profile />} />
 							<Route path="my-buckets/:gid" element={<MyBuckets />} />
 							<Route path="grp-buckets/:gid" element={<GroupBuckets />} />
 							<Route path="groups" element={<Groups />} />

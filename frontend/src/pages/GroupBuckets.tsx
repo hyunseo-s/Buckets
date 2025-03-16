@@ -11,6 +11,7 @@ const GroupBuckets = () => {
   const { gid = '' } = useParams();
   const { buckets, refreshBucketsOfGroup } = useGroups();
   const [title, setTitle] = useState<string>('');
+  const [members, setMembers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const GroupBuckets = () => {
           handleError(res.error);
         } else {
           setTitle(res.groupName);
+          setMembers(res.members);
         }
       } catch (err) {
         console.error("Error fetching group:", err);
@@ -40,13 +42,15 @@ const GroupBuckets = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div
+      style={{marginTop: '150px'}}
+    >
       <BucketView title={title} buckets={buckets?.[gid] ?? []}>
         <Avatar.Group>
-          <Avatar src="https://example.com/avatar1.jpg" />
-          <Avatar src="https://example.com/avatar2.jpg" />
-          <Avatar src="https://example.com/avatar3.jpg" />
-          <Avatar>+5</Avatar>
+        {members.slice(0, 3).map((_, index) => (
+          <Avatar key={index} src={`https://example.com/avatar${index}.jpg`} />
+        ))}
+        {members.length > 3 ? <Avatar>+{members.length - 3}</Avatar> : <></>}
         </Avatar.Group>
         <ActionIcon variant="light" color="gray" radius="xl" aria-label="Settings">
           <MoreHorizIcon />

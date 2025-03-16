@@ -5,6 +5,7 @@ import { get, post } from "../utils/apiClient";
 import { handleError, handleSuccess } from "../utils/handlers";
 import { useGroups } from "../context/GroupsProvider";
 import { Bucket } from "../types";
+import { IconPhotoScan } from "@tabler/icons-react";
 
 interface ItemAllocation {
 	groupName: string | null,
@@ -215,6 +216,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 							</Flex>
 							<FileInput
 								style={InputStyle}
+								rightSection={<IconPhotoScan style={{color: '#CED4DA'}}/>}
 								label="Images"
 								accept="image/png,image/jpeg"
 								placeholder="Upload images"
