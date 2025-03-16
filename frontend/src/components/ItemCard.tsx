@@ -40,6 +40,7 @@ const ItemCard = (props: ItemDetails) => {
     userId()
   }, [props.likes])
 
+
   const handleLike = async () => {
     const res = await put("/item/toggleLike", { itemId : props.id });
     if (res.error) {
@@ -60,18 +61,19 @@ const ItemCard = (props: ItemDetails) => {
     setVisible(!visible)
   }
 
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>
         {visible ? 
-          <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length !== 1} withControls={props.images.length !== 1}>
-            {props.images.length > 0 && props.images.map((image, index) => {
+          <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length > 1} withControls={props.images.length > 1}>
+            {props.images.length > 0 ? props.images.map((image, index) => {
                 return (
                   <Carousel.Slide key={index}>
                     <Image src={image} radius="md" h={CAROUSEL_HEIGHT} onError={(e) => (e.currentTarget.src = "https://archive.org/download/placeholder-image//placeholder-image.jpg")}/>
                   </Carousel.Slide>
                 )
-            })}
+            }) : <Image src={"https://archive.org/download/placeholder-image//placeholder-image.jpg"} radius="md" h={CAROUSEL_HEIGHT} onError={(e) => (e.currentTarget.src = "https://archive.org/download/placeholder-image//placeholder-image.jpg")}/> }
           </Carousel>
           : <Flex h={CAROUSEL_HEIGHT} p='lg' direction='column' gap='lg'>
             <Text c={'gray'}>Description</Text>
@@ -81,16 +83,16 @@ const ItemCard = (props: ItemDetails) => {
           </Flex>
         }
       </Card.Section>
-      <Group justify='space-between' mt={'md'}>
-        <Group gap="xs" align='center'>
-          <Text fw={500}>{props.title}</Text>
+      <Group justify='space-between' mt={'md'} wrap='nowrap' style={{overflowX: "clip"}}>
+        <Group gap="xs" align='center' wrap='nowrap' style={{overflowX: "clip"}} maw={"70%"}>
+          <Text fw={500} >{props.title}</Text>
           <ActionIcon variant="light" color='gray' radius="xl" aria-label="More Details Button" onClick={handleVisibility}><MoreHorizIcon /></ActionIcon>
         </Group>
         {props.type
           ? <ActionIcon variant="light" color="red" radius="xl" aria-label="Delete Button">
             <CloseRoundedIcon/>
           </ActionIcon>
-          : <Group gap="xs" align='center'>
+          : <Group gap="xs" wrap='nowrap' style={{overflowX: "clip"}} >
               {like ? <FavoriteRoundedIcon color='error' onClick={handleLike} /> : <FavoriteBorderRoundedIcon onClick={handleLike}/>}
               <Text size='sm'>{likeCount}</Text>
               <Anchor href={props.link} target="_blank" c={'blue'}><OpenInNewRoundedIcon/></Anchor>

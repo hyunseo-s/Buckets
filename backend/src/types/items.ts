@@ -28,7 +28,6 @@ interface EditItemType {
 export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucketIds}: CreateItemType) {
   const database = getData();
   const items = database.items;
-  console.log({itemName, itemDesc, itemUrl, addedBy, images, bucketIds})
   for (const bucketId of bucketIds) {
 		const itemId = v4();
     const item: Item = {
