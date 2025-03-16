@@ -93,18 +93,32 @@ app.post('/auth/logout', async (req: Request, res: Response) => {
 //  ================= GROUP ===================
 // ====================================================================
 
-app.post('/group/create', (req: Request, res: Response) => {
-	const { groupName, memberIds, images }: { groupName: string, memberIds: string[], images: string[] } = req.body;
+app.post('/group/create', async (req: Request, res: Response) => {
+	const { groupName, memberIds }: { groupName: string, memberIds: string[] } = req.body;
 	const token = req.header('Authorization').split(" ")[1];
   const id = decodeJWT(token);
-  try {
-    const groupId = createGroup(groupName, [...memberIds, id], images);
-    res.status(201).json({ message: 'Group created', groupId });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  } finally {
-    writeData()
-  }
+	
+	const images = [];
+
+	try {
+		const imageUrl = await fetchUnsplashImages(groupName);
+		if (imageUrl) {
+			images.push(imageUrl)
+		}
+	} catch (error) {
+
+	} finally {
+			try {
+				const groupId = createGroup(groupName, [...memberIds, id], images);
+				res.status(201).json({ message: 'Group created', groupId });
+			} catch (error) {
+				res.status(500).json({ error: error.message });
+			} finally {
+				writeData()
+			}
+	}
+ 
+
 });
 
 app.delete('/group/:groupId', (req: Request, res: Response) => {
@@ -376,24 +390,23 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		Only return this directly.
 	`;
 
-	const	itemsString = await askGemini(prompt);
-
-	const jsonData = await JSON.parse(itemsString.slice(7, -4));
-
-	const data = await Promise.all(jsonData.items.map(async (item) => {
-		const imageUrl = await fetchUnsplashImages(item.itemName);
-
-		return ({
-			itemName: item.itemName,
-			itemDesc: item.itemDesc,
-			images: imageUrl == null ? [] : [ imageUrl ]
-		});
-	}))
-
+	
+	
   try {
+		const	itemsString = await askGemini(prompt);
+	
+		const jsonData = await JSON.parse(itemsString.slice(7, -4));
+		const data = await Promise.all(jsonData.items.map(async (item) => {
+		const imageUrl = await fetchUnsplashImages(item.itemName);
+	
+			return ({
+				itemName: item.itemName,
+				itemDesc: item.itemDesc,
+				images: imageUrl == null ? [] : [ imageUrl ]
+			});
+		}))
     res.status(200).json(data);
   } catch (error) {
-		console.log(error.message);
     res.status(404).json({ error: error.message });
   } finally {
     writeData();

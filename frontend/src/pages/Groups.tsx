@@ -24,7 +24,7 @@ const Groups = () => {
 					wrap={{ base: "nowrap", sm: "wrap" }}
           direction={{ base: "column", sm: "row" }}
         >
-          {groups.filter(group => group.groupName.includes(query)).length > 0 && groups.filter(group => group.groupName.includes(query)).map((group, index) => (
+          { groups.filter(group => group.groupName.includes(query)).length > 0 && groups.filter(group => group.groupName.includes(query)).map((group, index) => (
             <GroupCard key={index} group={group} />
           ))}
         </Flex>
