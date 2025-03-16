@@ -1,5 +1,7 @@
 {
   "url": "http://127.0.0.1",
   "port": "49153",
-  "expandDocs": false
+  "expandDocs": false,
+	"gemini_api_key": "AIzaSyCXrSpRgP1WHqFS4luMWt2fGCk0M-SCkOM",
+	"unsplash_api_key": "-c5pj-wdBYnrAk7V6nLCo_kqIi7xGDAGvnfcpCQiM2g"
 }

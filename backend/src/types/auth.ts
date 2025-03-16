@@ -10,7 +10,7 @@ const JWT_SECRET = "TOPSECRET";
 
 // Register a new user
 export const register = async (req: Request, res: Response) => {
-	const { email, username, password } = req.body;
+	const { email, username, password, profileImg } = req.body;
 	console.log(email,username,password)
 	
 	const db: Database = getData();
@@ -19,12 +19,17 @@ export const register = async (req: Request, res: Response) => {
 		throw new Error("User already exists");
 	}
 
+	if (db.users.some((user) => user.username === username)) {
+		throw new Error("Username already taken");
+	}
+
 	const id = v4()
 	// const hashedPassword = await bcrypt.hash(password, 10);
 	const newUser: User = {
 		id,
 		username,
 		email,
+		profileImg,
 		password: password,
 		groups: [],
 		friends: [],
@@ -36,7 +41,7 @@ export const register = async (req: Request, res: Response) => {
 
 	const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
-	createGroup("My Buckets", [id]);
+	createGroup("My", [id], []);
 
 	return ({ message: "Registration success", token });
 }
