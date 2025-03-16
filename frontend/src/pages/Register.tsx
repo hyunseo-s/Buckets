@@ -58,16 +58,16 @@ const Register = () => {
 				const reader = new FileReader();
 				reader.onload = () => resolve(reader.result as string);
 				reader.onerror = reject;
+				console.log(file)
 				reader.readAsDataURL(file);
 			});
 		};
 
 		try {
-			const dataUrl = await filePromise(image);
 
 			const params = {
 				...values,
-				profileImage: dataUrl
+				profileImage: image == null ? null : await filePromise(image)
 			}
 			const res = await post("/auth/register", params);
 			
@@ -106,14 +106,14 @@ const Register = () => {
 						{...form.getInputProps('name')}
 					/>
 					<FileInput
+						clearable 
 						style={InputStyle}
-						rightSection={<IconPhotoScan style={{color: '#CED4DA'}}/>}
-						label="Images"
+						leftSection={<IconPhotoScan style={{color: '#CED4DA'}}/>}
+						label="Image"
 						accept="image/png,image/jpeg"
 						placeholder="Upload images"
-						multiple
-						value={file}
-						onChange={setFile}
+						value={image}
+						onChange={setImage}
 					/>
 					<TextInput
 						style={InputStyle}
