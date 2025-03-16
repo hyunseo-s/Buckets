@@ -18,6 +18,7 @@ export const ItemModal = ({ openedAddItem, closeAddItem }) => {
 		initialValues: {
 			itemName: '',
 			itemUrl: '',
+			itemDesc: ''
 		},
 
 		validate: {
