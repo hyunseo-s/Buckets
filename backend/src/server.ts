@@ -14,6 +14,10 @@ import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 import { getUser } from './types/user';
+import { google } from "googleapis";
+import { getCal } from './calendar/script';
+import { OAuth2Client } from 'google-auth-library';
+import { Token } from './interface';
 
 // Set up web app
 const app = express();
@@ -363,3 +367,7 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
+function getFreeTime(oAuth2Client: OAuth2Client) {
+  throw new Error('Function not implemented.');
+}
+
