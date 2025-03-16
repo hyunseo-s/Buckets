@@ -14,10 +14,8 @@ import { getAllUsers, login, register } from './types/auth';
 import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
 import { decodeJWT } from './utilis';
 import { getUser } from './types/user';
-import { google } from "googleapis";
-import { getCal } from './calendar/script';
-import { OAuth2Client } from 'google-auth-library';
-import { Token } from './interface';
+import { getCalendar } from './calendar/calendar';
+
 
 // Set up web app
 const app = express();
@@ -40,6 +38,20 @@ const HOST: string = process.env.IP || '127.0.0.1';
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
+
+// ====================================================================
+//  ============================ GOOGLE API ===========================
+// ====================================================================
+
+// IMPLEMENT THE GOOGLE API CALENDER FETCHING IMPLEMENTATION HERE
+app.get('/calendar', async (req: Request, res: Response) => {
+  try {
+    const result = await getCalendar()
+    res.status(201).json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message })
+  }
+})
 // ====================================================================
 //  =============================== AUTH ==============================
 // ====================================================================
@@ -367,7 +379,3 @@ process.on('SIGINT', () => {
     process.exit();
   });
 });
-function getFreeTime(oAuth2Client: OAuth2Client) {
-  throw new Error('Function not implemented.');
-}
-
