@@ -19,8 +19,7 @@ const Profile = () => {
         handleError(res.error);
         return;
       }
-      console.log('userid=', res)
-      setUserId(res);
+      setUserId(res.id);
     }
     getUserId();
   }, [token]);
@@ -43,7 +42,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token")
-    navigate('login')
+    navigate('/login')
   }
 
   return (
@@ -82,7 +81,6 @@ const Profile = () => {
       >
         Logout
       </Button>
-      <MyBuckets />
     </div>
   );
 }

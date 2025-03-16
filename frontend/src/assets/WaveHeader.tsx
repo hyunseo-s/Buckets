@@ -19,7 +19,7 @@ const WaveHeader = () => {
         handleError(res.error);
         return;
       }
-      setUserId(res);
+      setUserId(res.id);
     }
 
     getUserId();
