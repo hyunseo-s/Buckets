@@ -67,8 +67,8 @@ const Login = () => {
 	}
 
   return (
-		<div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: "-120pt"}}>
-			<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
+<div style={{ height: '100vh', display: "flex", flexDirection: "column", alignItems: "center", justifyContent: 'center'}}>
+	<div style={{ width: "40%", minWidth: "300px", margin: "auto" }}>
 				<h2 style={HeadingStyle} >Login</h2>
 				<form onSubmit={form.onSubmit(handleSubmit)}>
 					<TextInput

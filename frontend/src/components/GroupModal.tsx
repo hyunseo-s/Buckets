@@ -38,8 +38,8 @@ export const GroupModal = ({
 	const { refreshGroups } = useGroups();
 
 
-  // Call API to get users
-  const [users, setUsers] = useState<User[]>([]);
+	// Call API to get users
+	const [users, setUsers] = useState<User[]>([]);
 	const [members, setMembers] = useState<string[]>([]);
 	const [groupName, setGroupName] = useState<string>('');
 
