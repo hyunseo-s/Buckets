@@ -48,7 +48,7 @@ const HOST: string = process.env.IP || '127.0.0.1';
 app.get('/calendar', async (req: Request, res: Response) => {
   try {
     const result = await getCalendar()
-    res.status(201).json(result);
+    res.status(201).json({ data: result, message: "Successfully retrieved calendar"  });
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }

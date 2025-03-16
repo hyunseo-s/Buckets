@@ -7,36 +7,65 @@ const initialValues = [
   { label: '8pm-12am', checked: false, key: randomId() },
 ];
 
-export function NestedCheckbox({day} : {day : string}) {
-  const [values, handlers] = useListState(initialValues);
+interface DateObject {
+  date: string,
+  checked: boolean,
+  freeAt: DateRange[]
+}
 
-  const allChecked = values.every((value) => value.checked);
-  const indeterminate = values.some((value) => value.checked) && !allChecked;
+interface DateRange {
+  start: string,
+  end: string,
+  checked: boolean,
+}
 
-  const items = values.map((value, index) => (
-    <Checkbox
-      mt="xs"
-      ml={33}
-      label={value.label}
-      key={value.key}
-      checked={value.checked}
-      onChange={(event) => handlers.setItemProp(index, 'checked', event.currentTarget.checked)}
-    />
-  ));
+interface DateObjectProps {
+  index: number,
+  dateObjects: DateObject[]
+  setDateObjects: React.Dispatch<DateObject[]>
+
+}
+
+export function NestedCheckbox( { dateObjects, setDateObjects, index } : DateObjectProps) {
+  console.log(dateObjects[index],index, "hello")
+
+  // const allChecked = dateObjects[index].freeAt.every((value) => value.checked);
+  // const indeterminate = dateObjects[index].freeAt.some((value) => value.checked) && !allChecked;
 
   return (
     <>
       <Checkbox
-        checked={allChecked}
-        indeterminate={indeterminate}
-        label={day}
-        onChange={() =>
-          handlers.setState((current) =>
-            current.map((value) => ({ ...value, checked: !allChecked }))
-          )
+        key={`${dateObjects[index].date}`}
+        // checked={allChecked}
+        // indeterminate={indeterminate}
+        label={`${new Date(dateObjects[index].date).toDateString().slice(0, -4)}`}
+        onChange={(e) => {
+          const newDateObjects = [...dateObjects];
+          const newDateObject: DateObject = { ...newDateObjects[index] };
+          newDateObject.checked = e.target.checked;
+          newDateObjects[index] = newDateObject;
+          setDateObjects(newDateObjects);
+        }
         }
       />
-      {items}
+      {dateObjects[index].freeAt.length > 0 &&  dateObjects[index].freeAt.map((value, i) => (
+      <Checkbox
+        mt="xs"
+        ml={33}
+        label={`${new Date(value.start).toLocaleTimeString().slice(0, -3)} - ${new Date(value.end).toLocaleTimeString().slice(0, -3)}`}
+        key={`${value.start} - ${value.end} (${i})`}
+        checked={value.checked}
+        onChange={(e) => {
+          const newDateObjects = [...dateObjects];
+          const newDateObject = { ...newDateObjects[index] };
+          const newFreeAt = [...newDateObject.freeAt];
+          newFreeAt[i].checked = e.target.checked;
+          newDateObject.freeAt = newFreeAt;
+          newDateObjects[index] = newDateObject;
+          setDateObjects(newDateObjects);
+        }}
+      />
+    ))}
     </>
   );
 }

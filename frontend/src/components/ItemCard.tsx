@@ -8,6 +8,7 @@ import { Carousel } from '@mantine/carousel'
 import { handleError } from '../utils/handlers';
 import { get, put } from '../utils/apiClient';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useNavigate } from 'react-router';
 
 const CAROUSEL_HEIGHT = 325
 
@@ -25,6 +26,7 @@ const ItemCard = (props: ItemDetails) => {
   const [like, setLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [visible, setVisible] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userId = async () => {
@@ -60,8 +62,12 @@ const ItemCard = (props: ItemDetails) => {
     setVisible(!visible)
   }
 
+  const handleCardClick = () => {
+    navigate(`/calendar/${props.id}`)
+  }
+
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card shadow="sm" padding="lg" radius="md" withBorder component="a" onClick={handleCardClick}>
       <Card.Section>
         {visible ? 
           <Carousel height={CAROUSEL_HEIGHT} withIndicators={props.images.length !== 1} withControls={props.images.length !== 1}>

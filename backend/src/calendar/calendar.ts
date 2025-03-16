@@ -36,7 +36,7 @@ export const getCalendar = async () => {
     try {
         const token = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
         oAuth2Client.setCredentials(token);
-        getFreeTime(oAuth2Client);
+        return getFreeTime(oAuth2Client);
         console.log("A")
     } catch (err) {
         console.log("No existing token found. Requesting new authentication...");

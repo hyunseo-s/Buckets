@@ -40,7 +40,7 @@ function App() {
 							<Route path="my-buckets/:gid" element={<MyBuckets />} />
 							<Route path="grp-buckets/:gid" element={<GroupBuckets />} />
 							<Route path="groups" element={<Groups />} />
-							<Route path="calendar" element={<Calendar />} />
+							<Route path="calendar/:id" element={<Calendar />} />
 						</Routes>
 					</BrowserRouter>
 					<AddButton />
