@@ -5,6 +5,13 @@ export interface Database {
 	items: Item[];
 }
 
+export interface RegisterObj {
+	email: string;
+	username: string;
+	password: string;
+	profileImg : string;
+}
+
 export interface User {
 	id: string;
 	username: string;

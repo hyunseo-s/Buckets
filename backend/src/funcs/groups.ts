@@ -1,12 +1,12 @@
 import { getData } from './dataStore';
-import { Group, User } from '../interface';
-import { v4 as uuidv4 } from 'uuid';
+import { Group } from '../interface';
+import { v4 } from 'uuid';
 
 // Function to create the group, given the name and the members
 export function createGroup(groupName: string, memberIds: string[], images: string[]) {
 	const database = getData();
 	const groups = database.groups;
-	const groupId = uuidv4();
+	const groupId = v4();
 	
 	const group: Group = {
 		groupId: groupId,
@@ -24,7 +24,7 @@ export function createGroup(groupName: string, memberIds: string[], images: stri
 // Function to delete the groups given the id
 export function deleteGroup(findGroupId: string) {
 	const database = getData();
-	let groups = database.groups;
+	const groups = database.groups;
 
 	const index = groups.findIndex(group => group.groupId === findGroupId);
 	
@@ -66,7 +66,7 @@ export function removeFromGroup(groupId: string, memberIds: string[]) {
 	const group = groups.find(group => group.groupId === groupId);
 	
 	if (!group) {
-			throw new Error(`Group with ID ${groupId} not found`);
+		throw new Error(`Group with ID ${groupId} not found`);
 	}
 
 	group.members = group.members.filter(id => !memberIds.includes(id));
@@ -75,24 +75,24 @@ export function removeFromGroup(groupId: string, memberIds: string[]) {
 }
 
 export function editGroup(groupId: string, updatedGroupName: string) {
-    const database = getData();
-    const groups = database.groups;
+	const database = getData();
+	const groups = database.groups;
 
-    const group = groups.find(group => group.groupId === groupId);
-    if (!group) {
-        throw new Error(`Group with ID ${groupId} not found`);
-    }
+	const group = groups.find(group => group.groupId === groupId);
+	if (!group) {
+		throw new Error(`Group with ID ${groupId} not found`);
+	}
 
-    group.groupName = updatedGroupName;
+	group.groupName = updatedGroupName;
 
-    return group.groupName;
+	return group.groupName;
 }
 
 export function getGroup(groupId: string) {
     const database = getData();
     const groups = database.groups;
 
-    let group = groups.find(group => group.groupId === groupId);
+    const group = groups.find(group => group.groupId === groupId);
     if (!group) {
         throw new Error(`Group with ID ${groupId} not found`);
     }

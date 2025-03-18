@@ -31,7 +31,7 @@ export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucket
   for (const bucketId of bucketIds) {
 		const itemId = v4();
     const item: Item = {
-      itemId: itemId,
+      itemId,
       itemName,
       itemDesc,
       itemUrl,
@@ -49,38 +49,44 @@ export function createItem({itemName, itemDesc, itemUrl, addedBy, images, bucket
 			bucket.items.push(itemId);
 		}
 	}
+
+  return { message: 'Item added to buckets!' }
 }
 
 export function editItem({ itemId, itemName, itemDesc, itemUrl, itemImage, bucketId }: EditItemType) {
-    const database = getData();
-    const items = database.items;
+  const database = getData();
+  const items = database.items;
 
-    const itemIndex = items.findIndex(item => item.itemId === itemId);
-    
-    if (itemIndex === -1) {
-        throw new Error(`Item with ID ${itemId} not found`);
-    }
+  const itemIndex = items.findIndex(item => item.itemId === itemId);
+  
+  if (itemIndex === -1) {
+      throw new Error(`Item with ID ${itemId} not found`);
+  }
 
-    // Update only provided fields
-    if (itemName) items[itemIndex].itemName = itemName;
-    if (itemDesc) items[itemIndex].itemDesc = itemDesc;
-    if (itemUrl) items[itemIndex].itemUrl = itemUrl;
-    if (itemImage) items[itemIndex].images = itemImage;
-    if (bucketId) items[itemIndex].bucketId = bucketId;
+  // Update only provided fields
+  if (itemName) items[itemIndex].itemName = itemName;
+  if (itemDesc) items[itemIndex].itemDesc = itemDesc;
+  if (itemUrl) items[itemIndex].itemUrl = itemUrl;
+  if (itemImage) items[itemIndex].images = itemImage;
+  if (bucketId) items[itemIndex].bucketId = bucketId;
+
+  return { message: "Item successfully edited" }
 }
 
 // Function to remove an item given the itemId
 export function removeItem(itemId: string) {
-    const database = getData();
-    const items = database.items;
+  const database = getData();
+  const items = database.items;
 
-    const itemExists = items.some(item => item.itemId === itemId);
-    
-    if (!itemExists) {
-        throw new Error(`Item with ID ${itemId} not found`);
-    }
+  const itemExists = items.some(item => item.itemId === itemId);
+  
+  if (!itemExists) {
+      throw new Error(`Item with ID ${itemId} not found`);
+  }
 
-    database.items = items.filter(item => item.itemId !== itemId);
+  database.items = items.filter(item => item.itemId !== itemId);
+
+  return { message: "Successfully removed item" }
 }
 
 export function upvoteItem(itemId: string, id: string) {

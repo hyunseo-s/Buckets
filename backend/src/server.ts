@@ -1,19 +1,19 @@
 import express, { json, Request, Response } from 'express';
-import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './types/groups';
-import { createBucket, deleteBucket, getBucket, getAllBuckets, getBucketItems } from './types/buckets'
+import { createGroup, deleteGroup, addToGroup, removeFromGroup, editGroup, getGroup, getAllGroups } from './funcs/groups';
+import { createBucket, deleteBucket, getBucket, getAllBuckets, getBucketItems } from './funcs/buckets'
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import YAML from 'yaml';
 import sui from 'swagger-ui-express';
-import fs, { write } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { clear, getCal, readCal, readData, writeData } from './types/dataStore'
-import { getAllUsers, login, register } from './types/auth';
-import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './types/items';
-import { decodeJWT, fetchUnsplashImages } from './utilis';
-import { getUser } from './types/user';
+import { clear, getCal, readData, writeData } from './funcs/dataStore'
+import { getAllUsers, login, register } from './funcs/auth';
+import { createItem, editItem, removeItem, toggleActiveItem, upvoteItem } from './funcs/items';
+import { decodeJWT, fetchUnsplashImages } from './utils';
+import { getUser } from './funcs/user';
 import { askGemini } from './gemini/client';
 import { getCalendar } from './calendar/calendar';
 import { FreeTime } from './interface';
@@ -65,7 +65,8 @@ app.get('/calendar', async (req: Request, res: Response) => {
 
 app.post('/auth/register', async (req: Request, res: Response) => {
   try {
-    const newToken = await register(req, res);
+    const args = req.body;
+    const newToken = await register(args);
     res.status(201).json(newToken);
   } catch (error) {
     return res.status(400).json({ error: error.message })
@@ -87,7 +88,7 @@ app.post('/auth/login', async (req: Request, res: Response) => {
 
 app.post('/auth/logout', async (req: Request, res: Response) => {
   try {
-    
+    // TO DO
   } catch (error) {
     res.status(400).json({ error: error.message });
   } finally {
@@ -112,7 +113,7 @@ app.post('/group/create', async (req: Request, res: Response) => {
 			images.push(imageUrl)
 		}
 	} catch (error) {
-
+    res.status(400).json({ error: error.message })
 	} finally {
 			try {
 				const groupId = createGroup(groupName, [...memberIds, id], images);
@@ -298,7 +299,7 @@ app.post('/item/add', (req: Request, res: Response) => {
     params.addedBy = id;
 
     const result = createItem(params)
-    res.status(201).json({ message: 'Item added to buckets!' });
+    res.status(201).json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message })
   } finally {
@@ -310,7 +311,7 @@ app.post('/item/remove', (req: Request, res: Response) => {
   try {
     const { itemId } = req.body;
     const result = removeItem(itemId);
-    return res.status(200).json({message: "Successfully removed item" });
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(400).json({error: error.message })
   } finally {
@@ -400,7 +401,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 
 	const jsonData = await JSON.parse(itemsString.slice(7, -4));
 
-	const data = await Promise.all(jsonData.items.map(async (item: { itemName: string; itemDesc: any; }) => {
+	await Promise.all(jsonData.items.map(async (item: { itemName: string; itemDesc: any; }) => {
 		const imageUrl = await fetchUnsplashImages(item.itemName);
 
 		return ({
@@ -414,7 +415,7 @@ app.get('/buckets/:bucketId/recommendations', async (req: Request, res: Response
 		const	itemsString = await askGemini(prompt);
 	
 		const jsonData = await JSON.parse(itemsString.slice(7, -4));
-		const data = await Promise.all(jsonData.items.map(async (item) => {
+		const data = await Promise.all(jsonData.items.map(async (item: { itemName: string; itemDesc: any; }) => {
 		const imageUrl = await fetchUnsplashImages(item.itemName);
 			
 			return ({

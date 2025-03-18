@@ -1,18 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { User, Database } from "../interface";
+import { User, Database, RegisterObj } from "../interface";
 import { v4 } from 'uuid';
-import { getData, readData, writeData } from "./dataStore";
+import { getData } from "./dataStore";
 import { createGroup } from "./groups";
 
 const JWT_SECRET = "TOPSECRET";
 
 // Register a new user
-export const register = async (req: Request, res: Response) => {
-	const { email, username, password, profileImg } = req.body;
-	console.log(email,username,password)
-	
+export const register = async ({ email, username, password, profileImg } : RegisterObj) => {
 	const db: Database = getData();
 
 	if (db.users.some((user) => user.email === email)) {
