@@ -43,9 +43,7 @@ export const register = async ({ email, username, password, profileImg } : Regis
 }
 
 // User login function
-export const login = async (req: Request, res: Response) => {
-
-    const { email, password } = req.body;
+export const login = async (email: string, password: string) => {
     const db = getData();
   
     const user = db.users.find((u: User) => u.email === email);
@@ -62,7 +60,7 @@ export const login = async (req: Request, res: Response) => {
   
     const token = jwt.sign({ user: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
   
-    res.status(201).json({ message: "Login success", token });
+    return { message: "Login success", token };
 };
 
 // Middleware to verify JWT token

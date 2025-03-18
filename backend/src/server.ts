@@ -78,9 +78,11 @@ app.post('/auth/register', async (req: Request, res: Response) => {
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     // Check if the token is still valid:
-    await login(req, res);
+    const { email, password } = req.body;
+    await login(email, password);
+    res.status(200).json(login);
   } catch (error) {
-    return res.status(400).json({ error: error.message })
+    res.status(400).json({ error: error.message })
   } finally {
     writeData();
   }

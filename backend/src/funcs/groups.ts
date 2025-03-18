@@ -89,20 +89,20 @@ export function editGroup(groupId: string, updatedGroupName: string) {
 }
 
 export function getGroup(groupId: string) {
-    const database = getData();
-    const groups = database.groups;
+	const database = getData();
+	const groups = database.groups;
 
-    const group = groups.find(group => group.groupId === groupId);
-    if (!group) {
-        throw new Error(`Group with ID ${groupId} not found`);
-    }
+	const group = groups.find(group => group.groupId === groupId);
+	if (!group) {
+		throw new Error(`Group with ID ${groupId} not found`);
+	}
 
-    return group;
+	return group;
 }
 
 export function getAllGroups(memberId: string) {
-    const database = getData();
-    const groups = database.groups;
-		
-    return groups.filter(group => group.members.includes(memberId));
+	const database = getData();
+	const groups = database.groups;
+	
+	return groups.filter(group => group.members.includes(memberId));
 }
