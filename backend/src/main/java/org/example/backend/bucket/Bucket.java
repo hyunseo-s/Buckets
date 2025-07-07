@@ -14,7 +14,7 @@ public class Bucket {
 
     public Bucket() {}
 
-    public Bucket(String name, String description) {
+    public Bucket(String name) {
         this.name = name;
     }
 }

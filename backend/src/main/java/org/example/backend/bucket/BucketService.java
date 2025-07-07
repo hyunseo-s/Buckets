@@ -14,7 +14,7 @@ public class BucketService {
     }
 
     public Bucket createBucket() {
-        return bucketRepository.save(new Bucket());
+        return bucketRepository.save(new Bucket("Justin"));
     }
 
 }
